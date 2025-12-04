@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { organization } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./db";
 // If your Prisma file is located elsewhere, you can change the path
@@ -13,4 +14,5 @@ export const auth = betterAuth({
     maxPasswordLength: 20,
     requireEmailVerification: false,
   },
+  plugins: [organization()],
 });
