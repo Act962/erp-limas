@@ -1,16 +1,11 @@
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { CirclePlus, Filter } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { FiltersCatalog } from "./filters";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function Catalogo() {
   const mockedProducts = [
@@ -75,6 +70,78 @@ export function Catalogo() {
       images: ["https://picsum.photos/400/400?random=10"],
     },
   ];
+  const mockedCategories = [
+    {
+      id: "cat_01",
+      name: "Informática",
+      slug: "informatica",
+      description: "Produtos de informática e acessórios",
+      image: "https://picsum.photos/400/400?random=101",
+    },
+    {
+      id: "cat_02",
+      name: "Periféricos",
+      slug: "perifericos",
+      description: "Teclados, mouses e acessórios",
+      image: "https://picsum.photos/400/400?random=102",
+    },
+    {
+      id: "cat_03",
+      name: "Monitores",
+      slug: "monitores",
+      description: "Monitores e telas profissionais",
+      image: "https://picsum.photos/400/400?random=103",
+    },
+    {
+      id: "cat_04",
+      name: "Notebooks",
+      slug: "notebooks",
+      description: "Notebooks e laptops",
+      image: "https://picsum.photos/400/400?random=104",
+    },
+    {
+      id: "cat_05",
+      name: "Gamers",
+      slug: "gamers",
+      description: "Produtos para setup gamer",
+      image: "https://picsum.photos/400/400?random=105",
+    },
+    {
+      id: "cat_06",
+      name: "Smartphones",
+      slug: "smartphones",
+      description: "Celulares e acessórios",
+      image: "https://picsum.photos/400/400?random=106",
+    },
+    {
+      id: "cat_07",
+      name: "Áudio",
+      slug: "audio",
+      description: "Fones, caixas de som e headsets",
+      image: "https://picsum.photos/400/400?random=107",
+    },
+    {
+      id: "cat_08",
+      name: "Armazenamento",
+      slug: "armazenamento",
+      description: "HDs, SSDs e cartões de memória",
+      image: "https://picsum.photos/400/400?random=108",
+    },
+    {
+      id: "cat_09",
+      name: "Móveis Gamer",
+      slug: "moveis-gamer",
+      description: "Cadeiras e mesas gamer",
+      image: "https://picsum.photos/400/400?random=109",
+    },
+    {
+      id: "cat_10",
+      name: "Acessórios",
+      slug: "acessorios",
+      description: "Cabos, suportes e adaptadores",
+      image: "https://picsum.photos/400/400?random=110",
+    },
+  ];
 
   return (
     <main className="w-full flex items-center justify-center py-5">
@@ -82,7 +149,7 @@ export function Catalogo() {
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-4">
           <div />
           <h1 className="text-2xl font-bold">Catálogo</h1>
-          <FiltersCatalog />
+          <FiltersCatalog categories={mockedCategories} />
         </div>
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {mockedProducts.map((product) => (
@@ -116,13 +183,23 @@ function ProductCard({ id, name, salePrice, images }: ProductProps) {
     >
       {images && (
         <img
-          className="w-[220px] h-[220px] object-contain rounded-lg"
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 rounded-sm"
           src={images}
           alt={name}
         />
       )}
       <div className="flex flex-col items-center w-full">
-        <h2 className="text-medium font-semibold">{name}</h2>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <h2 className="text-medium font-semibold line-clamp-2 min-h-[50px]">
+              {name}
+            </h2>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{name}</p>
+          </TooltipContent>
+        </Tooltip>
+
         <p className="text-2xl font-bold">R$ {salePrice}</p>
       </div>
       <Button variant="outline">
