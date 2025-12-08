@@ -1,0 +1,56 @@
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { Handbag, HandCoins } from "lucide-react";
+import Link from "next/link";
+
+export function Header() {
+  return (
+    <header className="w-full flex items-center justify-center py-5 px-5 bg-accent-foreground/10">
+      <div className="max-w-[1280px] flex flex-row w-full justify-between">
+        <div className="flex flex-row gap-x-3 items-center">
+          <Avatar>
+            <AvatarImage src="https://github.com/ElFabrica.png" />
+          </Avatar>
+          <h1 className="text-xl font-bold">Limas Atacado</h1>
+        </div>
+        <div className="flex flex-row gap-x-3 items-center">
+          <Link className="hidden sm:block" href="/limas-atacado">
+            <Button className="rounded-full">Início</Button>
+          </Link>
+          <Link className="hidden sm:block" href="/about-us">
+            <Button className="rounded-full">Sobre Nós</Button>
+          </Link>
+          <Button variant="outline" className="rounded-full">
+            <HandCoins className="size-4" />
+          </Button>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="rounded-full">
+                <Handbag className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-80 mt-2 mr-2">
+              <div
+                className="flex flex-col items-center
+               gap-4 bg-accent p-4 rounded-2xl"
+              >
+                <h1 className="text-center text-lg font-bold">
+                  Seu pedido ainda não possui produtos
+                </h1>
+                <p className="text-center text-sm opacity-80">
+                  Navegue para adicionar produtos ao seu pedido
+                </p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+    </header>
+  );
+}
