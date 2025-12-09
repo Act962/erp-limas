@@ -22,18 +22,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Check, Filter } from "lucide-react";
-import { useState } from "react";
-import { parseAsInteger, useQueryState } from "nuqs";
-
-export interface Category {
-  id: string;
-  name: string;
-  categorySlug: string;
-  description: string;
-}
+import { useEffect, useState } from "react";
+import { useQueryState } from "nuqs";
+import { CategoryCatalog } from "../types/category";
 
 interface FiltersCatalogProps {
-  categories: Category[];
+  categories: CategoryCatalog[];
 }
 
 export function FiltersCatalog({
@@ -78,6 +72,22 @@ export function FiltersCatalog({
     }
     setModalIsOpen(false);
   };
+
+  useEffect(() => {
+    if (category) {
+      const slugsFromUrl = category
+        .split(",")
+        .map((s) => s.trim().toLowerCase());
+
+      const idsFromSlugs = mockedCategories
+        .filter((cat) => slugsFromUrl.includes(cat.categorySlug.toLowerCase()))
+        .map((cat) => cat.id);
+
+      setSelectedIds(idsFromSlugs);
+    } else {
+      setSelectedIds([]);
+    }
+  }, [category, mockedCategories]);
 
   return (
     <Sheet open={modalOpen} onOpenChange={setModalIsOpen}>
