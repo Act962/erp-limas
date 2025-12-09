@@ -25,12 +25,11 @@ import { Check, Filter } from "lucide-react";
 import { useState } from "react";
 import { parseAsInteger, useQueryState } from "nuqs";
 
-interface Category {
+export interface Category {
   id: string;
   name: string;
-  slug: string;
+  categorySlug: string;
   description: string;
-  image: string;
 }
 
 interface FiltersCatalogProps {
@@ -42,9 +41,7 @@ export function FiltersCatalog({
 }: FiltersCatalogProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [modalOpen, setModalIsOpen] = useState(false);
-  const [category, setCategory] = useQueryState("category", {
-    defaultValue: `${mockedCategories[0].name}`,
-  });
+  const [category, setCategory] = useQueryState("category");
 
   const handleRemove = (id: string) => {
     if (!selectedIds.includes(id)) {
@@ -73,7 +70,7 @@ export function FiltersCatalog({
     if (getSelectedCategories().length >= 1) {
       setCategory(
         getSelectedCategories()
-          .map((cat) => cat.slug.toLowerCase())
+          .map((cat) => cat.categorySlug.toLowerCase())
           .join(",")
       );
     } else {
