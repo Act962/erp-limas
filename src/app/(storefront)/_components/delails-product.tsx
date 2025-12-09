@@ -64,12 +64,7 @@ export function DetailsPoduct({
               </span>
             </div>
             <div>
-              <div className="flex items-center">
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  className="h-9 w-9 rounded-none"
-                ></Button>
+              <div className="flex items-center mt-4">
                 <Button
                   variant="ghost"
                   size="icon-sm"
