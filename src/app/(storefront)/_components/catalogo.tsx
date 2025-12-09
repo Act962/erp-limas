@@ -1,100 +1,136 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CirclePlus, Minus, Plus } from "lucide-react";
-import { Category, FiltersCatalog } from "./filters";
+import { Check, CirclePlus, IdCard, Minus, Plus } from "lucide-react";
+import { FiltersCatalog } from "./filters";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
-
-interface Product {
-  id: string;
-  name: string;
-  salePrice: number;
-  images: string[];
-  categorySlug: string;
-}
+import { ProductCatalog } from "../types/product";
+import { CategoryCatalog } from "../types/category";
+import { useShoppingCart } from "../hooks/use-product";
+import { currencyFormatter } from "../utils/currencyFormatter";
 
 export function Catalogo() {
   const [categoryParam] = useQueryState("category");
 
-  const mockedProducts: Product[] = [
+  const mockedProducts: ProductCatalog[] = [
     {
       id: "1",
       name: "Notebook Gamer RTX 4050",
       salePrice: 5899.9,
-      images: ["https://picsum.photos/400/400?random=1"],
+      thumbnail: "https://picsum.photos/400/400?random=1",
+      images: [
+        "https://picsum.photos/800/800?random=1",
+        "https://picsum.photos/800/800?random=11",
+        "https://picsum.photos/800/800?random=111",
+      ],
       categorySlug: "notebooks",
     },
     {
       id: "2",
       name: "Mouse Sem Fio Logitech MX",
       salePrice: 249.9,
-      images: ["https://picsum.photos/400/400?random=2"],
+      thumbnail: "https://picsum.photos/400/400?random=2",
+      images: [
+        "https://picsum.photos/800/800?random=2",
+        "https://picsum.photos/800/800?random=22",
+      ],
       categorySlug: "perifericos",
     },
     {
       id: "3",
       name: "Teclado Mecânico RGB",
       salePrice: 399.99,
-      images: ["https://picsum.photos/400/400?random=3"],
+      thumbnail: "https://picsum.photos/400/400?random=3",
+      images: [
+        "https://picsum.photos/800/800?random=3",
+        "https://picsum.photos/800/800?random=33",
+      ],
       categorySlug: "perifericos",
     },
     {
       id: "4",
       name: 'Monitor 27" Full HD',
       salePrice: 1299.0,
-      images: ["https://picsum.photos/400/400?random=4"],
+      thumbnail: "https://picsum.photos/400/400?random=4",
+      images: [
+        "https://picsum.photos/800/800?random=4",
+        "https://picsum.photos/800/800?random=44",
+      ],
       categorySlug: "monitores",
     },
     {
       id: "5",
       name: "Headset Gamer 7.1",
       salePrice: 799.9,
-      images: ["https://picsum.photos/400/400?random=5"],
+      thumbnail: "https://picsum.photos/400/400?random=5",
+      images: [
+        "https://picsum.photos/800/800?random=5",
+        "https://picsum.photos/800/800?random=55",
+      ],
       categorySlug: "audio",
     },
     {
       id: "6",
       name: "SSD NVMe 1TB",
       salePrice: 699.9,
-      images: ["https://picsum.photos/400/400?random=6"],
+      thumbnail: "https://picsum.photos/400/400?random=6",
+      images: [
+        "https://picsum.photos/800/800?random=6",
+        "https://picsum.photos/800/800?random=66",
+      ],
       categorySlug: "armazenamento",
     },
     {
       id: "7",
       name: "Cadeira Gamer Ergonômica",
       salePrice: 1599.0,
-      images: ["https://picsum.photos/400/400?random=7"],
+      thumbnail: "https://picsum.photos/400/400?random=7",
+      images: [
+        "https://picsum.photos/800/800?random=7",
+        "https://picsum.photos/800/800?random=77",
+        "https://picsum.photos/800/800?random=777",
+      ],
       categorySlug: "moveis-gamer",
     },
     {
       id: "8",
       name: "Webcam Full HD",
       salePrice: 299.9,
-      images: ["https://picsum.photos/400/400?random=8"],
+      thumbnail: "https://picsum.photos/400/400?random=8",
+      images: ["https://picsum.photos/800/800?random=8"],
       categorySlug: "acessorios",
     },
     {
       id: "9",
       name: "Caixa de Som Bluetooth",
       salePrice: 349.9,
-      images: ["https://picsum.photos/400/400?random=9"],
+      thumbnail: "https://picsum.photos/400/400?random=9",
+      images: [
+        "https://picsum.photos/800/800?random=9",
+        "https://picsum.photos/800/800?random=99",
+      ],
       categorySlug: "audio",
     },
     {
-      id: "0",
+      id: "10",
       name: "Smartphone Android 128GB",
       salePrice: 2499.0,
-      images: ["https://picsum.photos/400/400?random=10"],
+      thumbnail: "https://picsum.photos/400/400?random=10",
+      images: [
+        "https://picsum.photos/800/800?random=10",
+        "https://picsum.photos/800/800?random=100",
+        "https://picsum.photos/800/800?random=1000",
+      ],
       categorySlug: "smartphones",
     },
   ];
-  const mockedCategories: Category[] = [
+  const mockedCategories: CategoryCatalog[] = [
     {
       id: "cat_01",
       name: "Informática",
@@ -173,11 +209,9 @@ export function Catalogo() {
     <main className="w-full flex items-center justify-center py-5">
       <div className="max-w-[1280px] flex flex-col w-full justify-between px-3">
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6">
-          {categoryParam && (
-            <div className="mb-4 text-sm text-muted-foreground">
-              {filteredProducts.length} produto(s) encontrado(s)
-            </div>
-          )}
+          <span className="text-sm text-muted-foreground">
+            {filteredProducts.length} produto(s) encontrado(s)
+          </span>
 
           <h1 className="text-2xl font-bold">Catálogo</h1>
           <FiltersCatalog categories={mockedCategories} />
@@ -189,7 +223,8 @@ export function Catalogo() {
               id={String(product.id)}
               name={product.name}
               salePrice={product.salePrice}
-              images={product.images[0]}
+              thumbnail={product.thumbnail}
+              categorySlug={product.categorySlug}
             />
           ))}
         </ul>
@@ -198,15 +233,31 @@ export function Catalogo() {
   );
 }
 
-interface ProductProps {
-  id: string;
-  name: string;
-  salePrice: number;
-  images: string;
-}
-
-function ProductCard({ id, name, salePrice, images }: ProductProps) {
+function ProductCard({
+  id,
+  name,
+  salePrice,
+  categorySlug,
+  thumbnail,
+}: ProductCatalog) {
   const [quantity, setQuantity] = useState(1);
+  const { addToCart, cartItems } = useShoppingCart();
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  const productInCart = !!cartItems.find((item) => item.id === id);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleAddToCart = () => {
+    addToCart({ id, name, salePrice, categorySlug, thumbnail }, quantity);
+  };
+
+  const showAsInCart = isMounted && productInCart;
+  const isDisabled = isMounted && productInCart;
+
   return (
     <div
       id={id}
@@ -216,11 +267,11 @@ function ProductCard({ id, name, salePrice, images }: ProductProps) {
       hover:shadow-lg 
       "
     >
-      {images && (
+      {thumbnail && (
         <div className="aspect-square overflow-hidden">
           <img
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 rounded-sm"
-            src={images}
+            src={thumbnail}
             alt={name}
           />
         </div>
@@ -237,7 +288,7 @@ function ProductCard({ id, name, salePrice, images }: ProductProps) {
           </TooltipContent>
         </Tooltip>
 
-        <p className="text-2xl font-bold">R$ {salePrice}</p>
+        <p className="text-2xl font-bold">{currencyFormatter(salePrice)}</p>
       </div>
       <div className="flex flex-col gap-y-2">
         <div className="flex items-center border border-border rounded-lg overflow-hidden">
@@ -246,23 +297,34 @@ function ProductCard({ id, name, salePrice, images }: ProductProps) {
             size="icon"
             className="h-9 w-9 rounded-none"
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            disabled={isDisabled}
           >
-            <Minus className="h-4 w-4" />
+            <Minus className="size-4" />
           </Button>
           <span className="px-4 font-medium min-w-12 text-center">
             {quantity}
           </span>
           <Button
+            disabled={isDisabled}
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-none"
             onClick={() => setQuantity(quantity + 1)}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="size-4" />
           </Button>
         </div>
-        <Button variant="default">
-          Adicionar <CirclePlus />
+        <Button
+          variant="default"
+          onClick={handleAddToCart}
+          disabled={isDisabled}
+        >
+          {showAsInCart ? "Adicionado" : "Adicionar"}
+          {showAsInCart ? (
+            <Check className="size-4" />
+          ) : (
+            <CirclePlus className="size-4" />
+          )}
         </Button>
       </div>
     </div>
