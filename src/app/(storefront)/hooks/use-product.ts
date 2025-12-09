@@ -21,25 +21,22 @@ export function useShoppingCart() {
         ...cartItems,
         {
           ...product,
-          cartId: Math.random().toString(36).substring(2, 9),
           quantity,
         },
       ]);
     }
   }
-  function removeFromCart(cartId: string) {
-    setCartItems(cartItems.filter((item) => item.cartId !== cartId));
+  function removeFromCart(id: string) {
+    setCartItems(cartItems.filter((item) => item.id !== id));
   }
-  function updateQuantity(cartId: string, quantity: number) {
+  function updateQuantity(id: string, quantity: number) {
     if (quantity <= 0) {
-      removeFromCart(cartId);
+      removeFromCart(id);
       return;
     }
 
     setCartItems(
-      cartItems.map((item) =>
-        item.cartId === cartId ? { ...item, quantity } : item
-      )
+      cartItems.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
   }
   function clearCart() {

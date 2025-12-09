@@ -296,6 +296,7 @@ model Product {
   maxStock         Decimal?        @db.Decimal(10, 3)
   // Imagens
   images           String[] // Array de URLs
+  thumbnail        String // URL da thumbnail
   // Dimensões e peso
   weight           Decimal?        @db.Decimal(10, 3)
   length           Decimal?        @db.Decimal(10, 2)

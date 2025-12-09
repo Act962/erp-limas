@@ -264,8 +264,7 @@ function ProductCard({
       className="flex flex-col items-center 
       gap-y-3 pb-5 rounded-lg bg-accent-foreground/5 shadow-md 
       transition-shadow overflow-hidden
-      hover:shadow-lg 
-      "
+      hover:shadow-lg"
     >
       {thumbnail && (
         <div className="aspect-square overflow-hidden">

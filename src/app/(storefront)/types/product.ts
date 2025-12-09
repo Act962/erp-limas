@@ -8,6 +8,5 @@ export interface ProductCatalog {
 }
 
 export interface CartItem extends Omit<ProductCatalog, "images"> {
-  cartId: string;
   quantity: number;
 }
