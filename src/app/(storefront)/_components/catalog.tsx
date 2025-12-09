@@ -14,8 +14,9 @@ import { ProductCatalog } from "../types/product";
 import { CategoryCatalog } from "../types/category";
 import { useShoppingCart } from "../hooks/use-product";
 import { currencyFormatter } from "../utils/currencyFormatter";
+import { useRouter } from "next/navigation";
 
-export function Catalogo() {
+export function Catalog() {
   const [categoryParam] = useQueryState("category");
 
   const mockedProducts: ProductCatalog[] = [
@@ -206,8 +207,8 @@ export function Catalogo() {
   }, [categoryParam]);
 
   return (
-    <main className="w-full flex items-center justify-center py-5">
-      <div className="max-w-[1280px] flex flex-col w-full justify-between px-3">
+    <main className="w-full max-w-6xl mx-auto justify-center py-5">
+      <div className="flex flex-col w-full justify-between px-3">
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6">
           <span className="text-sm text-muted-foreground">
             {filteredProducts.length} produto(s) encontrado(s)
@@ -220,7 +221,7 @@ export function Catalogo() {
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
-              id={String(product.id)}
+              id={product.id}
               name={product.name}
               salePrice={product.salePrice}
               thumbnail={product.thumbnail}
@@ -242,9 +243,8 @@ function ProductCard({
 }: ProductCatalog) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart, cartItems } = useShoppingCart();
-
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-
   const productInCart = !!cartItems.find((item) => item.id === id);
 
   useEffect(() => {
@@ -263,13 +263,14 @@ function ProductCard({
       id={id}
       className="flex flex-col items-center 
       gap-y-3 pb-5 rounded-lg bg-accent-foreground/5 shadow-md 
-      transition-shadow overflow-hidden
-      hover:shadow-lg"
+      transition-shadow overflow-hidden animate-fade-in
+      hover:shadow-lg hover:shadow-elegant cursor-pointer"
+      onClick={() => router.push(`/product/${id}`)}
     >
       {thumbnail && (
         <div className="aspect-square overflow-hidden">
           <img
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 rounded-sm"
+            className="w-full h-full object-cover transition-transform rounded-sm"
             src={thumbnail}
             alt={name}
           />

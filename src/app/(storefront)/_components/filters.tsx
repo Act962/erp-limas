@@ -73,6 +73,12 @@ export function FiltersCatalog({
     setModalIsOpen(false);
   };
 
+  const handleClearFilters = () => {
+    setSelectedIds([]);
+    setModalIsOpen(false);
+    setCategory(null);
+  };
+
   useEffect(() => {
     if (category) {
       const slugsFromUrl = category
@@ -138,7 +144,9 @@ export function FiltersCatalog({
             Aplicar
           </Button>
           <SheetClose asChild>
-            <Button variant="outline">Fechar</Button>
+            <Button onClick={handleClearFilters} variant="outline">
+              Limpar
+            </Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>
