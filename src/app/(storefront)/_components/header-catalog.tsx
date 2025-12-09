@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function Header() {
   const { cartItems, updateQuantity } = useShoppingCart();
@@ -70,14 +71,16 @@ export function Header() {
                       {cartItems.length} itens
                     </span>
                   </div>
-                  {cartItems.map((item) => (
-                    <ItemRequested
-                      key={item.id}
-                      {...item}
-                      quantityInit={item.quantity}
-                      updateQuantity={updateQuantity}
-                    />
-                  ))}
+                  <ScrollArea className="h-72 w-full rounded-md">
+                    {cartItems.map((item) => (
+                      <ItemRequested
+                        key={item.id}
+                        {...item}
+                        quantityInit={item.quantity}
+                        updateQuantity={updateQuantity}
+                      />
+                    ))}
+                  </ScrollArea>
                   <Button className="w-full">Finalizar Pedido</Button>
                 </div>
               )}
@@ -132,7 +135,7 @@ function ItemRequested({
               variant="ghost"
               size="icon-sm"
               className="h-9 w-9 rounded-none"
-              onClick={() => onSubmit(0)}
+              onClick={() => onSubmit(quantity - 1)}
               disabled={isDisabled}
             >
               <Minus className="size-4" />
