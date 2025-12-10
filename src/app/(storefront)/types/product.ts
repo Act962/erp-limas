@@ -11,3 +11,6 @@ export interface ProductCatalog {
 export interface CartItem extends Omit<ProductCatalog, "images"> {
   quantity: number;
 }
+
+export type DeliveryMethod = "delivery" | "pickup";
+export type PaymentMethod = "pix" | "credit" | "debit" | "cash";

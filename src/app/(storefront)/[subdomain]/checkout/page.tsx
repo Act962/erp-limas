@@ -1,0 +1,5 @@
+import { Checkout } from "../../_components/checkout";
+
+export default function Page() {
+  return <Checkout />;
+}

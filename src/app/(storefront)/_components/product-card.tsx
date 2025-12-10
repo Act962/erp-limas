@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { ProductCatalog } from "../types/product";
-import { useShoppingCart } from "../hooks/use-product";
+import { useShoppingCart } from "../../../hooks/use-product";
 import { useRouter } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { currencyFormatter } from "../utils/currencyFormatter";
+import { currencyFormatter } from "../../../utils/currencyFormatter";
 import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
 

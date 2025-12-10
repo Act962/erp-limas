@@ -1,4 +1,4 @@
-import { ProductCatalog, CartItem } from "../types/product";
+import { ProductCatalog, CartItem } from "../app/(storefront)/types/product";
 import useLocalStorage from "use-local-storage";
 const CART_KEY = "@cart_products";
 

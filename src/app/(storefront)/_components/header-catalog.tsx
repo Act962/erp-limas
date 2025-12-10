@@ -4,7 +4,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Handbag, HandCoins, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useShoppingCart } from "../hooks/use-product";
+import { useShoppingCart } from "../../../hooks/use-product";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
 import { CartItem } from "../types/product";
 import { useState } from "react";
@@ -23,7 +23,7 @@ export function Header() {
 
   return (
     <header className="w-full flex items-center justify-center py-5 px-5 bg-accent-foreground/10">
-      <div className="max-w-[1280px] flex flex-row w-full justify-between">
+      <div className="max-w-6xl flex flex-row w-full justify-between">
         <div className="flex flex-row gap-x-3 items-center">
           <Avatar>
             <AvatarImage src="https://github.com/ElFabrica.png" />
