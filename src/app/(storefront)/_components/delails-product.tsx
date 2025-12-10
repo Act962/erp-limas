@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ProductCatalog } from "../types/product";
 import { currencyFormatter } from "../utils/currencyFormatter";
 import { Header } from "./header-catalog";
@@ -13,7 +13,8 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useShoppingCart } from "../hooks/use-product";
-import { useIsMobile } from "@/hooks/use-mobile";
+import useEmblaCarousel from "embla-carousel-react";
+import { EmblaCarouselType } from "embla-carousel";
 
 interface DetailsPoductProps extends ProductCatalog {
   quantityInit: number;
@@ -31,7 +32,12 @@ export function DetailsPoduct({
 }: DetailsPoductProps) {
   const [imageSelected, setImageSelected] = useState(thumbnail);
   const [quantity, setQuantity] = useState(quantityInit || 0);
+
   const { cartItems, updateQuantity } = useShoppingCart();
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({});
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi);
 
   function onSubmit(quantity: number) {
     setQuantity(quantity);
@@ -85,7 +91,6 @@ export function DetailsPoduct({
       categorySlug: "monitores",
     },
   ];
-  const isMobile = useIsMobile();
 
   return (
     <div className="h-screen space-y-5">
@@ -102,35 +107,66 @@ export function DetailsPoduct({
             <ChevronRight className="size-3" />
             <span>{name}</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 w-full space-x-5">
-            {isMobile ? (
-              <div>Viva ao mobile</div>
-            ) : (
-              <div className="flex justify-center flex-1 flex-row gap-x-5 sm:justify-start">
-                <div className="hidden sm:flex flex-col gap-4 min-w-13">
+          <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
+            <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
+              <div className="overflow-hidden size-full" ref={emblaRef}>
+                <div className="flex gap-2 size-full">
                   {images &&
-                    images.map((image) => (
-                      <img
-                        data-selected={imageSelected === image}
-                        key={image}
-                        src={image}
-                        alt={name}
-                        className="w-15 h-15 rounded-sm cursor-pointer
-                  data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40"
-                        onClick={() => setImageSelected(image)}
-                      />
+                    images.map((image, index) => (
+                      <div
+                        className="flex justify-center translate-0 shrink-0 grow-0 size-full"
+                        key={`image-carousel-${index}`}
+                      >
+                        <img
+                          src={image}
+                          alt={name}
+                          className="object-cover rounded-2xl"
+                        />
+                      </div>
                     ))}
                 </div>
-                <div className="items-center sm:block">
-                  <img
-                    src={imageSelected}
-                    alt={name}
-                    className="w-full rounded-2xl
-               object-cover"
-                  />
-                </div>
               </div>
-            )}
+              {/* DotsButton */}
+              {images && images.length > 0 && (
+                <div className="flex flex-row gap-1">
+                  {scrollSnaps.map((_, index) => (
+                    <button
+                      key={`dot-${index}`}
+                      onClick={() => onDotButtonClick(index)}
+                      className="flex items-center justify-center cursor-pointer size-4 rounded-full border-2 border-gray-400"
+                    >
+                      {index === selectedIndex ? (
+                        <div className="size-2 rounded-full bg-gray-800" />
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center">
+              <div className="flex flex-col gap-4 min-w-13">
+                {images &&
+                  images.map((image) => (
+                    <img
+                      data-selected={imageSelected === image}
+                      key={image}
+                      src={image}
+                      alt={name}
+                      className="w-15 h-15 rounded-sm cursor-pointer
+                  data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40"
+                      onClick={() => setImageSelected(image)}
+                    />
+                  ))}
+              </div>
+              <div className="items-center sm:block">
+                <img
+                  src={imageSelected}
+                  alt={name}
+                  className="w-full rounded-2xl
+               object-cover"
+                />
+              </div>
+            </div>
             <div className="h-full px-4">
               <h1 className="font-bold text-3xl">{name}</h1>
               <h3 className="text-2xl font-semibold opacity-80 mt-2">
@@ -182,6 +218,7 @@ export function DetailsPoduct({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
               {categoryProducts.map((product) => (
                 <div
+                  key={product.id}
                   className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg hover:shadow-elegant"
                 >
@@ -212,3 +249,50 @@ export function DetailsPoduct({
     </div>
   );
 }
+
+// use DotButton
+type UseDotButtonType = {
+  selectedIndex: number;
+  scrollSnaps: number[];
+  onDotButtonClick: (index: number) => void;
+};
+
+export const useDotButton = (
+  emblaApi: EmblaCarouselType | undefined,
+  onButtonClick?: (emblaApi: EmblaCarouselType) => void
+): UseDotButtonType => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  const onDotButtonClick = useCallback(
+    (index: number) => {
+      if (!emblaApi) return;
+      emblaApi.scrollTo(index);
+      if (onButtonClick) onButtonClick(emblaApi);
+    },
+    [emblaApi, onButtonClick]
+  );
+
+  const onInit = useCallback((emblaApi: EmblaCarouselType) => {
+    setScrollSnaps(emblaApi.scrollSnapList());
+  }, []);
+
+  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, []);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    onInit(emblaApi);
+    onSelect(emblaApi);
+
+    emblaApi.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect);
+  }, [emblaApi, onInit, onSelect]);
+
+  return {
+    selectedIndex,
+    scrollSnaps,
+    onDotButtonClick,
+  };
+};
