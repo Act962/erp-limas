@@ -44,7 +44,6 @@ export function ProductCard({
       gap-y-3 pb-5 rounded-lg bg-accent-foreground/5 shadow-md 
       transition-shadow overflow-hidden animate-fade-in
       hover:shadow-lg hover:shadow-elegant cursor-pointer"
-      onClick={() => router.push(`/product/${id}`)}
     >
       {thumbnail && (
         <div className="aspect-square overflow-hidden">
@@ -52,6 +51,7 @@ export function ProductCard({
             className="w-full h-full object-cover transition-transform rounded-sm"
             src={thumbnail}
             alt={name}
+            onClick={() => router.push(`/product/${id}`)}
           />
         </div>
       )}
@@ -67,7 +67,7 @@ export function ProductCard({
           </TooltipContent>
         </Tooltip>
 
-        <p className="text-2xl font-bold">{currencyFormatter(salePrice)}</p>
+        <p className="text-2xl font-bold">R${currencyFormatter(salePrice)}</p>
       </div>
       <div className="flex flex-col gap-y-2">
         <div className="flex items-center border border-border rounded-lg overflow-hidden">

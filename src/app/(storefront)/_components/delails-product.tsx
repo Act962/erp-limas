@@ -94,7 +94,7 @@ export function DetailsPoduct({
   ];
 
   return (
-    <div className=" h-screen mx-auto w-full max-w-5xl">
+    <div className="mx-auto w-full max-w-5xl pb-8">
       <div
         className="bg-accent-foreground/10 rounded-sm py-5 px-4  
           sm:px-10"

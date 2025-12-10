@@ -17,9 +17,5 @@ export default function Page() {
       "https://picsum.photos/400/400?random=4",
     ],
   };
-  return (
-    <main>
-      <DetailsPoduct {...product} />
-    </main>
-  );
+  return <DetailsPoduct {...product} />;
 }

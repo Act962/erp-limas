@@ -32,7 +32,10 @@ export function Header() {
   return (
     <header className="w-full flex items-center justify-center py-5 px-5 bg-accent-foreground/10">
       <div className="max-w-6xl flex flex-row w-full justify-between">
-        <div className="flex flex-row gap-x-3 items-center">
+        <div
+          onClick={() => router.push("/Limas-Atacado")}
+          className="flex flex-row gap-x-3 items-center cursor-pointer"
+        >
           <Avatar>
             <AvatarImage src="https://github.com/ElFabrica.png" />
           </Avatar>

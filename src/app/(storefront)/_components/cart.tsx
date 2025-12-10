@@ -68,11 +68,13 @@ export function Cart() {
                       <img
                         src={item.thumbnail}
                         alt={item.name}
-                        className="w-24 h-24 object-cover rounded-lg"
+                        className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg"
                       />
 
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{item.name}</h3>
+                        <h3 className="font-semibold text-md sm:text-lg">
+                          {item.name}
+                        </h3>
                         <p className="text-sm text-muted-foreground">
                           {item.description}
                         </p>
@@ -95,12 +97,12 @@ export function Cart() {
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-6 w-6 sm:h-8 sm:w-8"
                             onClick={() =>
                               handleUpdateQuantity(item.id, item.quantity - 1)
                             }
                           >
-                            <Minus className="h-3 w-3" />
+                            <Minus className="size-3" />
                           </Button>
                           <span className="w-8 text-center font-medium">
                             {item.quantity}
@@ -108,12 +110,12 @@ export function Cart() {
                           <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-6 w-6 sm:h-8 sm:w-8 "
                             onClick={() =>
                               handleUpdateQuantity(item.id, item.quantity + 1)
                             }
                           >
-                            <Plus className="h-3 w-3" />
+                            <Plus className="size-3" />
                           </Button>
                         </div>
 
@@ -137,7 +139,7 @@ export function Cart() {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span className="font-medium">
+                      <span className="font-medium ">
                         R$ {currencyFormatter(total)}
                       </span>
                     </div>
@@ -147,7 +149,7 @@ export function Cart() {
 
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span className="bg-gradient-primary bg-clip-text text-transparent">
+                    <span className="bg-gradient-primary bg-clip-text">
                       R$ {total.toFixed(2)}
                     </span>
                   </div>
