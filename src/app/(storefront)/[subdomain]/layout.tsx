@@ -6,7 +6,7 @@ export default function SubdomainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 bg-accent-foreground/5">
       <Header />
       {children}
     </div>

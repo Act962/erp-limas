@@ -15,11 +15,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const router = useRouter();
   const { cartItems, updateQuantity } = useShoppingCart();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const isEmpty = cartItems.length === 0;
+
+  function handleGoToCart() {
+    setModalIsOpen(false);
+    router.push("/Limas-Atacado/cart");
+  }
 
   return (
     <header className="w-full flex items-center justify-center py-5 px-5 bg-accent-foreground/10">
@@ -41,7 +49,7 @@ export function Header() {
             <HandCoins className="size-4" />
           </Button>
 
-          <Popover>
+          <Popover open={modalIsOpen} onOpenChange={setModalIsOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="rounded-full">
                 <Handbag className="size-4" />
@@ -81,7 +89,9 @@ export function Header() {
                       />
                     ))}
                   </ScrollArea>
-                  <Button className="w-full">Finalizar Pedido</Button>
+                  <Button className="w-full" onClick={handleGoToCart}>
+                    Finalizar Pedido
+                  </Button>
                 </div>
               )}
             </PopoverContent>

@@ -19,11 +19,12 @@ import { useState } from "react";
 import { DeliveryMethod, PaymentMethod } from "../types/product";
 import { useShoppingCart } from "@/hooks/use-product";
 import { toast } from "sonner";
+import { currencyFormatter } from "@/utils/currencyFormatter";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
 export function Checkout() {
-  const navigate = useRouter();
+  const router = useRouter();
   const [deliveryMethod, setDeliveryMethod] =
     useState<DeliveryMethod>("delivery");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("pix");
@@ -98,12 +99,16 @@ export function Checkout() {
     const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
     window.open(whatsappURL, "_blank");
     toast.success("Redirecionando para o WhatsApp...");
-    setTimeout(() => navigate.push("/"), 2000);
+    setTimeout(() => router.push("/"), 2000);
   };
 
   return (
     <div className="h-screen mx-auto w-full max-w-6xl">
-      <Button variant={"secondary"} className="mb-4">
+      <Button
+        onClick={() => router.push("/Limas-Atacado/cart")}
+        variant={"secondary"}
+        className="mb-4"
+      >
         <ArrowLeft className="size-4" /> Voltar ao carrinho
       </Button>
 
@@ -258,7 +263,7 @@ export function Checkout() {
                       {item.quantity}x {item.name}
                     </span>
                     <span className="font-medium">
-                      R$ {(item.salePrice * item.quantity).toFixed(2)}
+                      R$ {currencyFormatter(item.salePrice * item.quantity)}
                     </span>
                   </div>
                 ))}
