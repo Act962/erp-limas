@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { ProductCatalog } from "../types/product";
 import { currencyFormatter } from "../../../utils/currencyFormatter";
-import { Header } from "./header-catalog";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
@@ -95,7 +94,7 @@ export function DetailsPoduct({
   ];
 
   return (
-    <div className="h-screen mx-auto w-full max-w-5xl">
+    <div className=" h-screen mx-auto w-full max-w-5xl">
       <div
         className="bg-accent-foreground/10 rounded-sm py-5 px-4  
           sm:px-10"
