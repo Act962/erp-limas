@@ -1,22 +1,26 @@
 import { auth } from "@/lib/auth";
-import { base } from "../middlewares/base";
-import { ORPCError } from "@orpc/server";
+import { base } from "./base";
 
 export const requireAuthMiddleware = base.middleware(
-  async ({ context, next }) => {
+  async ({ context, next, errors }) => {
     const sessionData = await auth.api.getSession({
       headers: context.headers,
     });
 
     if (!sessionData?.session || !sessionData?.user) {
-      throw new ORPCError("UNAUTHORIZED");
+      throw errors.UNAUTHORIZED;
     }
+
+    const organization = await auth.api.getFullOrganization({
+      headers: context.headers,
+    });
 
     // Adds session and user to the context
     return next({
       context: {
         session: sessionData.session,
         user: sessionData.user,
+        org: organization,
       },
     });
   }
