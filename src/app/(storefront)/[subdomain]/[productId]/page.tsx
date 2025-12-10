@@ -2,8 +2,9 @@ import { DetailsPoduct } from "../../_components/delails-product";
 
 export default function Page() {
   return (
-    <main>
+    <main className="">
       <DetailsPoduct
+        quantityInit={1}
         categorySlug="notebooks"
         id="1"
         name="Notebook Gamer RTX 4050"
