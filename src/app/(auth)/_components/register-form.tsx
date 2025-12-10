@@ -61,7 +61,7 @@ export function RegisterForm({
       {
         onSuccess: () => {
           toast.success("Conta criada com sucesso");
-          router.push("/dashboard");
+          router.push("/create-organization");
         },
         onError: () => {
           toast.error("Erro ao criar conta");
@@ -112,6 +112,7 @@ export function RegisterForm({
                     <Input
                       id="password"
                       type="password"
+                      placeholder="********"
                       disabled={isSubmitting}
                       {...form.register("password")}
                     />
@@ -126,6 +127,7 @@ export function RegisterForm({
                     <Input
                       id="confirm-password"
                       type="password"
+                      placeholder="********"
                       disabled={isSubmitting}
                       {...form.register("confirmPassword")}
                     />
