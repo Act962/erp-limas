@@ -5,7 +5,7 @@ import { ProductCatalog } from "../types/product";
 import { currencyFormatter } from "../utils/currencyFormatter";
 import { Header } from "./header-catalog";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, ShoppingBag } from "lucide-react";
 import { useShoppingCart } from "../hooks/use-product";
 
 interface DetailsPoductProps extends ProductCatalog {
@@ -31,12 +31,12 @@ export function DetailsPoduct({
   }
 
   return (
-    <div>
+    <div className="h-screen space-y-5">
       <Header />
-      <div className="mx-auto items-center w-full max-w-6xl py-5 px-3">
-        <div className="flex flex-row justify-between gap-5 ">
-          <div className="flex flex-row justify-evenly gap-x-4">
-            <div className="flex flex-col justify-between gap-2">
+      <div className="mx-auto items-center flex-1 w-full max-w-5xl py-5 px-10 bg-accent-foreground/10 rounded-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-3 flex-1 w-full gap-5">
+          <div className="flex justify-center flex-1 flex-row gap-x-5 sm:justify-start sm:col-span-2">
+            <div className="hidden sm:flex flex-col gap-4 min-w-13">
               {images &&
                 images.map((image) => (
                   <img
@@ -50,7 +50,14 @@ export function DetailsPoduct({
                   />
                 ))}
             </div>
-            <img src={imageSelected} alt={name} className="w-1/2 rounded-2xl" />
+            <div className="items-center sm:block">
+              <img
+                src={imageSelected}
+                alt={name}
+                className="w-full rounded-2xl
+               object-cover"
+              />
+            </div>
           </div>
           <div className="h-full">
             <h1 className="font-bold text-3xl">{name}</h1>
@@ -63,8 +70,8 @@ export function DetailsPoduct({
                 {categorySlug}
               </span>
             </div>
-            <div>
-              <div className="flex items-center mt-4">
+            <div className="flex flex-wrap items-center mt-4 gap-4">
+              <div className="flex items-center">
                 <Button
                   variant="ghost"
                   size="icon-sm"
@@ -84,6 +91,9 @@ export function DetailsPoduct({
                   <Plus className="size-4" />
                 </Button>
               </div>
+              <Button>
+                <ShoppingBag /> Adicionar ao Carrinho
+              </Button>
             </div>
           </div>
         </div>

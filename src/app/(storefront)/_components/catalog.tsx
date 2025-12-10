@@ -1,20 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Check, CirclePlus, IdCard, Minus, Plus } from "lucide-react";
 import { FiltersCatalog } from "./filters";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQueryState } from "nuqs";
 import { ProductCatalog } from "../types/product";
 import { CategoryCatalog } from "../types/category";
-import { useShoppingCart } from "../hooks/use-product";
-import { currencyFormatter } from "../utils/currencyFormatter";
-import { useRouter } from "next/navigation";
+import { ProductCard } from "./product-card";
 
 export function Catalog() {
   const [categoryParam] = useQueryState("category");
@@ -231,102 +222,5 @@ export function Catalog() {
         </ul>
       </div>
     </main>
-  );
-}
-
-function ProductCard({
-  id,
-  name,
-  salePrice,
-  categorySlug,
-  thumbnail,
-}: ProductCatalog) {
-  const [quantity, setQuantity] = useState(1);
-  const { addToCart, cartItems } = useShoppingCart();
-  const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
-  const productInCart = !!cartItems.find((item) => item.id === id);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const handleAddToCart = () => {
-    addToCart({ id, name, salePrice, categorySlug, thumbnail }, quantity);
-  };
-
-  const showAsInCart = isMounted && productInCart;
-  const isDisabled = isMounted && productInCart;
-
-  return (
-    <div
-      id={id}
-      className="flex flex-col items-center 
-      gap-y-3 pb-5 rounded-lg bg-accent-foreground/5 shadow-md 
-      transition-shadow overflow-hidden animate-fade-in
-      hover:shadow-lg hover:shadow-elegant cursor-pointer"
-      onClick={() => router.push(`/product/${id}`)}
-    >
-      {thumbnail && (
-        <div className="aspect-square overflow-hidden">
-          <img
-            className="w-full h-full object-cover transition-transform rounded-sm"
-            src={thumbnail}
-            alt={name}
-          />
-        </div>
-      )}
-      <div className="flex flex-col items-center w-full px-5">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <h2 className="text-medium font-semibold line-clamp-2 min-h-[50px]">
-              {name}
-            </h2>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{name}</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <p className="text-2xl font-bold">{currencyFormatter(salePrice)}</p>
-      </div>
-      <div className="flex flex-col gap-y-2">
-        <div className="flex items-center border border-border rounded-lg overflow-hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-none"
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            disabled={isDisabled}
-          >
-            <Minus className="size-4" />
-          </Button>
-          <span className="px-4 font-medium min-w-12 text-center">
-            {quantity}
-          </span>
-          <Button
-            disabled={isDisabled}
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-none"
-            onClick={() => setQuantity(quantity + 1)}
-          >
-            <Plus className="size-4" />
-          </Button>
-        </div>
-        <Button
-          variant="default"
-          onClick={handleAddToCart}
-          disabled={isDisabled}
-        >
-          {showAsInCart ? "Adicionado" : "Adicionar"}
-          {showAsInCart ? (
-            <Check className="size-4" />
-          ) : (
-            <CirclePlus className="size-4" />
-          )}
-        </Button>
-      </div>
-    </div>
   );
 }
