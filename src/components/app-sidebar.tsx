@@ -80,7 +80,7 @@ const menuItems: Items[] = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" variant="floating">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <OrgMenu />
       </SidebarHeader>

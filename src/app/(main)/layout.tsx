@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import React from "react";
 import { requireAuth, requireAuthOrg } from "@/lib/auth-utils";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 export default async function Layout({
   children,
@@ -19,7 +20,7 @@ export default async function Layout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <SidebarTrigger />
+        <ModalProvider />
         {children}
       </SidebarInset>
     </SidebarProvider>
