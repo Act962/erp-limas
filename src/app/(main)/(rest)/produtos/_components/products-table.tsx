@@ -1,0 +1,299 @@
+"use client";
+
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { Button } from "@/components/ui/button";
+import {
+  Copy,
+  Eye,
+  Filter,
+  MoreVertical,
+  Pencil,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+
+interface Product {
+  id: number;
+  name: string;
+  sku: string;
+  barcode: string;
+  category: string;
+  salePrice: number;
+  costPrice: number;
+  currentStock: number;
+  minStock: number;
+  image: string;
+  isActive: boolean;
+}
+
+function getStockStatus(current: number, min: number) {
+  if (current === 0)
+    return {
+      label: "Sem estoque",
+      className: "bg-destructive text-destructive-foreground",
+    };
+  if (current < min)
+    return {
+      label: "Estoque baixo",
+      className: "bg-warning text-warning-foreground",
+    };
+  return {
+    label: "Em estoque",
+    className: "bg-success text-success-foreground",
+  };
+}
+
+export function ProductsTable({ products }: { products: Product[] }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+
+  const filteredProducts = products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.barcode.includes(searchTerm)
+  );
+
+  const toggleSelectAll = () => {
+    if (selectedProducts.length === filteredProducts.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(filteredProducts.map((p) => p.id));
+    }
+  };
+
+  const toggleSelect = (id: number) => {
+    setSelectedProducts((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-4">
+          <InputGroup>
+            <InputGroupAddon>
+              <Search className="h-4 w-4" />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder="Buscar por nome, SKU ou código de barras..."
+              className="pl-9"
+            />
+          </InputGroup>
+
+          <Select defaultValue="all">
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Categorias</SelectItem>
+              <SelectItem value="eletronicos">Eletrônicos</SelectItem>
+              <SelectItem value="perifericos">Periféricos</SelectItem>
+              <SelectItem value="monitores">Monitores</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline">
+            <Filter className="h-4 w-4 mr-2" />
+            Filtros
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {selectedProducts.length > 0 && (
+          <div className="mb-4 flex items-center gap-2 rounded-lg border bg-muted/50 p-3">
+            <span className="text-sm font-medium">
+              {selectedProducts.length}{" "}
+              {selectedProducts.length === 1
+                ? "produto selecionado"
+                : "produtos selecionados"}
+            </span>
+            <div className="ml-auto flex gap-2">
+              <Button size="sm" variant="outline">
+                Ativar
+              </Button>
+              <Button size="sm" variant="outline">
+                Desativar
+              </Button>
+              <Button size="sm" variant="destructive">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Excluir
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={
+                      selectedProducts.length === filteredProducts.length &&
+                      filteredProducts.length > 0
+                    }
+                    onCheckedChange={toggleSelectAll}
+                  />
+                </TableHead>
+                <TableHead>Produto</TableHead>
+                <TableHead>SKU</TableHead>
+                <TableHead>Categoria</TableHead>
+                <TableHead className="text-right">Preço</TableHead>
+                <TableHead className="text-right">Estoque</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-12"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.map((product) => {
+                const stockStatus = getStockStatus(
+                  product.currentStock,
+                  product.minStock
+                );
+                return (
+                  <TableRow key={product.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedProducts.includes(product.id)}
+                        onCheckedChange={() => toggleSelect(product.id)}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10 rounded-md">
+                          <AvatarImage
+                            src={product.image || "/placeholder.svg"}
+                            alt={product.name}
+                          />
+                          <AvatarFallback>
+                            {product.name.substring(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium">{product.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            Cód. Barras: {product.barcode}
+                          </div>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {product.sku}
+                    </TableCell>
+                    <TableCell>{product.category}</TableCell>
+                    <TableCell className="text-right font-semibold">
+                      R$ {product.salePrice.toFixed(2).replace(".", ",")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="font-medium">
+                        {product.currentStock} un
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Min: {product.minStock}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={stockStatus.className}>
+                        {stockStatus.label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <Link href={`/produtos/${product.id}`}>
+                            <DropdownMenuItem>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Ver detalhes
+                            </DropdownMenuItem>
+                          </Link>
+                          <Link href={`/produtos/${product.id}/editar`}>
+                            <DropdownMenuItem>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                          </Link>
+                          <DropdownMenuItem>
+                            <Copy className="h-4 w-4 mr-2" />
+                            Duplicar
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {filteredProducts.length} de {products.length} produtos
+          </p>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" disabled>
+              Anterior
+            </Button>
+            <Button variant="outline" size="sm">
+              1
+            </Button>
+            <Button variant="outline" size="sm">
+              2
+            </Button>
+            <Button variant="outline" size="sm">
+              3
+            </Button>
+            <Button variant="outline" size="sm">
+              Próximo
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
