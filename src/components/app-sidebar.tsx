@@ -11,18 +11,37 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
   BadgeDollarSign,
   BadgeDollarSignIcon,
+  BarChart3,
+  Box,
   BoxIcon,
+  Building2,
+  ChevronDown,
+  ChevronRight,
   ChevronsUpDown,
+  CreditCard,
+  DollarSign,
   GalleryVerticalEnd,
   HomeIcon,
+  Inbox,
+  LayoutDashboard,
   LogOut,
   LucideIcon,
+  Package,
+  Receipt,
   ScrollTextIcon,
+  Settings,
+  ShoppingCart,
+  Store,
+  Tag,
+  TrendingUp,
   Users,
   UsersIcon,
 } from "lucide-react";
@@ -35,7 +54,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Skeleton } from "./ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -43,6 +62,14 @@ import { useEffect, useState } from "react";
 import { ActiveOrganization } from "@/lib/auth-types";
 import { error } from "console";
 import Image from "next/image";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
+import { ScrollArea } from "./ui/scroll-area";
+import { Button } from "./ui/button";
+import { cn } from "@/lib/utils";
 
 interface Items {
   title: string;
@@ -50,35 +77,79 @@ interface Items {
   icon: LucideIcon;
 }
 
-const menuItems: Items[] = [
+const navigation = [
   {
-    title: "Dashboard",
+    name: "Dashboard",
     href: "/dashboard",
-    icon: HomeIcon,
+    icon: LayoutDashboard,
   },
   {
-    title: "Produtos",
+    name: "Produtos",
     href: "/produtos",
-    icon: BoxIcon,
+    icon: Package,
+    children: [
+      { name: "Produtos", href: "/produtos", icon: Package },
+      { name: "Categorias", href: "/produtos/categorias", icon: Tag },
+    ],
   },
   // {
-  //   title: "Vendas",
+  //   name: "Vendas",
   //   href: "/vendas",
-  //   icon: BadgeDollarSignIcon,
+  //   icon: ShoppingCart,
   // },
-  {
-    title: "Clientes",
-    href: "/clientes",
-    icon: UsersIcon,
-  },
-  {
-    title: "Catalogo",
-    href: "/catalogo",
-    icon: ScrollTextIcon,
-  },
+  // {
+  //   name: "Estoque",
+  //   href: "/estoque",
+  //   icon: Box,
+  //   children: [
+  //     {
+  //       name: "Movimentações",
+  //       href: "/estoque/movimentacoes",
+  //       icon: TrendingUp,
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: "Financeiro",
+  //   href: "/financeiro",
+  //   icon: DollarSign,
+  //   children: [
+  //     { name: "Contas a Receber", href: "/financeiro/receber", icon: Inbox },
+  //     { name: "Contas a Pagar", href: "/financeiro/pagar", icon: Receipt },
+  //     { name: "Fluxo de Caixa", href: "/financeiro/fluxo", icon: CreditCard },
+  //   ],
+  // },
+  // {
+  //   name: "Clientes",
+  //   href: "/clientes",
+  //   icon: Users,
+  // },
+  // {
+  //   name: "Fornecedores",
+  //   href: "/fornecedores",
+  //   icon: Building2,
+  // },
+  // {
+  //   name: "Catálogo Online",
+  //   href: "/catalogo",
+  //   icon: Store,
+  // },
+  // {
+  //   name: "Relatórios",
+  //   href: "/relatorios",
+  //   icon: BarChart3,
+  // },
+  // {
+  //   name: "Configurações",
+  //   href: "/configuracoes",
+  //   icon: Settings,
+  // },
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -88,18 +159,80 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton tooltip={item.title} asChild>
-                    <Link href={item.href} prefetch>
-                      <item.icon className="size-4" />
-                      {item.title}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <ScrollArea className="flex-1">
+              <SidebarMenu>
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  const hasChildren = item.children && item.children.length > 0;
+
+                  if (hasChildren) {
+                    return (
+                      <Collapsible
+                        key={item.name}
+                        asChild
+                        defaultOpen={pathname.startsWith(item.href)}
+                      >
+                        <SidebarMenuItem>
+                          <CollapsibleTrigger asChild>
+                            <SidebarMenuButton
+                              tooltip={item.name}
+                              className={cn(
+                                pathname.startsWith(item.href) &&
+                                  "bg-sidebar-accent text-sidebar-accent-foreground"
+                              )}
+                            >
+                              {item.icon && (
+                                <item.icon
+                                  onClick={() => router.push(item.href)}
+                                />
+                              )}
+                              <span>{item.name}</span>
+                              <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            </SidebarMenuButton>
+                          </CollapsibleTrigger>
+                          <CollapsibleContent>
+                            <SidebarMenuSub>
+                              {item.children?.map((child) => (
+                                <SidebarMenuSubItem key={child.name}>
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    className={cn(
+                                      pathname === child.href &&
+                                        "bg-sidebar-accent text-sidebar-accent-foreground"
+                                    )}
+                                  >
+                                    <Link href={child.href}>
+                                      <child.icon />
+                                      <span>{child.name}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          </CollapsibleContent>
+                        </SidebarMenuItem>
+                      </Collapsible>
+                    );
+                  }
+
+                  return (
+                    <SidebarMenuButton
+                      tooltip={item.name}
+                      className={cn(
+                        pathname.startsWith(item.href) &&
+                          "bg-sidebar-accent text-sidebar-accent-foreground"
+                      )}
+                      asChild
+                    >
+                      <Link href={item.href}>
+                        {item.icon && <item.icon />}
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  );
+                })}
+              </SidebarMenu>
+            </ScrollArea>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
