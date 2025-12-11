@@ -88,8 +88,6 @@ const products = [
 ];
 
 export function ProductsContainer() {
-  const { onOpen } = useCreateProductsModal();
-
   return (
     <div className="px-4 mt-8 space-y-4">
       <div className="flex items-center justify-between">
@@ -101,8 +99,8 @@ export function ProductsContainer() {
         </div>
 
         <div>
-          <Button size={"sm"} onClick={onOpen} asChild>
-            <Link href={"/produtos"}>
+          <Button size={"sm"} asChild>
+            <Link href={"/produtos/novo"}>
               <Plus className="size-4" />
               Adicionar Produto
             </Link>

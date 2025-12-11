@@ -17,33 +17,16 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  BadgeDollarSign,
-  BadgeDollarSignIcon,
-  BarChart3,
   Box,
-  BoxIcon,
-  Building2,
   ChevronDown,
-  ChevronRight,
   ChevronsUpDown,
-  CreditCard,
-  DollarSign,
   GalleryVerticalEnd,
-  HomeIcon,
-  Inbox,
   LayoutDashboard,
   LogOut,
   LucideIcon,
   Package,
-  Receipt,
-  ScrollTextIcon,
-  Settings,
-  ShoppingCart,
-  Store,
   Tag,
   TrendingUp,
-  Users,
-  UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -60,7 +43,6 @@ import { Skeleton } from "./ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
 import { ActiveOrganization } from "@/lib/auth-types";
-import { error } from "console";
 import Image from "next/image";
 import {
   Collapsible,
@@ -68,7 +50,6 @@ import {
   CollapsibleTrigger,
 } from "./ui/collapsible";
 import { ScrollArea } from "./ui/scroll-area";
-import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 interface Items {
@@ -97,18 +78,18 @@ const navigation = [
   //   href: "/vendas",
   //   icon: ShoppingCart,
   // },
-  // {
-  //   name: "Estoque",
-  //   href: "/estoque",
-  //   icon: Box,
-  //   children: [
-  //     {
-  //       name: "Movimentações",
-  //       href: "/estoque/movimentacoes",
-  //       icon: TrendingUp,
-  //     },
-  //   ],
-  // },
+  {
+    name: "Estoque",
+    href: "/estoque",
+    icon: Box,
+    children: [
+      {
+        name: "Movimentações",
+        href: "/estoque/movimentacoes",
+        icon: TrendingUp,
+      },
+    ],
+  },
   // {
   //   name: "Financeiro",
   //   href: "/financeiro",

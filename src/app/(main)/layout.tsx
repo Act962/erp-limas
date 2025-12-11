@@ -16,10 +16,10 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   await requireAuth();
-  await requireAuthOrg();
+  // await requireAuthOrg();
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="flex h-screen overflow-hidden">
       <AppSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <AppHeader />

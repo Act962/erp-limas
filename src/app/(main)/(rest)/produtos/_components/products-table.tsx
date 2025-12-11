@@ -64,16 +64,16 @@ function getStockStatus(current: number, min: number) {
   if (current === 0)
     return {
       label: "Sem estoque",
-      className: "bg-destructive text-destructive-foreground",
+      className: "bg-red-500 text-red-50",
     };
   if (current < min)
     return {
       label: "Estoque baixo",
-      className: "bg-warning text-warning-foreground",
+      className: "bg-yellow-500 text-yellow-50",
     };
   return {
     label: "Em estoque",
-    className: "bg-success text-success-foreground",
+    className: "bg-green-500 text-green-50",
   };
 }
 
