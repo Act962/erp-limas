@@ -47,7 +47,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   sku: string;
   barcode: string;
@@ -79,7 +79,7 @@ function getStockStatus(current: number, min: number) {
 
 export function ProductsTable({ products }: { products: Product[] }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   const filteredProducts = products.filter(
     (p) =>
@@ -96,7 +96,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
     }
   };
 
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedProducts((prev) =>
       prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
     );

@@ -1,0 +1,81 @@
+import prisma from "@/lib/db";
+import { z } from "zod";
+import { base } from "@/app/middlewares/base";
+import { requireAuthMiddleware } from "@/app/middlewares/auth";
+
+export const listProducts = base
+  .use(requireAuthMiddleware)
+  .route({
+    method: "GET",
+    summary: "Listar todos os produtos",
+    tags: ["products"],
+  })
+  .output(
+    z.object({
+      products: z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          sku: z.string(),
+          barcode: z.string(),
+          category: z.string(),
+          salePrice: z.number(),
+          costPrice: z.number(),
+          currentStock: z.number(),
+          minStock: z.number(),
+          images: z.array(z.string()),
+          isActive: z.boolean(),
+        })
+      ),
+    })
+  )
+  .handler(async ({ context, errors }) => {
+    try {
+      if (!context.org) {
+        throw errors.UNAUTHORIZED;
+      }
+
+      const products = await prisma.product.findMany({
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          barcode: true,
+          category: {
+            select: {
+              name: true,
+            },
+          },
+          salePrice: true,
+          costPrice: true,
+          currentStock: true,
+          minStock: true,
+          images: true,
+          isActive: true,
+        },
+        where: {
+          organizationId: context.org.id,
+        },
+      });
+
+      const productList = products.map((product) => ({
+        id: product.id,
+        name: product.name,
+        sku: product.sku ?? "",
+        barcode: product.barcode ?? "",
+        category: product.category?.name ?? "",
+        salePrice: product.salePrice.toNumber(),
+        costPrice: product.costPrice.toNumber(),
+        currentStock: product.currentStock.toNumber(),
+        minStock: product.minStock.toNumber(),
+        images: product.images,
+        isActive: product.isActive,
+      }));
+
+      return {
+        products: productList,
+      };
+    } catch (error) {
+      throw error;
+    }
+  });

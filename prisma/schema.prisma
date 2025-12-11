@@ -319,7 +319,7 @@ model Product {
   stockMovements   StockMovement[]
 
   @@unique([organizationId, slug])
-  @@unique([organizationId, sku])
+  // @@unique([organizationId, sku])
   @@index([organizationId])
   @@index([categoryId])
   @@index([barcode])

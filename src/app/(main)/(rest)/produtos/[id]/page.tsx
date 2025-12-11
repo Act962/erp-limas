@@ -74,7 +74,7 @@ const stockHistory = [
 
 export default function Page() {
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader title={product.name} description={product.sku}>
         <Button variant="outline" size="sm" asChild>
           <Link href="/produtos">

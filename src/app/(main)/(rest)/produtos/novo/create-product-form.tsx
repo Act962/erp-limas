@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -12,17 +13,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { ProductUnit } from "@/generated/prisma/enums";
+import { orpc } from "@/lib/orpc";
+import { ProductSchema, ProductType } from "@/schemas/product";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+const unidades = [
+  { code: "UN", name: "Unidade" },
+  { code: "KG", name: "Quilograma" },
+  { code: "G", name: "Grama" },
+  { code: "L", name: "Litro" },
+  { code: "ML", name: "Mililitro" },
+  { code: "M", name: "Metro" },
+  { code: "M2", name: "Metro Quadrado" },
+  { code: "M3", name: "Metro Cúbico" },
+  { code: "CX", name: "Caixa" },
+  { code: "PC", name: "Peça" },
+  { code: "PAR", name: "Par" },
+  { code: "DZ", name: "Dúzia" },
+];
 
 export function CreateProductForm() {
+  const form = useForm<ProductType>({
+    resolver: zodResolver(ProductSchema),
+    defaultValues: {
+      name: "",
+      categoryId: "",
+      description: "",
+      sku: "",
+      barcode: "",
+      unit: ProductUnit.UN,
+      costPrice: 0,
+      salePrice: 0,
+      currentStock: 0,
+      minStock: 0,
+      maxStock: 0,
+      location: "",
+      images: [],
+      thumbnail: "",
+      weight: 0,
+      length: 0,
+      width: 0,
+      height: 0,
+      isActive: true,
+      isFeatured: false,
+    },
+  });
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const mutation = useMutation(
+    orpc.products.create.mutationOptions({
+      onSuccess: () => {
+        router.push("/produtos");
+
+        queryClient.invalidateQueries(orpc.products.list.queryOptions());
+      },
+      onError: (error) => {
+        console.log("Error Cliente: ", error);
+        toast.error(error.message);
+      },
+    })
+  );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,42 +98,71 @@ export function CreateProductForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    router.push("/produtos");
+  const handleSubmit = async (data: ProductType) => {
+    mutation.mutate({
+      name: data.name,
+      description: data.description,
+      sku: data.sku,
+      unit: ProductUnit.KG,
+      costPrice: data.costPrice,
+      salePrice: data.salePrice,
+      currentStock: data.currentStock,
+      minStock: data.minStock,
+      maxStock: data.maxStock,
+      location: data.location,
+      images: data.images,
+      thumbnail: data.thumbnail,
+      weight: data.weight,
+      length: data.length,
+      width: data.width,
+      height: data.height,
+      isActive: data.isActive,
+      isFeatured: data.isFeatured,
+    });
   };
+
+  const isCreating = mutation.isPending;
+
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={form.handleSubmit(handleSubmit)}>
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
+          {/* ---- INFORMAÇÕES BÁSICAS ---- */}
           <Card>
             <CardHeader>
               <CardTitle>Informações Básicas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
+                {/* Nome */}
                 <div className="space-y-2">
                   <Label htmlFor="name">
                     Nome do Produto <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="name"
-                    name="name"
                     placeholder="Ex: Notebook Dell Inspiron 15"
-                    required
+                    disabled={isCreating}
+                    {...form.register("name")}
                   />
+                  <FieldError>{form.formState.errors.name?.message}</FieldError>
                 </div>
+
+                {/* Categoria */}
                 <div className="space-y-2">
-                  <Label htmlFor="category">
-                    Categoria <span className="text-destructive">*</span>
-                  </Label>
-                  <Select name="category" required>
-                    <SelectTrigger id="category" className="w-full">
+                  <Label htmlFor="categoryId">Categoria</Label>
+
+                  <Select
+                    value={form.watch("categoryId")}
+                    onValueChange={(value) =>
+                      form.setValue("categoryId", value)
+                    }
+                  >
+                    <SelectTrigger
+                      disabled={isCreating}
+                      id="categoryId"
+                      className="w-full"
+                    >
                       <SelectValue placeholder="Selecione uma categoria" />
                     </SelectTrigger>
                     <SelectContent>
@@ -81,46 +173,68 @@ export function CreateProductForm() {
                       <SelectItem value="webcams">Webcams</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FieldError>
+                    {form.formState.errors.categoryId?.message}
+                  </FieldError>
                 </div>
               </div>
 
+              {/* Descrição */}
               <div className="space-y-2">
                 <Label htmlFor="description">Descrição</Label>
                 <Textarea
                   id="description"
-                  name="description"
                   placeholder="Descreva o produto em detalhes..."
                   rows={4}
+                  disabled={isCreating}
+                  {...form.register("description")}
                 />
+                <FieldError>
+                  {form.formState.errors.description?.message}
+                </FieldError>
               </div>
 
+              {/* SKU / BARCODE / UNIT */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor="sku">
-                    SKU <span className="text-destructive">*</span>
-                  </Label>
-                  <Input id="sku" name="sku" placeholder="NB-001" required />
+                  <Label htmlFor="sku">SKU</Label>
+                  <Input
+                    id="sku"
+                    placeholder="NB-001"
+                    disabled={isCreating}
+                    {...form.register("sku")}
+                  />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="barcode">Código de Barras</Label>
                   <Input
                     id="barcode"
-                    name="barcode"
                     placeholder="7891234567890"
+                    disabled={isCreating}
+                    {...form.register("barcode")}
                   />
                 </div>
+
+                {/* UNIDADE */}
                 <div className="space-y-2">
                   <Label htmlFor="unit">Unidade</Label>
-                  <Select name="unit" defaultValue="un">
-                    <SelectTrigger id="unit" className="w-full">
+                  <Select
+                    value={form.watch("unit")}
+                    onValueChange={(value) =>
+                      form.setValue("unit", value as ProductUnit)
+                    }
+                    disabled={isCreating}
+                  >
+                    <SelectTrigger id="unit" disabled={isCreating}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="un">Unidade</SelectItem>
-                      <SelectItem value="kg">Quilograma</SelectItem>
-                      <SelectItem value="lt">Litro</SelectItem>
-                      <SelectItem value="mt">Metro</SelectItem>
-                      <SelectItem value="cx">Caixa</SelectItem>
+                      {unidades.map((unit) => (
+                        <SelectItem key={unit.code} value={unit.code}>
+                          {unit.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -128,11 +242,13 @@ export function CreateProductForm() {
             </CardContent>
           </Card>
 
+          {/* ---- PREÇOS E ESTOQUE ---- */}
           <Card>
             <CardHeader>
               <CardTitle>Preços e Estoque</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Preços */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="costPrice">
@@ -140,70 +256,80 @@ export function CreateProductForm() {
                   </Label>
                   <Input
                     id="costPrice"
-                    name="costPrice"
                     type="number"
                     step="0.01"
+                    disabled={isCreating}
                     placeholder="0,00"
-                    required
+                    {...form.register("costPrice", { valueAsNumber: true })}
                   />
+                  <FieldError>
+                    {form.formState.errors.costPrice?.message}
+                  </FieldError>
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="salePrice">
                     Preço de Venda <span className="text-destructive">*</span>
                   </Label>
                   <Input
                     id="salePrice"
-                    name="salePrice"
                     type="number"
                     step="0.01"
+                    disabled={isCreating}
                     placeholder="0,00"
-                    required
+                    {...form.register("salePrice", { valueAsNumber: true })}
                   />
+                  <FieldError>
+                    {form.formState.errors.salePrice?.message}
+                  </FieldError>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="margin">Margem de Lucro</Label>
+                  <Label>Margem de Lucro</Label>
                   <Input
-                    id="margin"
-                    name="margin"
-                    type="number"
-                    step="0.01"
-                    placeholder="0%"
+                    value={
+                      ((form.watch("salePrice") - form.watch("costPrice")) /
+                        form.watch("costPrice")) *
+                        100 +
+                      "%"
+                    }
+                    placeholder="0.00%"
                     disabled
                   />
                 </div>
               </div>
 
+              {/* Estoque */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor="currentStock">
-                    Estoque Inicial <span className="text-destructive">*</span>
-                  </Label>
+                  <Label htmlFor="currentStock">Estoque Inicial</Label>
                   <Input
                     id="currentStock"
-                    name="currentStock"
                     type="number"
                     placeholder="0"
-                    required
+                    disabled={isCreating}
+                    {...form.register("currentStock", { valueAsNumber: true })}
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="minStock">
-                    Estoque Mínimo <span className="text-destructive">*</span>
-                  </Label>
+                  <Label htmlFor="minStock">Estoque Mínimo</Label>
                   <Input
                     id="minStock"
-                    name="minStock"
                     type="number"
                     placeholder="0"
-                    required
+                    disabled={isCreating}
+                    {...form.register("minStock", { valueAsNumber: true })}
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="location">Localização</Label>
                   <Input
                     id="location"
-                    name="location"
-                    placeholder="Ex: Prateleira A-12"
+                    placeholder="Ex: Prateleira 1"
+                    disabled={isCreating}
+                    {...form.register("location")}
                   />
                 </div>
               </div>
@@ -211,6 +337,7 @@ export function CreateProductForm() {
           </Card>
         </div>
 
+        {/* ----------- COLUNA LATERAL ----------- */}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -218,6 +345,7 @@ export function CreateProductForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col items-center gap-4">
+                {/* PREVIEW */}
                 <Avatar className="h-40 w-40 rounded-lg">
                   <AvatarImage
                     src={imagePreview || "/placeholder.svg"}
@@ -233,28 +361,35 @@ export function CreateProductForm() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full bg-transparent"
                       asChild
+                      className="w-full"
                     >
-                      <span>
-                        <Upload className="h-4 w-4 mr-2" />
-                        Upload
-                      </span>
+                      <span>Upload</span>
                     </Button>
                     <Input
                       id="image-upload"
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={handleImageChange}
+                      disabled={isCreating}
+                      onChange={(e) => {
+                        handleImageChange(e);
+                        const file = e.target.files?.[0];
+                        if (file) form.setValue("thumbnail", file.name);
+                      }}
                     />
                   </Label>
+
                   {imagePreview && (
                     <Button
                       type="button"
                       variant="outline"
                       size="icon"
-                      onClick={() => setImagePreview("")}
+                      disabled={isCreating}
+                      onClick={() => {
+                        setImagePreview("");
+                        form.setValue("thumbnail", "");
+                      }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -274,6 +409,7 @@ export function CreateProductForm() {
               <CardTitle>Configurações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* isActive */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="isActive">Produto Ativo</Label>
@@ -281,58 +417,42 @@ export function CreateProductForm() {
                     Disponível para venda
                   </p>
                 </div>
-                <Switch id="isActive" name="isActive" defaultChecked />
+                <Switch
+                  disabled={isCreating}
+                  checked={form.watch("isActive")}
+                  onCheckedChange={(v) => form.setValue("isActive", v)}
+                />
               </div>
 
+              {/* isFeatured */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="trackStock">Controlar Estoque</Label>
+                  <Label htmlFor="isActive">Destaque</Label>
                   <p className="text-xs text-muted-foreground">
-                    Rastrear quantidade
-                  </p>
-                </div>
-                <Switch id="trackStock" name="trackStock" defaultChecked />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="allowNegative">
-                    Permitir Estoque Negativo
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Vender sem estoque
-                  </p>
-                </div>
-                <Switch id="allowNegative" name="allowNegative" />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="showOnCatalog">
-                    Exibir no Catálogo Online
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Visível para clientes
+                    Destaque para venda
                   </p>
                 </div>
                 <Switch
-                  id="showOnCatalog"
-                  name="showOnCatalog"
-                  defaultChecked
+                  disabled={isCreating}
+                  checked={form.watch("isFeatured")}
+                  onCheckedChange={(v) => form.setValue("isFeatured", v)}
                 />
               </div>
             </CardContent>
           </Card>
 
+          {/* AÇÕES */}
           <div className="flex flex-col gap-2">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              <Save className="h-4 w-4 mr-2" />
-              {isSubmitting ? "Salvando..." : "Salvar Produto"}
+            <Button type="submit" className="w-full" disabled={isCreating}>
+              {isCreating && <Spinner />}
+              Salvar Produto
             </Button>
+
             <Button
               type="button"
               variant="outline"
               className="w-full bg-transparent"
+              disabled={isCreating}
             >
               <Link href="/produtos">Cancelar</Link>
             </Button>

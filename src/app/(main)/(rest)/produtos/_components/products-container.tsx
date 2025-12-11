@@ -5,6 +5,8 @@ import { Plus } from "lucide-react";
 import { useCreateProductsModal } from "@/hooks/modals/use-create-products";
 import Link from "next/link";
 import { ProductsTable } from "./products-table";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
 
 const products = [
   {
@@ -88,6 +90,10 @@ const products = [
 ];
 
 export function ProductsContainer() {
+  const { data, isPending } = useSuspenseQuery(
+    orpc.products.list.queryOptions()
+  );
+
   return (
     <div className="px-4 mt-8 space-y-4">
       <div className="flex items-center justify-between">
@@ -108,7 +114,12 @@ export function ProductsContainer() {
         </div>
       </div>
 
-      <ProductsTable products={products} />
+      <ProductsTable
+        products={data.products.map((product) => ({
+          ...product,
+          image: product.images[0],
+        }))}
+      />
     </div>
   );
 }
