@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useShoppingCart } from "../../../hooks/use-product";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
 import { CartItem } from "../types/product";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -21,6 +21,7 @@ export function Header() {
   const router = useRouter();
   const { cartItems, updateQuantity } = useShoppingCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const isEmpty = cartItems.length === 0;
 
@@ -29,8 +30,21 @@ export function Header() {
     router.push("/Limas-Atacado/cart");
   }
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    console.log("caiu nos 50");
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <header className="w-full flex items-center justify-center py-5 px-5 bg-accent-foreground/10">
+    <header
+      className={`w-full flex fixed top-0 z-50 items-center justify-center py-3 px-5 transition-colors duration-300 sm:py-5 
+        ${isScrolled ? "bg-accent-foreground" : "bg-accent-foreground/10"}`}
+    >
       <div className="max-w-6xl flex flex-row w-full justify-between">
         <div
           onClick={() => router.push("/Limas-Atacado")}
@@ -39,18 +53,31 @@ export function Header() {
           <Avatar>
             <AvatarImage src="https://github.com/ElFabrica.png" />
           </Avatar>
-          <h1 className="text-xl font-bold">Limas Atacado</h1>
+          <h1
+            className={`text-xl font-bold ${
+              isScrolled ? "text-white" : "text-black"
+            }`}
+          >
+            Limas Atacado
+          </h1>
         </div>
         <div className="flex flex-row gap-x-3 items-center">
           <Link className="hidden sm:block" href="/limas-atacado">
-            <Button className="rounded-full">Início</Button>
+            <Button
+              variant={isScrolled ? "secondary" : "default"}
+              className="rounded-full"
+            >
+              Início
+            </Button>
           </Link>
           <Link className="hidden sm:block" href="/about-us">
-            <Button className="rounded-full">Sobre Nós</Button>
+            <Button
+              variant={isScrolled ? "secondary" : "default"}
+              className="rounded-full"
+            >
+              Sobre Nós
+            </Button>
           </Link>
-          <Button variant="outline" className="rounded-full">
-            <HandCoins className="size-4" />
-          </Button>
 
           <Popover open={modalIsOpen} onOpenChange={setModalIsOpen}>
             <PopoverTrigger asChild>
@@ -82,16 +109,18 @@ export function Header() {
                       {cartItems.length} itens
                     </span>
                   </div>
-                  <ScrollArea className="h-72 w-full rounded-md">
-                    {cartItems.map((item) => (
-                      <ItemRequested
-                        key={item.id}
-                        {...item}
-                        quantityInit={item.quantity}
-                        updateQuantity={updateQuantity}
-                      />
-                    ))}
-                  </ScrollArea>
+                  <div className="flex flex-1 max-h-72">
+                    <ScrollArea className="w-full rounded-md ">
+                      {cartItems.map((item) => (
+                        <ItemRequested
+                          key={item.id}
+                          {...item}
+                          quantityInit={item.quantity}
+                          updateQuantity={updateQuantity}
+                        />
+                      ))}
+                    </ScrollArea>
+                  </div>
                   <Button className="w-full" onClick={handleGoToCart}>
                     Finalizar Pedido
                   </Button>

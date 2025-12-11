@@ -201,7 +201,7 @@ export function Catalog() {
     <main className="w-full max-w-6xl mx-auto justify-center py-5">
       <div className="flex flex-col w-full justify-between px-3">
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6">
-          <span className="text-sm text-muted-foreground">
+          <span className="hidden sm:block text-sm text-muted-foreground">
             {filteredProducts.length} produto(s) encontrado(s)
           </span>
 
