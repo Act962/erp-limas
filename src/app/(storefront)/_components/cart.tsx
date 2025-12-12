@@ -6,17 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useShoppingCart } from "@/hooks/use-product";
-
-function currencyFormatter(amount: number) {
-  const formatter = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-
-  return formatter.replace("R$", "");
-}
+import { currencyFormatter } from "@/utils/currencyFormatter";
 
 export function Cart() {
   const router = useRouter();
@@ -140,7 +130,7 @@ export function Cart() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
                       <span className="font-medium ">
-                        R$ {currencyFormatter(total)}
+                        R${currencyFormatter(total)}
                       </span>
                     </div>
                   </div>
@@ -150,7 +140,7 @@ export function Cart() {
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span className="bg-gradient-primary bg-clip-text">
-                      R$ {total.toFixed(2)}
+                      R${currencyFormatter(total)}
                     </span>
                   </div>
 
