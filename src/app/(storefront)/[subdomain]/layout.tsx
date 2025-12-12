@@ -8,7 +8,7 @@ export default function SubdomainLayout({
   return (
     <div className="bg-accent-foreground/5">
       <Header />
-      <div className="mt-20">{children}</div>
+      <main className="mt-19">{children}</main>
     </div>
   );
 }

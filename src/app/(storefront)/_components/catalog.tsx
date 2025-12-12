@@ -221,13 +221,12 @@ export function Catalog() {
   }, [categoryParam]);
 
   return (
-    <main className="w-full max-w-6xl mx-auto justify-center">
+    <div className="w-full max-w-6xl mx-auto justify-center">
       <div className="flex flex-col w-full justify-between px-3">
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6">
           <span className="hidden sm:block text-sm text-muted-foreground">
             {filteredProducts.length} produto(s) encontrado(s)
           </span>
-          <h1 className="text-2xl font-bold">Catálogo</h1>
           <FiltersCatalog categories={mockedCategories} />
         </div>
         {/*Carousel */}
@@ -261,7 +260,7 @@ export function Catalog() {
           ))}
         </ul>
       </div>
-    </main>
+    </div>
   );
 }
 
