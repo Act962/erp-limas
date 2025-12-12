@@ -1,191 +1,262 @@
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 "use client";
 
-import type React from "react";
-
-import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 
-type Category = {
-  id?: number;
-  name: string;
-  slug: string;
-  description: string;
-  parentId?: number;
-};
+import { useCategories } from "@/context/category/hooks/use-category";
+import { useCategoryModal } from "@/hooks/modals/use-category-modal";
 
-interface CategoryFormDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  category?: Category | null;
-  mode: "create" | "edit";
-  parentCategory?: { id: number; name: string } | null;
-}
+import { orpc } from "@/lib/orpc";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
-export function CategoryFormDialog({
-  open,
-  onOpenChange,
-  category,
-  mode,
-  parentCategory,
-}: CategoryFormDialogProps) {
-  const [formData, setFormData] = useState<Category>({
-    name: "",
-    slug: "",
-    description: "",
-    parentId: undefined,
+const categorySchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  slug: z.string().min(1, "Slug é obrigatório"),
+  description: z.string().optional(),
+  categoryId: z.string().optional(),
+});
+
+type CategoryFormData = z.infer<typeof categorySchema>;
+
+export function CategoryFormDialog() {
+  const { open, onClose, mode, category } = useCategoryModal();
+  const { categories, isLoadingCategories } = useCategories();
+
+  const queryClient = useQueryClient();
+
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+  const form = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      categoryId: "",
+    },
   });
 
-  useEffect(() => {
-    if (category) {
-      setFormData(category);
-    } else {
-      setFormData({
-        name: "",
-        slug: "",
-        description: "",
-        parentId: parentCategory?.id,
-      });
-    }
-  }, [category, parentCategory, open]);
+  const name = form.watch("name");
 
+  const createMutation = useMutation(
+    orpc.categories.create.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(orpc.categories.list.queryOptions());
+        queryClient.invalidateQueries(
+          orpc.categories.listWithoutSubcategory.queryOptions()
+        );
+        toast.success("Categoria criada com sucesso");
+        onClose();
+      },
+      onError: (error) => toast.error(error.message),
+    })
+  );
+
+  const updateMutation = useMutation(
+    orpc.categories.update.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(orpc.categories.list.queryOptions());
+        toast.success("Categoria atualizada com sucesso");
+        onClose();
+      },
+      onError: (error) => toast.error(error.message),
+    })
+  );
+
+  const isLoading =
+    mode === "create" ? createMutation.isPending : updateMutation.isPending;
+
+  // ---------------------------
+  // SLUG UTILS
+  // ---------------------------
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
+      .replace(/\s+/g, "-")
+      .trim();
   };
 
-  const handleNameChange = (name: string) => {
-    setFormData({ ...formData, name, slug: generateSlug(name) });
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsSlugManuallyEdited(true);
+    form.setValue("slug", e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("[v0] Submitting category:", formData);
-    // TODO: Implement API call to save category
-    onOpenChange(false);
-  };
+  // ---------------------------
+  // RESET DO FORM AO ABRIR MODAL
+  // ---------------------------
+  useEffect(() => {
+    if (!open) return;
 
-  const title =
-    mode === "create"
-      ? parentCategory
-        ? `Nova Subcategoria em "${parentCategory.name}"`
-        : "Nova Categoria"
-      : "Editar Categoria";
+    if (mode === "update" && category) {
+      form.reset({
+        name: category.name,
+        slug: category.slug,
+        description: category.description || "",
+        categoryId: category.parentId || "",
+      });
+    } else {
+      form.reset({
+        name: "",
+        slug: "",
+        description: "",
+        categoryId: category?.id || "",
+      });
+    }
+
+    setIsSlugManuallyEdited(false);
+  }, [open, mode, category, form]);
+
+  // ---------------------------
+  // ATUALIZAÇÃO AUTOMÁTICA DO SLUG
+  // ---------------------------
+  useEffect(() => {
+    if (!open) return;
+    if (isSlugManuallyEdited) return;
+
+    const slug = generateSlug(name);
+    form.setValue("slug", slug);
+  }, [name, open, isSlugManuallyEdited, form]);
+
+  // ---------------------------
+  // SUBMIT DO FORM
+  // ---------------------------
+  const onSubmit = (data: CategoryFormData) => {
+    if (mode === "create") {
+      const categoryId = data.categoryId || undefined;
+      createMutation.mutate({ ...data, parentId: categoryId });
+    } else {
+      if (!category?.id) return;
+
+      const categoryId = data.categoryId || undefined;
+
+      updateMutation.mutate({
+        id: category?.id,
+        ...data,
+        parentId: categoryId,
+      });
+    }
+  };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            {mode === "create"
-              ? "Preencha os dados para criar uma nova categoria"
-              : "Atualize as informações da categoria"}
-          </DialogDescription>
+          <DialogTitle>
+            {mode === "update" ? "Editar Categoria" : "Criar Categoria"}
+          </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Nome da Categoria *</Label>
+        <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="name">Nome *</FieldLabel>
               <Input
                 id="name"
+                disabled={isLoading}
+                {...form.register("name")}
                 placeholder="Ex: Eletrônicos"
-                value={formData.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                required
               />
-            </div>
+            </Field>
 
-            <div>
-              <Label htmlFor="slug">Slug *</Label>
+            <Field>
+              <FieldLabel htmlFor="slug">Slug *</FieldLabel>
               <Input
                 id="slug"
+                disabled={isLoading}
+                value={form.watch("slug")}
+                onChange={handleSlugChange}
                 placeholder="eletronicos"
-                value={formData.slug}
-                onChange={(e) =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
-                required
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                URL amigável gerada automaticamente do nome
-              </p>
-            </div>
+            </Field>
 
-            {!parentCategory && (
-              <div>
-                <Label htmlFor="parentId">Categoria Pai (Opcional)</Label>
-                <Select
-                  value={formData.parentId?.toString()}
-                  onValueChange={(value) =>
-                    setFormData({
-                      ...formData,
-                      parentId: Number.parseInt(value),
-                    })
-                  }
-                >
-                  <SelectTrigger id="parentId">
-                    <SelectValue placeholder="Nenhuma (Categoria principal)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">
-                      Nenhuma (Categoria principal)
-                    </SelectItem>
-                    <SelectItem value="1">Eletrônicos</SelectItem>
-                    <SelectItem value="2">Periféricos</SelectItem>
-                    <SelectItem value="3">Monitores</SelectItem>
-                    <SelectItem value="5">Audio</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {(mode === "create" || category?.parentId) && (
+              <Field>
+                <FieldLabel>Categoria Pai</FieldLabel>
+
+                <Controller
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <Select
+                      disabled={isLoading}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Nenhuma" />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Categorias</SelectLabel>
+
+                          {isLoadingCategories &&
+                            Array.from({ length: 5 }).map((_, i) => (
+                              <Skeleton key={i} className="h-4 w-full" />
+                            ))}
+
+                          {categories.map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </Field>
             )}
 
-            <div>
-              <Label htmlFor="description">Descrição</Label>
+            <Field>
+              <FieldLabel htmlFor="description">Descrição</FieldLabel>
               <Textarea
                 id="description"
-                placeholder="Descreva a categoria..."
+                disabled={isLoading}
                 rows={3}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                placeholder="Ex: Produtos eletrônicos"
+                {...form.register("description")}
               />
-            </div>
-          </div>
+            </Field>
+          </FieldGroup>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit">
-              {mode === "create" ? "Criar Categoria" : "Salvar Alterações"}
+
+            <Button disabled={isLoading}>
+              {isLoading && <Spinner />}
+              {mode === "update" ? "Salvar" : "Criar"}
             </Button>
           </DialogFooter>
         </form>

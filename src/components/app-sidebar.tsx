@@ -147,7 +147,7 @@ export function AppSidebar() {
             <ScrollArea className="flex-1">
               <SidebarMenu>
                 {navigation.map((item) => {
-                  const isActive = pathname === item.href;
+                  // const isActive = pathname === item.href;
                   const hasChildren = item.children && item.children.length > 0;
 
                   if (hasChildren) {
