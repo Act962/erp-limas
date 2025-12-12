@@ -94,7 +94,7 @@ export function DetailsPoduct({
   ];
 
   return (
-    <div className="mx-auto w-full max-w-5xl pb-8">
+    <div className="mx-auto w-full max-w-5xl py-8 ">
       <div
         className="bg-accent-foreground/10 rounded-sm py-5 px-4  
           sm:px-10"
@@ -130,7 +130,7 @@ export function DetailsPoduct({
                   <button
                     key={`dot-${index}`}
                     onClick={() => onDotButtonClick(index)}
-                    className="flex items-center justify-center cursor-pointer size-4 rounded-full border-2 border-gray-400"
+                    className="flex items-center justify-center cursor-pointer size-4 rounded-full "
                   >
                     {index === selectedIndex ? (
                       <div className="size-2 rounded-full bg-gray-800" />
@@ -165,10 +165,10 @@ export function DetailsPoduct({
             </div>
           </div>
           <div className="h-full px-4">
-            <h1 className="font-bold text-3xl">{name}</h1>
-            <h3 className="text-2xl font-semibold opacity-80 mt-2">
+            <h3 className="font-bold text-xl">{name}</h3>
+            <h1 className="text-3xl font-semibold opacity-80">
               R${currencyFormatter(salePrice)}
-            </h3>
+            </h1>
             <div className="flex flex-col mt-2">
               <span className="text-md font-medium">Categoria</span>
               <span className="text-md font-medium text-muted-foreground">
