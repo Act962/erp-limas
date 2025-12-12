@@ -69,8 +69,8 @@ export function ProductCard({
 
         <p className="text-2xl font-bold">R${currencyFormatter(salePrice)}</p>
       </div>
-      <div className="flex flex-col gap-y-2">
-        <div className="flex items-center border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center gap-y-2">
+        <div className="hidden items-center border border-border rounded-lg overflow-hidden sm:flex">
           <Button
             variant="ghost"
             size="icon"
