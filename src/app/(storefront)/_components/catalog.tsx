@@ -1,14 +1,25 @@
 "use client";
 
 import { FiltersCatalog } from "./filters";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
 import { ProductCatalog } from "../types/product";
 import { CategoryCatalog } from "../types/category";
 import { ProductCard } from "./product-card";
+import { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
 
 export function Catalog() {
+  const options: EmblaOptionsType = { loop: true };
+
   const [categoryParam] = useQueryState("category");
+  const [emblaRef, emblaApi] = useEmblaCarousel(options, [
+    Autoplay({ playOnInit: true, delay: 4000 }),
+  ]);
+
+  const { selectedIndex, scrollSnaps, onDotButtonClick } =
+    useDotButton(emblaApi);
 
   const mockedProducts: ProductCatalog[] = [
     {
@@ -184,6 +195,18 @@ export function Catalog() {
       description: "Cabos, suportes e adaptadores",
     },
   ];
+  const mockedImagesCatalog = [
+    "https://picsum.photos/800/200?random=1",
+    "https://picsum.photos/800/200?random=2",
+    "https://picsum.photos/800/200?random=3",
+    "https://picsum.photos/800/200?random=4",
+    "https://picsum.photos/800/200?random=5",
+    "https://picsum.photos/800/200?random=6",
+    "https://picsum.photos/800/200?random=7",
+    "https://picsum.photos/800/200?random=8",
+    "https://picsum.photos/800/200?random=9",
+    "https://picsum.photos/800/200?random=10",
+  ];
 
   const filteredProducts = useMemo(() => {
     if (!categoryParam) {
@@ -198,17 +221,34 @@ export function Catalog() {
   }, [categoryParam]);
 
   return (
-    <main className="w-full max-w-6xl mx-auto justify-center py-5">
+    <main className="w-full max-w-6xl mx-auto justify-center">
       <div className="flex flex-col w-full justify-between px-3">
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6">
           <span className="hidden sm:block text-sm text-muted-foreground">
             {filteredProducts.length} produto(s) encontrado(s)
           </span>
-
           <h1 className="text-2xl font-bold">Catálogo</h1>
           <FiltersCatalog categories={mockedCategories} />
         </div>
-        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        {/*Carousel */}
+        <div className="overflow-hidden size-full" ref={emblaRef}>
+          <div className="flex gap-2 size-full">
+            {mockedImagesCatalog &&
+              mockedImagesCatalog.map((image, index) => (
+                <div
+                  className="flex w-full justify-center translate-0 shrink-0 grow-0 size-full"
+                  key={`image-carousel-${index}`}
+                >
+                  <img
+                    src={image}
+                    alt="Imagem do catalogo"
+                    className="object-cover rounded-2xl w-full"
+                  />
+                </div>
+              ))}
+          </div>
+        </div>
+        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-7">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}
@@ -224,3 +264,50 @@ export function Catalog() {
     </main>
   );
 }
+
+// use DotButton
+type UseDotButtonType = {
+  selectedIndex: number;
+  scrollSnaps: number[];
+  onDotButtonClick: (index: number) => void;
+};
+
+export const useDotButton = (
+  emblaApi: EmblaCarouselType | undefined,
+  onButtonClick?: (emblaApi: EmblaCarouselType) => void
+): UseDotButtonType => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  const onDotButtonClick = useCallback(
+    (index: number) => {
+      if (!emblaApi) return;
+      emblaApi.scrollTo(index);
+      if (onButtonClick) onButtonClick(emblaApi);
+    },
+    [emblaApi, onButtonClick]
+  );
+
+  const onInit = useCallback((emblaApi: EmblaCarouselType) => {
+    setScrollSnaps(emblaApi.scrollSnapList());
+  }, []);
+
+  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, []);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    onInit(emblaApi);
+    onSelect(emblaApi);
+
+    emblaApi.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect);
+  }, [emblaApi, onInit, onSelect]);
+
+  return {
+    selectedIndex,
+    scrollSnaps,
+    onDotButtonClick,
+  };
+};

@@ -130,7 +130,7 @@ export function DetailsPoduct({
                   <button
                     key={`dot-${index}`}
                     onClick={() => onDotButtonClick(index)}
-                    className="flex items-center justify-center cursor-pointer size-4 rounded-full border-2 border-gray-400"
+                    className="flex items-center justify-center cursor-pointer size-4 rounded-full "
                   >
                     {index === selectedIndex ? (
                       <div className="size-2 rounded-full bg-gray-800" />
