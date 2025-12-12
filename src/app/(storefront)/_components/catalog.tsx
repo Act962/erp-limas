@@ -223,14 +223,8 @@ export function Catalog() {
   return (
     <div className="w-full max-w-6xl mx-auto justify-center">
       <div className="flex flex-col w-full justify-between px-3">
-        <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6">
-          <span className="hidden sm:block text-sm text-muted-foreground">
-            {filteredProducts.length} produto(s) encontrado(s)
-          </span>
-          <FiltersCatalog categories={mockedCategories} />
-        </div>
         {/*Carousel */}
-        <div className="overflow-hidden size-full" ref={emblaRef}>
+        <div className="overflow-hidden size-full mt-7" ref={emblaRef}>
           <div className="flex gap-2 size-full">
             {mockedImagesCatalog &&
               mockedImagesCatalog.map((image, index) => (
@@ -241,13 +235,19 @@ export function Catalog() {
                   <img
                     src={image}
                     alt="Imagem do catalogo"
-                    className="object-cover rounded-2xl w-full"
+                    className="object-cover w-full"
                   />
                 </div>
               ))}
           </div>
         </div>
-        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mt-7">
+        <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6 ">
+          <span className="hidden sm:block text-sm text-muted-foreground">
+            {filteredProducts.length} produto(s) encontrado(s)
+          </span>
+          <FiltersCatalog categories={mockedCategories} />
+        </div>
+        <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {filteredProducts.map((product) => (
             <ProductCard
               key={product.id}

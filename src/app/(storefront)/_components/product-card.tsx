@@ -43,12 +43,12 @@ export function ProductCard({
       className="flex flex-col items-center 
       gap-y-3 pb-5 rounded-lg bg-accent-foreground/5 shadow-md 
       transition-shadow overflow-hidden animate-fade-in
-      hover:shadow-lg hover:shadow-elegant cursor-pointer"
+      hover:shadow-lg hover:shadow-elegant"
     >
       {thumbnail && (
         <div className="aspect-square overflow-hidden">
           <img
-            className="w-full h-full object-cover transition-transform rounded-sm"
+            className="w-full h-full object-cover transition-transform rounded-sm cursor-pointer"
             src={thumbnail}
             alt={name}
             onClick={() => router.push(`/product/${id}`)}
@@ -75,8 +75,8 @@ export function ProductCard({
             variant="ghost"
             size="icon"
             className="h-9 w-9 rounded-none"
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            disabled={isDisabled}
+            onClick={() => setQuantity(quantity - 1)}
+            disabled={isDisabled || quantity <= 1}
           >
             <Minus className="size-4" />
           </Button>

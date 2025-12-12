@@ -16,12 +16,13 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
+import { useScrollTop } from "@/hooks/use-scroll-top";
 
 export function Header() {
   const router = useRouter();
   const { cartItems, updateQuantity } = useShoppingCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const { scrolled } = useScrollTop();
 
   const isEmpty = cartItems.length === 0;
 
@@ -30,20 +31,10 @@ export function Header() {
     router.push("/Limas-Atacado/cart");
   }
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    console.log("caiu nos 50");
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <header
       className={`w-full flex fixed top-0 z-50 items-center justify-center py-3 px-5 transition-colors duration-300 sm:py-5 
-        ${isScrolled ? "bg-accent-foreground" : "bg-accent-foreground/10"}`}
+        ${scrolled ? "bg-accent-foreground" : "bg-accent-foreground/10"}`}
     >
       <div className="max-w-6xl flex flex-row w-full justify-between">
         <div
@@ -55,7 +46,7 @@ export function Header() {
           </Avatar>
           <h1
             className={`text-xl font-bold ${
-              isScrolled ? "text-white" : "text-black"
+              scrolled ? "text-white" : "text-black"
             }`}
           >
             Limas Atacado
@@ -64,7 +55,7 @@ export function Header() {
         <div className="flex flex-row gap-x-3 items-center">
           <Link className="hidden sm:block" href="/limas-atacado">
             <Button
-              variant={isScrolled ? "secondary" : "default"}
+              variant={scrolled ? "secondary" : "default"}
               className="rounded-full"
             >
               Início
@@ -72,7 +63,7 @@ export function Header() {
           </Link>
           <Link className="hidden sm:block" href="/about-us">
             <Button
-              variant={isScrolled ? "secondary" : "default"}
+              variant={scrolled ? "secondary" : "default"}
               className="rounded-full"
             >
               Sobre Nós

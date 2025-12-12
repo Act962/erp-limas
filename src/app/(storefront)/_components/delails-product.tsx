@@ -5,6 +5,7 @@ import { ProductCatalog } from "../types/product";
 import { currencyFormatter } from "../../../utils/currencyFormatter";
 import { Button } from "@/components/ui/button";
 import {
+  Check,
   ChevronRight,
   Minus,
   Plus,
@@ -33,17 +34,23 @@ export function DetailsPoduct({
   const [imageSelected, setImageSelected] = useState(thumbnail);
   const [quantity, setQuantity] = useState(quantityInit || 0);
 
-  const { cartItems, updateQuantity } = useShoppingCart();
+  const { cartItems, updateQuantity, addToCart, removeFromCart } =
+    useShoppingCart();
   const router = useRouter();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({});
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi);
+  const [isMounted, setIsMounted] = useState(false);
 
-  function onSubmit(quantity: number) {
+  const productInCart = !!cartItems.find((item) => item.id === id);
+
+  function handleQuantity(quantity: number) {
     setQuantity(quantity);
     updateQuantity(id, quantity);
   }
+
+  const showAsInCart = productInCart && isMounted;
 
   const categoryProducts = [
     {
@@ -92,6 +99,18 @@ export function DetailsPoduct({
       categorySlug: "monitores",
     },
   ];
+
+  const handleAddAndRemoveToCart = () => {
+    if (productInCart) {
+      removeFromCart(id);
+      return;
+    }
+    addToCart({ id, name, salePrice, categorySlug, thumbnail }, quantity);
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <div className="mx-auto w-full max-w-5xl py-8 ">
@@ -178,9 +197,11 @@ export function DetailsPoduct({
             <div className="flex flex-wrap items-center mt-4 gap-4">
               <div className="flex items-center">
                 <Button
+                  disabled={quantity <= 1}
                   variant="ghost"
                   size="icon-sm"
                   className="h-9 w-9 rounded-none"
+                  onClick={() => handleQuantity(quantity - 1)}
                 >
                   <Minus className="size-4" />
                 </Button>
@@ -191,13 +212,18 @@ export function DetailsPoduct({
                   variant="ghost"
                   size="icon-sm"
                   className="h-9 w-9 rounded-none"
-                  onClick={() => onSubmit(quantity + 1)}
+                  onClick={() => handleQuantity(quantity + 1)}
                 >
                   <Plus className="size-4" />
                 </Button>
               </div>
-              <Button>
-                <ShoppingBag /> Adicionar ao Carrinho
+              <Button onClick={() => handleAddAndRemoveToCart()}>
+                {showAsInCart ? "Adicionado" : "Adicionar"}
+                {showAsInCart ? (
+                  <Check className="size-4" />
+                ) : (
+                  <ShoppingBag className="size-4" />
+                )}
               </Button>
             </div>
             <span className="mt-5 block">{description}</span>
@@ -216,7 +242,7 @@ export function DetailsPoduct({
                 onClick={() => router.push(`/${id}`)}
                 key={product.id}
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
-                hover:shadow-lg hover:shadow-elegant"
+                hover:shadow-lg"
               >
                 <div className="w-full h-35 rounded-t-2xl overflow-hidden">
                   <img
