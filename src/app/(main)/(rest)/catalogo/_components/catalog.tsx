@@ -21,8 +21,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type TabId = "visibility" | "contact" | "seo" | "customization" | "social";
 
 export function CatalogSettings() {
-  const [activeTab, setActiveTab] = useState<TabId>("visibility");
-
   const [settings, setSettings] = useState({
     isActive: true,
     showPrices: true,

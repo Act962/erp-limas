@@ -20,6 +20,8 @@ import { Button } from "@/components/ui/button";
 import { XCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
 
 const createOrgSchema = z.object({
   name: z.string().min(1, ""),
@@ -80,6 +82,10 @@ export function CreateFormOrg({
       .replace(/^-+|-+$/g, "");
   }
 
+  const mutationCreateSettingsCatalog = useMutation(
+    orpc.catalogSettings.create.mutationOptions()
+  );
+
   const onSubmit = async (formData: CreateOrgSchema) => {
     const { data } = await authClient.organization.checkSlug({
       slug: formData.slug,
@@ -108,6 +114,10 @@ export function CreateFormOrg({
     await authClient.organization.setActive({
       organizationId: organization.id,
       organizationSlug: organization.slug,
+    });
+
+    mutationCreateSettingsCatalog.mutate({
+      name: name,
     });
 
     toast.success("Organização criada com sucesso");
