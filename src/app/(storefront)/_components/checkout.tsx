@@ -103,7 +103,7 @@ export function Checkout() {
   };
 
   return (
-    <div className="h-screen mx-auto w-full max-w-6xl">
+    <div className="mx-auto w-full px-5 max-w-6xl py-4">
       <Button
         onClick={() => router.push("/Limas-Atacado/cart")}
         variant={"secondary"}

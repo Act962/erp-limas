@@ -46,7 +46,7 @@ export function ProductCard({
       hover:shadow-lg hover:shadow-elegant"
     >
       {thumbnail && (
-        <div className="aspect-square overflow-hidden">
+        <div className="aspect-square overflow-hidden w-full">
           <img
             className="w-full h-full object-cover transition-transform rounded-sm cursor-pointer"
             src={thumbnail}
