@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CreateProductModal from "../modals/create-product";
+import { CategoryFormDialog } from "../modals/category/category-form-dialog";
+import { DeleteCategoryDialog } from "../modals/category/delete-category";
 
 export function ModalProvider() {
   const [isMounted, setIsMounted] = useState(false);
@@ -15,7 +16,8 @@ export function ModalProvider() {
   }
   return (
     <>
-      <CreateProductModal />
+      <CategoryFormDialog />
+      <DeleteCategoryDialog />
     </>
   );
 }

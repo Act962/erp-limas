@@ -1,22 +1,25 @@
 import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { ListCategories } from "../_components/list-categories";
+import { CreateCategoryButton } from "./create-category-button";
+import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
+import { orpc } from "@/lib/orpc";
 
-export default function Page() {
+export default async function Page() {
+  const queryClient = getQueryClient();
+
+  await queryClient.prefetchQuery(orpc.categories.list.queryOptions());
+
   return (
     <div className="space-y-6">
       <PageHeader
         title="Categorias"
         description="Organize seus produtos em categorias"
       >
-        <Button size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Nova Categoria
-        </Button>
+        <CreateCategoryButton />
       </PageHeader>
-
-      <ListCategories />
+      <HydrateClient client={queryClient}>
+        <ListCategories />
+      </HydrateClient>
     </div>
   );
 }

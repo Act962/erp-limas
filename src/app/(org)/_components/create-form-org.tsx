@@ -114,6 +114,7 @@ export function CreateFormOrg({
     router.push("/dashboard");
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
