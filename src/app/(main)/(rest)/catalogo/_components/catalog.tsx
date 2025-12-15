@@ -15,26 +15,28 @@ import {
   Share2,
   Save,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-type TabId = "visibility" | "contact" | "seo" | "customization" | "social";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
 
 export function CatalogSettings() {
+  const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
+  const { calatogSettings } = data;
+
   const [settings, setSettings] = useState({
-    isActive: true,
-    showPrices: true,
-    showStock: false,
-    allowOrders: false,
-    whatsappNumber: "",
-    showWhatsapp: true,
-    contactEmail: "",
-    metaTitle: "",
-    metaDescription: "",
-    bannerImage: "",
-    aboutText: "",
-    instagram: "",
-    facebook: "",
+    isActive: calatogSettings.isActive,
+    showPrices: calatogSettings.showPrices,
+    showStock: calatogSettings.showStock,
+    allowOrders: calatogSettings.allowOrders,
+    whatsappNumber: calatogSettings.whatsappNumber,
+    showWhatsapp: calatogSettings.showWhatsapp,
+    contactEmail: calatogSettings.contactEmail || "",
+    metaTitle: calatogSettings.metaTitle || "",
+    metaDescription: calatogSettings.metaDescription || "",
+    bannerImage: calatogSettings.bannerImage || "",
+    aboutText: calatogSettings.aboutText || "",
+    instagram: calatogSettings.instagram || "",
+    facebook: calatogSettings.facebook || "",
   });
 
   const tabs = [
@@ -203,7 +205,7 @@ export function CatalogSettings() {
                       <Input
                         id="whatsappNumber"
                         placeholder="Ex: +55 11 98765-4321"
-                        value={settings.whatsappNumber}
+                        value={Number(settings.whatsappNumber)}
                         onChange={(e) =>
                           setSettings({
                             ...settings,
