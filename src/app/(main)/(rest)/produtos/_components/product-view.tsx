@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +19,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { orpc } from "@/lib/orpc";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { DollarSign, Link, Package } from "lucide-react";
+import { useParams } from "next/navigation";
 
 function getStockStatus(current: number, min: number) {
   if (current === 0)
@@ -36,28 +41,6 @@ function getStockStatus(current: number, min: number) {
   };
 }
 
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  barcode: string;
-  category: string;
-  description: string;
-  salePrice: number;
-  costPrice: number;
-  currentStock: number;
-  minStock: number;
-  unit: string;
-  location: string;
-  image: string;
-  isActive: boolean;
-  trackStock: boolean;
-  allowNegative: boolean;
-  showOnCatalog: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
 interface StockHistory {
   id: number;
   type: string;
@@ -67,13 +50,18 @@ interface StockHistory {
   note: string;
 }
 
-export function ProductView({
-  product,
-  history,
-}: {
-  product: Product;
-  history: StockHistory[];
-}) {
+export function ProductView({ history }: { history: StockHistory[] }) {
+  const params = useParams<{ id: string }>();
+  const {
+    data: { product },
+  } = useSuspenseQuery(
+    orpc.products.get.queryOptions({
+      input: {
+        id: params.id,
+      },
+    })
+  );
+
   const stockStatus = getStockStatus(product.currentStock, product.minStock);
   const margin =
     ((product.salePrice - product.costPrice) / product.costPrice) * 100;
@@ -93,13 +81,13 @@ export function ProductView({
       <div className="lg:col-span-2 space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Detalhes do Produto</CardTitle>
+            <CardTitle>Detalhes do Produto:</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex gap-6">
               <Avatar className="h-32 w-32 rounded-lg">
                 <AvatarImage
-                  src={product.image || "/placeholder.svg"}
+                  src={product.images?.[0] || "/placeholder.svg"}
                   alt={product.name}
                 />
                 <AvatarFallback className="rounded-lg">
@@ -122,7 +110,7 @@ export function ProductView({
                   <Badge className={stockStatus.className}>
                     {stockStatus.label}
                   </Badge>
-                  {product.showOnCatalog && (
+                  {product.isActive && (
                     <Badge variant="outline">Visível no Catálogo</Badge>
                   )}
                 </div>
@@ -157,7 +145,7 @@ export function ProductView({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Localização</p>
-                <p className="font-medium">{product.location}</p>
+                <p className="font-medium">N/A</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Criado em</p>
@@ -296,12 +284,12 @@ export function ProductView({
                   {product.trackStock ? "Sim" : "Não"}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-sm">
+              {/* <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Permitir Negativo</span>
                 <span className="font-medium">
                   {product.allowNegative ? "Sim" : "Não"}
                 </span>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>

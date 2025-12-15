@@ -16,12 +16,13 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useCategory } from "@/context/category/hooks/use-categories";
 import { ProductUnit } from "@/generated/prisma/enums";
 import { orpc } from "@/lib/orpc";
 import { ProductSchema, ProductType } from "@/schemas/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -73,6 +74,8 @@ export function CreateProductForm() {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string>("");
 
+  const { categories, isLoadingCategories } = useCategory();
+
   const mutation = useMutation(
     orpc.products.create.mutationOptions({
       onSuccess: () => {
@@ -107,6 +110,7 @@ export function CreateProductForm() {
       costPrice: data.costPrice,
       salePrice: data.salePrice,
       currentStock: data.currentStock,
+      categoryId: data.categoryId,
       minStock: data.minStock,
       maxStock: data.maxStock,
       location: data.location,
@@ -166,11 +170,15 @@ export function CreateProductForm() {
                       <SelectValue placeholder="Selecione uma categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="eletronicos">Eletrônicos</SelectItem>
-                      <SelectItem value="perifericos">Periféricos</SelectItem>
-                      <SelectItem value="monitores">Monitores</SelectItem>
-                      <SelectItem value="audio">Audio</SelectItem>
-                      <SelectItem value="webcams">Webcams</SelectItem>
+                      {isLoadingCategories ? (
+                        <SelectItem value="loading">Carregando...</SelectItem>
+                      ) : (
+                        categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   <FieldError>

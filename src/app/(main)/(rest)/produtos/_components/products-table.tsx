@@ -212,10 +212,10 @@ export function ProductsTable({ products }: { products: Product[] }) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {product.sku}
+                    <TableCell className="text-sm font-semibold text-muted-foreground">
+                      {product.sku || "N/A"}
                     </TableCell>
-                    <TableCell>{product.category}</TableCell>
+                    <TableCell>{product.category || "N/A"}</TableCell>
                     <TableCell className="text-right font-semibold">
                       R$ {product.salePrice.toFixed(2).replace(".", ",")}
                     </TableCell>

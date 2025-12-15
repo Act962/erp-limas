@@ -90,9 +90,7 @@ const products = [
 ];
 
 export function ProductsContainer() {
-  const { data, isPending } = useSuspenseQuery(
-    orpc.products.list.queryOptions()
-  );
+  const { data } = useSuspenseQuery(orpc.products.list.queryOptions());
 
   return (
     <div className="px-4 mt-8 space-y-4">

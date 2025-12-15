@@ -2,8 +2,9 @@ import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 import { ProductView } from "../_components/product-view";
+import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
+import { orpc } from "@/lib/orpc";
 
 // Mock data - in real app would come from API based on params.id
 const product = {
@@ -72,7 +73,23 @@ const stockHistory = [
   },
 ];
 
-export default function Page() {
+type ProductPageProps = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+export default async function Page({ params }: ProductPageProps) {
+  const { id: productId } = await params;
+  const queryClient = getQueryClient();
+
+  await queryClient.prefetchQuery(
+    orpc.products.get.queryOptions({
+      input: {
+        id: productId,
+      },
+    })
+  );
+
   return (
     <div className="space-y-6">
       <PageHeader title={product.name} description={product.sku}>
@@ -98,7 +115,9 @@ export default function Page() {
         </Button>
       </PageHeader>
 
-      <ProductView product={product} history={stockHistory} />
+      <HydrateClient client={queryClient}>
+        <ProductView history={stockHistory} />
+      </HydrateClient>
     </div>
   );
 }

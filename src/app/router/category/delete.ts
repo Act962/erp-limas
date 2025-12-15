@@ -1,6 +1,7 @@
-import { requireAuthMiddleware } from "@/app/middlewares/auth";
 import { base } from "@/app/middlewares/base";
-import z from "zod";
+import prisma from "@/lib/db";
+import { requireAuthMiddleware } from "@/app/middlewares/auth";
+import { z } from "zod";
 
 export const deleteCategory = base
   .use(requireAuthMiddleware)
@@ -15,4 +16,20 @@ export const deleteCategory = base
       id: z.string(),
     })
   )
-  .handler(async ({ context }) => {});
+  .handler(async ({ input, errors }) => {
+    const poductExists = prisma.product.findUnique({
+      where: {
+        id: input.id,
+      },
+    });
+
+    if (!poductExists) {
+      throw errors.NOT_FOUND;
+    }
+
+    await prisma.category.delete({
+      where: {
+        id: input.id,
+      },
+    });
+  });
