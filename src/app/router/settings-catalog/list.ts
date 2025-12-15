@@ -4,7 +4,7 @@ import { requireOrgMiddleware } from "@/app/middlewares/org";
 import prisma from "@/lib/db";
 import z from "zod";
 
-export const listCatalogSettings = base
+export const listSettingsCatalog = base
   .use(requireAuthMiddleware)
   .use(requireOrgMiddleware)
   .route({

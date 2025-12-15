@@ -6,18 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Settings,
-  Eye,
-  MessageCircle,
-  Search,
-  Palette,
-  Share2,
-  Save,
-} from "lucide-react";
+import { Eye, MessageCircle, Search, Palette, Share2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
+import { useDebouncedValue } from "@/utils/use-debouced";
+import { Button } from "@/components/ui/button";
 
 export function CatalogSettings() {
   const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
@@ -38,6 +32,7 @@ export function CatalogSettings() {
     instagram: catalogSettings.instagram || "",
     facebook: catalogSettings.facebook || "",
   });
+  const debounceUpdate = useDebouncedValue(settings, 500);
 
   const tabs = [
     {
@@ -72,6 +67,28 @@ export function CatalogSettings() {
     },
   ];
 
+  const updateFieldCatalog = useMutation(
+    orpc.catalogSettings.update.mutationOptions()
+  );
+  function onSubmit() {
+    updateFieldCatalog.mutate({
+      id: catalogSettings.id,
+      isActive: debounceUpdate.isActive,
+      showPrices: debounceUpdate.showPrices,
+      showStock: debounceUpdate.showStock,
+      allowOrders: debounceUpdate.allowOrders,
+      whatsappNumber: debounceUpdate.whatsappNumber || "",
+      showWhatsapp: debounceUpdate.showWhatsapp,
+      contactEmail: debounceUpdate.contactEmail,
+      metaTitle: debounceUpdate.metaTitle,
+      metaDescription: debounceUpdate.metaDescription,
+      bannerImage: debounceUpdate.bannerImage,
+      aboutText: debounceUpdate.aboutText,
+      instagram: debounceUpdate.instagram,
+      facebook: debounceUpdate.facebook,
+    });
+  }
+
   return (
     <div className="bg-background">
       <main className="mx-auto max-w-7xl">
@@ -85,6 +102,7 @@ export function CatalogSettings() {
                     {tab.label}
                   </TabsTrigger>
                 ))}
+                <Button onClick={onSubmit}>Salvar</Button>
               </div>
             </TabsList>
             <TabsContent value="visibility">
