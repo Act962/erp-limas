@@ -25,8 +25,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
-import { orpc } from "@/lib/orpc";
 
 const signUpSchema = z
   .object({

@@ -14,7 +14,7 @@ export const listCatalogSettings = base
   })
   .output(
     z.object({
-      calatogSettings: z.object({
+      catalogSettings: z.object({
         id: z.string(),
         organizationId: z.string(),
         isActive: z.boolean(),
@@ -37,19 +37,17 @@ export const listCatalogSettings = base
     })
   )
   .handler(async ({ context }) => {
-    let calatogSettings = await prisma.catalogSettings.findUnique({
+    const catalogSettings = await prisma.catalogSettings.upsert({
       where: {
+        organizationId: context.org.id,
+      },
+      create: {
+        organizationId: context.org.id,
+      },
+      update: {
         organizationId: context.org.id,
       },
     });
 
-    if (!calatogSettings) {
-      calatogSettings = await prisma.catalogSettings.create({
-        data: {
-          organizationId: context.org.id,
-        },
-      });
-    }
-
-    return { calatogSettings };
+    return { catalogSettings };
   });

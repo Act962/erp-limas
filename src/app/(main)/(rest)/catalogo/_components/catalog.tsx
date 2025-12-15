@@ -21,22 +21,22 @@ import { orpc } from "@/lib/orpc";
 
 export function CatalogSettings() {
   const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
-  const { calatogSettings } = data;
+  const { catalogSettings } = data;
 
   const [settings, setSettings] = useState({
-    isActive: calatogSettings.isActive,
-    showPrices: calatogSettings.showPrices,
-    showStock: calatogSettings.showStock,
-    allowOrders: calatogSettings.allowOrders,
-    whatsappNumber: calatogSettings.whatsappNumber,
-    showWhatsapp: calatogSettings.showWhatsapp,
-    contactEmail: calatogSettings.contactEmail || "",
-    metaTitle: calatogSettings.metaTitle || "",
-    metaDescription: calatogSettings.metaDescription || "",
-    bannerImage: calatogSettings.bannerImage || "",
-    aboutText: calatogSettings.aboutText || "",
-    instagram: calatogSettings.instagram || "",
-    facebook: calatogSettings.facebook || "",
+    isActive: catalogSettings.isActive,
+    showPrices: catalogSettings.showPrices,
+    showStock: catalogSettings.showStock,
+    allowOrders: catalogSettings.allowOrders,
+    whatsappNumber: catalogSettings.whatsappNumber,
+    showWhatsapp: catalogSettings.showWhatsapp,
+    contactEmail: catalogSettings.contactEmail || "",
+    metaTitle: catalogSettings.metaTitle || "",
+    metaDescription: catalogSettings.metaDescription || "",
+    bannerImage: catalogSettings.bannerImage || "",
+    aboutText: catalogSettings.aboutText || "",
+    instagram: catalogSettings.instagram || "",
+    facebook: catalogSettings.facebook || "",
   });
 
   const tabs = [
