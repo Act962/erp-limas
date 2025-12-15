@@ -27,6 +27,7 @@ import {
   LucideIcon,
   Package,
   Plus,
+  Store,
   Tag,
   TrendingUp,
 } from "lucide-react";
@@ -108,11 +109,11 @@ const navigation = [
   //   href: "/fornecedores",
   //   icon: Building2,
   // },
-  // {
-  //   name: "Catálogo Online",
-  //   href: "/catalogo",
-  //   icon: Store,
-  // },
+  {
+    name: "Catálogo Online",
+    href: "/catalogo",
+    icon: Store,
+  },
   // {
   //   name: "Relatórios",
   //   href: "/relatorios",

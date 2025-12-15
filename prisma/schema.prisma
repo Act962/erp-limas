@@ -222,6 +222,7 @@ model CatalogSettings {
   // Personalização
   bannerImage     String?
   aboutText       String?      @db.Text
+  theme           String? 
   // Redes Sociais
   instagram       String?
   facebook        String?
