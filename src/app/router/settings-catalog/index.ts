@@ -1,7 +1,9 @@
-import { createCatalogSettings } from "./create";
-import { listCatalogSettings } from "./list";
+import { createSettingsCatalog } from "./create";
+import { listSettingsCatalog } from "./list";
+import { updateSettingsCatalog } from "./update";
 
 export const catalogSettingsRouter = {
-  create: createCatalogSettings,
-  list: listCatalogSettings,
+  create: createSettingsCatalog,
+  list: listSettingsCatalog,
+  update: updateSettingsCatalog,
 };
