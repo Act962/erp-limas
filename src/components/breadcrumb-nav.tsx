@@ -31,7 +31,10 @@ export function BreadcrumbNav() {
           const isLast = index === breadcrumbs.length - 1;
 
           return (
-            <div key={breadcrumb.href} className="flex items-center gap-2">
+            <div
+              key={breadcrumb.href + "-" + index}
+              className="flex items-center gap-2"
+            >
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage>{breadcrumb.name}</BreadcrumbPage>

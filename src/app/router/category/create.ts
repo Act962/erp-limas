@@ -2,9 +2,11 @@ import { z } from "zod";
 import prisma from "@/lib/db";
 import { base } from "@/app/middlewares/base";
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
+import { requireOrgMiddleware } from "@/app/middlewares/org";
 
 export const createCategory = base
   .use(requireAuthMiddleware)
+  .use(requireOrgMiddleware)
   .route({
     method: "POST",
     summary: "Criar categoria",
@@ -24,10 +26,6 @@ export const createCategory = base
     })
   )
   .handler(async ({ input, context, errors }) => {
-    if (!context.org) {
-      throw errors.UNAUTHORIZED;
-    }
-
     const categoryExists = await prisma.category.findFirst({
       where: {
         slug: input.slug,
