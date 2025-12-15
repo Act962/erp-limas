@@ -3,9 +3,11 @@ import { z } from "zod";
 import { base } from "@/app/middlewares/base";
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
 import { ProductUnit } from "@/generated/prisma/enums";
+import { requireOrgMiddleware } from "@/app/middlewares/org";
 
 export const createProduct = base
   .use(requireAuthMiddleware)
+  .use(requireOrgMiddleware)
   .route({
     method: "POST",
     summary: "Criar um novo produto",
@@ -59,10 +61,6 @@ export const createProduct = base
   )
   .handler(async ({ input, context, errors }) => {
     try {
-      if (!context.org || !context.user) {
-        throw errors.UNAUTHORIZED;
-      }
-
       // Gerar slug a partir do nome
       const slug = input.name
         .toLowerCase()

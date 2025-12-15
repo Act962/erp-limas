@@ -56,12 +56,6 @@ import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-interface Items {
-  title: string;
-  href: string;
-  icon: LucideIcon;
-}
-
 const navigation = [
   {
     name: "Dashboard",
@@ -172,7 +166,7 @@ export function AppSidebar() {
                                 />
                               )}
                               <span>{item.name}</span>
-                              <ChevronDown className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                              <ChevronDown className="ml-auto transition-transform duration-200 data-[state=open]:rotate-180" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
                           <CollapsibleContent>

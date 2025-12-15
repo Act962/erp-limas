@@ -11,16 +11,11 @@ export const requireAuthMiddleware = base.middleware(
       throw errors.UNAUTHORIZED;
     }
 
-    const organization = await auth.api.getFullOrganization({
-      headers: context.headers,
-    });
-
     // Adds session and user to the context
     return next({
       context: {
         session: sessionData.session,
         user: sessionData.user,
-        org: organization,
       },
     });
   }

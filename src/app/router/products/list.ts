@@ -2,9 +2,11 @@ import prisma from "@/lib/db";
 import { z } from "zod";
 import { base } from "@/app/middlewares/base";
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
+import { requireOrgMiddleware } from "@/app/middlewares/org";
 
 export const listProducts = base
   .use(requireAuthMiddleware)
+  .use(requireOrgMiddleware)
   .route({
     method: "GET",
     summary: "Listar todos os produtos",
@@ -29,12 +31,8 @@ export const listProducts = base
       ),
     })
   )
-  .handler(async ({ context, errors }) => {
+  .handler(async ({ context }) => {
     try {
-      if (!context.org) {
-        throw errors.UNAUTHORIZED;
-      }
-
       const products = await prisma.product.findMany({
         select: {
           id: true,

@@ -2,9 +2,11 @@ import prisma from "@/lib/db";
 import { z } from "zod";
 import { base } from "@/app/middlewares/base";
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
+import { requireOrgMiddleware } from "@/app/middlewares/org";
 
 export const listCategories = base
   .use(requireAuthMiddleware)
+  .use(requireOrgMiddleware)
   .route({
     method: "GET",
     summary: "Listar categorias",
@@ -33,11 +35,7 @@ export const listCategories = base
       ),
     })
   )
-  .handler(async ({ context, errors }) => {
-    if (!context.org) {
-      throw errors.UNAUTHORIZED;
-    }
-
+  .handler(async ({ context }) => {
     const categories = await prisma.category.findMany({
       where: {
         organizationId: context.org.id,

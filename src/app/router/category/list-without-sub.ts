@@ -1,10 +1,12 @@
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
 import { base } from "@/app/middlewares/base";
+import { requireOrgMiddleware } from "@/app/middlewares/org";
 import prisma from "@/lib/db";
 import z from "zod";
 
 export const listWithoutSubcategory = base
   .use(requireAuthMiddleware)
+  .use(requireOrgMiddleware)
   .route({
     method: "GET",
     path: "/category/without-subcategory",
@@ -21,11 +23,7 @@ export const listWithoutSubcategory = base
       ),
     })
   )
-  .handler(async ({ context, errors }) => {
-    if (!context.org) {
-      throw errors.FORBIDDEN;
-    }
-
+  .handler(async ({ context }) => {
     const categories = await prisma.category.findMany({
       where: {
         organizationId: context.org.id,
