@@ -22,22 +22,26 @@ export const deleteProduct = base
     })
   )
   .handler(async ({ input, errors }) => {
-    try {
-      if (!input.productId) {
-        throw errors.BAD_REQUEST;
-      }
+    const productExists = await prisma.product.findUnique({
+      where: {
+        id: input.productId,
+      },
+    });
 
-      const product = await prisma.product.delete({
-        where: {
-          id: input.productId,
-        },
+    if (!productExists) {
+      throw errors.BAD_REQUEST({
+        message: "Produto não existe",
       });
-
-      return {
-        productId: product.id,
-        productName: product.name,
-      };
-    } catch (error) {
-      throw error;
     }
+
+    await prisma.product.delete({
+      where: {
+        id: input.productId,
+      },
+    });
+
+    return {
+      productId: productExists.id,
+      productName: productExists.name,
+    };
   });

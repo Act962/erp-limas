@@ -110,7 +110,7 @@ export const createProduct = base
           createdById: context.user.id,
           name: input.name,
           slug: finalSlug,
-          categoryId: input.categoryId,
+          categoryId: input.categoryId === "" ? null : input.categoryId,
           description: input.description,
           sku: input.sku,
           barcode: input.barcode,

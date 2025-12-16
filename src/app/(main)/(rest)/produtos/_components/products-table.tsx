@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useProductModal } from "@/hooks/modals/use-product-modal";
 
 interface Product {
   id: string;
@@ -80,6 +81,7 @@ function getStockStatus(current: number, min: number) {
 export function ProductsTable({ products }: { products: Product[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const { onOpen } = useProductModal();
 
   const filteredProducts = products.filter(
     (p) =>
@@ -257,7 +259,12 @@ export function ProductsTable({ products }: { products: Product[] }) {
                             Duplicar
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => {
+                              onOpen(product);
+                            }}
+                          >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Excluir
                           </DropdownMenuItem>

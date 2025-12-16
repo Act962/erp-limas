@@ -17,14 +17,16 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useCategory } from "@/context/category/hooks/use-categories";
+import { ProductUnit } from "@/generated/prisma/enums";
 import { orpc } from "@/lib/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm, type Resolver } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const unidades = [
@@ -44,11 +46,11 @@ const unidades = [
 
 const productSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-  categoryId: z.string().min(1, "Categoria é obrigatória"),
+  categoryId: z.string().optional(),
   description: z.string().optional(),
-  sku: z.string().min(1, "SKU é obrigatório"),
+  sku: z.string().optional(),
   barcode: z.string().optional(),
-  unit: z.string().min(1, "Unidade é obrigatória"),
+  unit: z.enum(ProductUnit).optional(),
   costPrice: z.coerce.number().min(0, "Preço de custo deve ser positivo"),
   salePrice: z.coerce.number().min(0, "Preço de venda deve ser positivo"),
   minStock: z.coerce.number().min(0, "Estoque mínimo deve ser positivo"),
@@ -68,6 +70,18 @@ export function EditProductForm() {
     orpc.products.get.queryOptions({
       input: {
         id: productId,
+      },
+    })
+  );
+
+  const updateProductMutation = useMutation(
+    orpc.products.update.mutationOptions({
+      onSuccess: () => {
+        toast.success("Produto atualizado com sucesso!");
+        router.push(`/produtos`);
+      },
+      onError: () => {
+        return toast.error("Erro ao atualizar o produto.");
       },
     })
   );
@@ -120,14 +134,10 @@ export function EditProductForm() {
   };
 
   const onSubmit = async (data: ProductFormValues) => {
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Form data:", data);
-      router.push(`/produtos/${product.id}`);
-    } catch (error) {
-      console.error("Error updating product:", error);
-    }
+    updateProductMutation.mutate({
+      id: productId,
+      ...data,
+    });
   };
 
   return (

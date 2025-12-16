@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useProductModal } from "@/hooks/modals/use-product-modal";
 import { orpc } from "@/lib/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, DollarSign, Edit, Package, Trash2 } from "lucide-react";
@@ -64,6 +65,8 @@ export function ProductView({ history }: { history: StockHistory[] }) {
     })
   );
 
+  const { onOpen } = useProductModal();
+
   const stockStatus = getStockStatus(product.currentStock, product.minStock);
   const margin =
     ((product.salePrice - product.costPrice) / product.costPrice) * 100;
@@ -95,11 +98,9 @@ export function ProductView({ history }: { history: StockHistory[] }) {
           </Link>
         </Button>
 
-        <Button size="sm" variant="destructive" asChild>
-          <Link href={`/produtos/${product.id}/editar`}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Excluir
-          </Link>
+        <Button size="sm" variant="destructive" onClick={() => onOpen(product)}>
+          <Trash2 className="h-4 w-4 mr-2" />
+          Excluir
         </Button>
       </PageHeader>
       {/* Produto */}
