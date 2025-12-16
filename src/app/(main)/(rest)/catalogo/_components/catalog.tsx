@@ -12,6 +12,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useDebouncedValue } from "@/utils/use-debouced";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function CatalogSettings() {
   const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
@@ -68,7 +69,14 @@ export function CatalogSettings() {
   ];
 
   const updateFieldCatalog = useMutation(
-    orpc.catalogSettings.update.mutationOptions()
+    orpc.catalogSettings.update.mutationOptions({
+      onSuccess: () => {
+        toast("Catálogo atualizado!")
+      },
+      onError: () => {
+        toast("Erro ao atualizar catálogo!")
+      }
+    })
   );
   function onSubmit() {
     updateFieldCatalog.mutate({
@@ -95,16 +103,16 @@ export function CatalogSettings() {
         <div className="flex flex-col">
           {/* Sidebar de navegação */}
           <Tabs defaultValue="visibility">
+              <div className="flex justify-between items-center overflow-x-auto">
             <TabsList>
-              <div className="overflow-x-auto">
                 {tabs.map((tab) => (
                   <TabsTrigger key={tab.id} value={tab.id}>
                     {tab.label}
                   </TabsTrigger>
                 ))}
-                <Button onClick={onSubmit}>Salvar</Button>
-              </div>
             </TabsList>
+            <Button className="hidden sm:flex" onClick={onSubmit}>Salvar</Button>
+              </div>
             <TabsContent value="visibility">
               <div className="space-y-6 mt-4">
                 <div>
@@ -427,6 +435,10 @@ export function CatalogSettings() {
             </TabsContent>
           </Tabs>
         </div>
+        <div className="flex items-end justify-end mt-4 sm:hidden">
+            <Button onClick={onSubmit}>Salvar</Button>
+        </div>
+
       </main>
     </div>
   );
