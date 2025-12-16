@@ -204,6 +204,13 @@ model Invitation {
 // CATÁLOGO ONLINE - CONFIGURAÇÕES
 // ============================================
 
+enum CatalogSortOrder {
+  ASC
+  DESC
+  NEWEST
+  OLDEST
+}
+
 model CatalogSettings {
   id              String       @id @default(cuid())
   organizationId  String       @unique
@@ -212,6 +219,7 @@ model CatalogSettings {
   showPrices      Boolean      @default(true)
   showStock       Boolean      @default(false)
   allowOrders     Boolean      @default(false)
+  sortOrder       CatalogSortOrder @default(ASC)
   // Contato
   whatsappNumber  String?
   showWhatsapp    Boolean      @default(true)
