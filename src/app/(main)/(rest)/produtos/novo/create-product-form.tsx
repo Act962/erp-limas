@@ -68,6 +68,7 @@ export function CreateProductForm() {
       height: 0,
       isActive: true,
       isFeatured: false,
+      trackStock: true,
     },
   });
   const queryClient = useQueryClient();
@@ -122,6 +123,8 @@ export function CreateProductForm() {
       height: data.height,
       isActive: data.isActive,
       isFeatured: data.isFeatured,
+      trackStock: data.trackStock,
+      barcode: data.barcode,
     });
   };
 
@@ -296,10 +299,14 @@ export function CreateProductForm() {
                   <Label>Margem de Lucro</Label>
                   <Input
                     value={
-                      ((form.watch("salePrice") - form.watch("costPrice")) /
-                        form.watch("costPrice")) *
-                        100 +
-                      "%"
+                      form.watch("costPrice") > 0
+                        ? (
+                            ((form.watch("salePrice") -
+                              form.watch("costPrice")) /
+                              form.watch("costPrice")) *
+                            100
+                          ).toFixed(2) + "%"
+                        : "0.00%"
                     }
                     placeholder="0.00%"
                     disabled
@@ -432,12 +439,26 @@ export function CreateProductForm() {
                 />
               </div>
 
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="isActive">Controlar Estoque</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Rastrear quantidade
+                  </p>
+                </div>
+                <Switch
+                  disabled={isCreating}
+                  checked={form.watch("trackStock")}
+                  onCheckedChange={(v) => form.setValue("trackStock", v)}
+                />
+              </div>
+
               {/* isFeatured */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Destaque</Label>
+                  <Label htmlFor="isActive">Exibir no Catálogo Online</Label>
                   <p className="text-xs text-muted-foreground">
-                    Destaque para venda
+                    Visível para clientes
                   </p>
                 </div>
                 <Switch

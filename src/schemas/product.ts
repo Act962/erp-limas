@@ -32,6 +32,7 @@ export const ProductSchema = z.object({
   // Controle
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
+  trackStock: z.boolean().optional(),
 });
 
 export type ProductType = z.infer<typeof ProductSchema>;

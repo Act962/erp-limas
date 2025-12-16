@@ -1,34 +1,6 @@
-import { PageHeader } from "@/components/page-header";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Edit, Trash2 } from "lucide-react";
-import Link from "next/link";
-import { ProductView } from "../_components/product-view";
-import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
 import { orpc } from "@/lib/orpc";
-
-// Mock data - in real app would come from API based on params.id
-const product = {
-  id: 1,
-  name: "Notebook Dell Inspiron 15",
-  sku: "NB-001",
-  barcode: "7891234567890",
-  category: "Eletrônicos",
-  description:
-    "Notebook Dell Inspiron 15 com processador Intel Core i5, 8GB RAM, 256GB SSD, tela Full HD de 15.6 polegadas. Ideal para trabalho e entretenimento.",
-  salePrice: 3499.9,
-  costPrice: 2800.0,
-  currentStock: 15,
-  minStock: 5,
-  unit: "Unidade",
-  location: "Prateleira A-12",
-  image: "/modern-laptop-workspace.png",
-  isActive: true,
-  trackStock: true,
-  allowNegative: false,
-  showOnCatalog: true,
-  createdAt: "2024-01-15T10:30:00",
-  updatedAt: "2024-12-08T14:22:00",
-};
+import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
+import { ProductView } from "../_components/product-view";
 
 const stockHistory = [
   {
@@ -91,33 +63,8 @@ export default async function Page({ params }: ProductPageProps) {
   );
 
   return (
-    <div className="space-y-6">
-      <PageHeader title={product.name} description={product.sku}>
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/produtos">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Link>
-        </Button>
-
-        <Button size="sm" asChild>
-          <Link href={`/produtos/${product.id}/editar`}>
-            <Edit className="h-4 w-4 mr-2" />
-            Editar
-          </Link>
-        </Button>
-
-        <Button size="sm" variant="destructive" asChild>
-          <Link href={`/produtos/${product.id}/editar`}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Excluir
-          </Link>
-        </Button>
-      </PageHeader>
-
-      <HydrateClient client={queryClient}>
-        <ProductView history={stockHistory} />
-      </HydrateClient>
-    </div>
+    <HydrateClient client={queryClient}>
+      <ProductView history={stockHistory} />
+    </HydrateClient>
   );
 }
