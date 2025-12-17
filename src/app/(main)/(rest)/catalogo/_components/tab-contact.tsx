@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -21,7 +21,7 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
       </div>
 
       <Card className="p-6">
-        <div className="space-y-6">
+        <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="whatsappNumber">Número do WhatsApp</Label>
             <Input
@@ -60,7 +60,6 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
               }
             />
           </div>
-
           <div className="space-y-2 border-t border-border pt-6">
             <Label htmlFor="contactEmail">Email de Contato</Label>
             <Input
@@ -76,7 +75,42 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
               }
             />
           </div>
-        </div>
+          <div className="space-y-3 border-border border-t pt-6">
+            <h2 className="text-lg font-semibold text-foreground">
+              Endereço da loja (opcional)
+            </h2>
+
+            <p className="text-sm text-muted-foreground max-w-lg">
+              Este é o endereço que seus clientes verão em seu catálogo. Se
+              estiver correto, um mapa será exibido ao lado do endereço.
+            </p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 space-x-4">
+                <div className="space-y-1">
+                  <Label htmlFor="cep">CEP</Label>
+                  <Input id="cep" placeholder="CEP" />
+                </div>
+
+                <div className="md:col-span-2 space-y-1">
+                  <Label htmlFor="address">Endereço</Label>
+                  <Input id="address" placeholder="Rua, Avenida..." />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 space-x-4">
+                <div className="md:col-span-2 space-y-1">
+                  <Label htmlFor="district">Bairro</Label>
+                  <Input id="district" placeholder="Bairro" />
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor="number">Número</Label>
+                  <Input id="number" placeholder="Número" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
