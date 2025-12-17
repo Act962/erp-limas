@@ -46,7 +46,7 @@ export function Header() {
           </Avatar>
           <h1
             className={`text-xl font-bold ${
-              scrolled ? "text-white" : "text-black"
+              scrolled ? "text-black" : "text-white"
             }`}
           >
             Limas Atacado

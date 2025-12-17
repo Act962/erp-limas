@@ -6,14 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import {
-  Eye,
-  MessageCircle,
-  Search,
-  Palette,
-  Share2,
-  Home,
-} from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
@@ -22,13 +14,19 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CirclePicker } from "react-color";
 import { phoneMask } from "@/utils/format-phone";
-
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { payments, SORT_ORDER, tabs } from "./mock/catalog-moc";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 export function CatalogSettings() {
   const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
@@ -52,61 +50,6 @@ export function CatalogSettings() {
   });
   const debounceUpdate = useDebouncedValue(settings, 500);
 
-  const tabs = [
-    {
-      id: "geral" as const,
-      label: "Geral",
-      icon: Search,
-      description: "Configurações gerais",
-    },
-    {
-      id: "visibility" as const,
-      label: "Visibilidade",
-      icon: Eye,
-      description: "Controle o que é exibido",
-    },
-    {
-      id: "contact" as const,
-      label: "Contato",
-      icon: MessageCircle,
-      description: "Canais de comunicação",
-    },
-    {
-      id: "customization" as const,
-      label: "Personalização",
-      icon: Palette,
-      description: "Aparência do catálogo",
-    },
-    {
-      id: "social" as const,
-      label: "Redes Sociais",
-      icon: Share2,
-      description: "Conecte suas redes",
-    },
-  ];
-
-  const SORT_ORDER = [
-    {
-      id: 1,
-      name: "ASC",
-      label: "Em ordem alfabética crescente de A a Z",
-    },
-    {
-      id: 2,
-      name: "DESC",
-      label: "Em ordem alfabética decrescente de Z a A",
-    },
-    {
-      id: 3,
-      name: "NEWEST",
-      label: "Em ordem crescente de mais recente para mais antigo",
-    },
-    {
-      id: 4,
-      name: "OLDEST",
-      label: "Em ordem decrescente de mais antigo para mais recente",
-    },
-  ];
   const updateFieldCatalog = useMutation(
     orpc.catalogSettings.update.mutationOptions({
       onSuccess: () => {
@@ -282,6 +225,20 @@ export function CatalogSettings() {
                           })
                         }
                       />
+                    </div>
+                    <div className="flex items-center justify-between border-t border-border pt-6">
+                      <div className="space-y-0.5">
+                        <Label
+                          htmlFor="showPrices"
+                          className="text-base font-medium"
+                        >
+                          Mostrar Produtos fora do estoque
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          Exibe os produtos que estão fora do estoque
+                        </p>
+                      </div>
+                      <Switch id="showOutOfStock" />
                     </div>
                     <div className="flex items-center justify-between border-t border-border pt-6">
                       <div className="space-y-0.5">
@@ -522,6 +479,35 @@ export function CatalogSettings() {
                 </Card>
               </div>
             </TabsContent>
+            <TabsContent value="payment">
+              <div className="space-y-6 mt-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    Pagamento
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Configure as opções de pagamento do seu catálogo
+                  </p>
+                </div>
+
+                <Card className="p-6">
+                  <div className="space-y-6">
+                    <Label>Formas de pagamento disponíveis</Label>
+                    <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
+                      {payments.map((payment) => (
+                        <div
+                          key={payment.id}
+                          className="flex items-center gap-2"
+                        >
+                          <Checkbox id={payment.name} />
+                          <Label htmlFor={payment.name}>{payment.name}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </TabsContent>
             <TabsContent value="social">
               <div className="space-y-6 mt-4">
                 <div>
@@ -587,6 +573,50 @@ export function CatalogSettings() {
                         id="tiktok"
                         placeholder="https://tiktok.com/minhaloja"
                       />
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </TabsContent>
+            <TabsContent value="integrations">
+              <div className="space-y-6 mt-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    Integrações
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Conecte seu catálogo a meta
+                  </p>
+                </div>
+                <Card className="p-6">
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="googleAnalytics">
+                        ID do Google Analytics
+                      </Label>
+                      <Input
+                        id="googleAnalytics"
+                        placeholder="000000000000000"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Receba os principais eventos do seu eventos do seu
+                        catálogo diretamente no Google Analytics. Faça análises
+                        de tráfego e vendas.
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="metaPixel">
+                        Seu ID do Pixel da Meta (Facebook)
+                      </Label>
+                      <InputGroup>
+                        <InputGroupAddon>G- </InputGroupAddon>
+                        <InputGroupInput id="metaPixel" />
+                      </InputGroup>
+                      <p className="text-sm text-muted-foreground">
+                        Integre seu catálogo ao seu Meta Pixel (Facebook) e
+                        tenha relatórios avançados sobre tráfego, campanhas e
+                        conversões.
+                      </p>
                     </div>
                   </div>
                 </Card>
