@@ -24,13 +24,13 @@ export const requireUnauth = async () => {
   }
 };
 
-export const requireAuthOrg = async () => {
+export const currentOrganization = async () => {
   const organization = await auth.api.getFullOrganization({
     headers: await headers(),
   });
 
   if (!organization) {
-    return redirect("/create-organization");
+    return null;
   }
 
   return organization;
