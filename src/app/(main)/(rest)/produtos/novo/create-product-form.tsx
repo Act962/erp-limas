@@ -16,12 +16,13 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useCategory } from "@/context/category/hooks/use-categories";
 import { ProductUnit } from "@/generated/prisma/enums";
 import { orpc } from "@/lib/orpc";
 import { ProductSchema, ProductType } from "@/schemas/product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Save, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -67,11 +68,14 @@ export function CreateProductForm() {
       height: 0,
       isActive: true,
       isFeatured: false,
+      trackStock: true,
     },
   });
   const queryClient = useQueryClient();
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string>("");
+
+  const { categories, isLoadingCategories } = useCategory();
 
   const mutation = useMutation(
     orpc.products.create.mutationOptions({
@@ -107,6 +111,7 @@ export function CreateProductForm() {
       costPrice: data.costPrice,
       salePrice: data.salePrice,
       currentStock: data.currentStock,
+      categoryId: data.categoryId,
       minStock: data.minStock,
       maxStock: data.maxStock,
       location: data.location,
@@ -118,6 +123,8 @@ export function CreateProductForm() {
       height: data.height,
       isActive: data.isActive,
       isFeatured: data.isFeatured,
+      trackStock: data.trackStock,
+      barcode: data.barcode,
     });
   };
 
@@ -166,11 +173,15 @@ export function CreateProductForm() {
                       <SelectValue placeholder="Selecione uma categoria" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="eletronicos">Eletrônicos</SelectItem>
-                      <SelectItem value="perifericos">Periféricos</SelectItem>
-                      <SelectItem value="monitores">Monitores</SelectItem>
-                      <SelectItem value="audio">Audio</SelectItem>
-                      <SelectItem value="webcams">Webcams</SelectItem>
+                      {isLoadingCategories ? (
+                        <SelectItem value="loading">Carregando...</SelectItem>
+                      ) : (
+                        categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   <FieldError>
@@ -288,10 +299,14 @@ export function CreateProductForm() {
                   <Label>Margem de Lucro</Label>
                   <Input
                     value={
-                      ((form.watch("salePrice") - form.watch("costPrice")) /
-                        form.watch("costPrice")) *
-                        100 +
-                      "%"
+                      form.watch("costPrice") > 0
+                        ? (
+                            ((form.watch("salePrice") -
+                              form.watch("costPrice")) /
+                              form.watch("costPrice")) *
+                            100
+                          ).toFixed(2) + "%"
+                        : "0.00%"
                     }
                     placeholder="0.00%"
                     disabled
@@ -424,12 +439,26 @@ export function CreateProductForm() {
                 />
               </div>
 
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="isActive">Controlar Estoque</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Rastrear quantidade
+                  </p>
+                </div>
+                <Switch
+                  disabled={isCreating}
+                  checked={form.watch("trackStock")}
+                  onCheckedChange={(v) => form.setValue("trackStock", v)}
+                />
+              </div>
+
               {/* isFeatured */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Destaque</Label>
+                  <Label htmlFor="isActive">Exibir no Catálogo Online</Label>
                   <p className="text-xs text-muted-foreground">
-                    Destaque para venda
+                    Visível para clientes
                   </p>
                 </div>
                 <Switch

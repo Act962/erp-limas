@@ -30,7 +30,7 @@ export const useCategoryModal = create<CategoryModalStore>((set) => ({
   onOpen: () => set({ open: true }),
   onClose: () => set({ open: false, category: null, mode: "create" }),
   onOpenDelete: () => set({ openDelete: true }),
-  onCloseDelete: () => set({ openDelete: false }),
+  onCloseDelete: () => set({ openDelete: false, category: null }),
   setCategory: (category: Category | null) => set({ category }),
   mode: "create",
   setMode: (mode: "create" | "update") => set({ mode }),

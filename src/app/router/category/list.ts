@@ -36,46 +36,69 @@ export const listCategories = base
     })
   )
   .handler(async ({ context }) => {
-    const categories = await prisma.category.findMany({
-      where: {
-        organizationId: context.org.id,
-        parentId: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        _count: {
-          select: {
-            products: true,
+    const [categoriesWithChildren, categoriesWithoutChildren, allCategories] =
+      await Promise.all([
+        await prisma.category.findMany({
+          where: {
+            organizationId: context.org.id,
+            parentId: null,
           },
-        },
-        children: {
           select: {
             id: true,
             name: true,
             slug: true,
             description: true,
-            parentId: true,
             _count: {
               select: {
                 products: true,
+              },
+            },
+            children: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                description: true,
+                parentId: true,
+                _count: {
+                  select: {
+                    products: true,
+                  },
+                },
+              },
+              orderBy: {
+                name: "asc",
               },
             },
           },
           orderBy: {
             name: "asc",
           },
-        },
-      },
-      orderBy: {
-        name: "asc",
-      },
-    });
+        }),
+
+        await prisma.category.findMany({
+          where: {
+            organizationId: context.org.id,
+            parentId: null,
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        }),
+
+        await prisma.category.findMany({
+          where: {
+            organizationId: context.org.id,
+          },
+          orderBy: {
+            name: "asc",
+          },
+        }),
+      ]);
 
     // Formata os dados para o formato esperado pelo componente
-    const formattedCategories = categories.map((category) => ({
+    const formattedCategories = categoriesWithChildren.map((category) => ({
       id: category.id,
       name: category.name,
       slug: category.slug,
