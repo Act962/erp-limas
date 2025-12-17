@@ -24,9 +24,7 @@ import {
   GalleryVerticalEnd,
   LayoutDashboard,
   LogOut,
-  LucideIcon,
   Package,
-  Plus,
   Store,
   Tag,
   TrendingUp,
@@ -309,10 +307,12 @@ function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={() => handleLogout()}
                 className="cursor-pointer"
+                variant="destructive"
               >
                 <LogOut className="size-4" />
                 Sair

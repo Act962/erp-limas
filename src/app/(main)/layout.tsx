@@ -1,14 +1,10 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import React from "react";
-import { requireAuth, requireAuthOrg } from "@/lib/auth-utils";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { requireAuth, currentOrganization } from "@/lib/auth-utils";
 import { ModalProvider } from "@/components/providers/modal-provider";
 import { BreadcrumbNav } from "@/components/breadcrumb-nav";
 import { AppHeader } from "@/components/app-header";
+import { EmptyOrganization } from "@/components/empty-organization";
 
 export default async function Layout({
   children,
@@ -16,7 +12,7 @@ export default async function Layout({
   children: React.ReactNode;
 }) {
   await requireAuth();
-  // await requireAuthOrg();
+  const org = await currentOrganization();
 
   return (
     <SidebarProvider className="flex h-screen overflow-hidden">
@@ -24,10 +20,14 @@ export default async function Layout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <AppHeader />
         <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto p-6 space-y-6">
-            <BreadcrumbNav />
-            {children}
-          </div>
+          {org ? (
+            <div className="container mx-auto p-6 space-y-6">
+              <BreadcrumbNav />
+              {children}
+            </div>
+          ) : (
+            <EmptyOrganization />
+          )}
         </main>
       </div>
       <ModalProvider />
