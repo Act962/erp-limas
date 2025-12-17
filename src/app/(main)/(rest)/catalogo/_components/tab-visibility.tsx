@@ -50,7 +50,10 @@ export function VisibilityTab({ settings, setSettings }: VisibilityTabProps) {
           </div>
           <div className="flex items-center justify-between border-t border-border pt-6">
             <div className="space-y-0.5">
-              <Label htmlFor="showPrices" className="text-base font-medium">
+              <Label
+                htmlFor="showProductsWithoutStock"
+                className="text-base font-medium"
+              >
                 Mostrar Preços
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -58,14 +61,8 @@ export function VisibilityTab({ settings, setSettings }: VisibilityTabProps) {
               </p>
             </div>
             <Switch
-              id="showPrices"
+              id="showProductsWithoutStock"
               checked={settings.showPrices}
-              onCheckedChange={(checked) =>
-                setSettings({
-                  ...settings,
-                  showPrices: checked,
-                })
-              }
             />
           </div>
           <div className="flex items-center justify-between border-t border-border pt-6">

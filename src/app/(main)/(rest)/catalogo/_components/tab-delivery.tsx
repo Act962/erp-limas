@@ -2,12 +2,13 @@
 
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { delivery } from "./mock/catalog-moc";
+import { delivery, deliveryOptions } from "./mock/catalog-moc";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 export function TabDelivery() {
   const [freeShipping, setFreeShipping] = useState(false);
@@ -17,14 +18,41 @@ export function TabDelivery() {
   return (
     <div className="space-y-6 mt-4">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Entrega</h2>
-        <p className="text-sm text-muted-foreground">
-          Configure as opções de entrega do seu catálogo
-        </p>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-xl font-semibold text-foreground">Entrega</h2>
+          <p className="text-sm text-muted-foreground">
+            Configure as opções de entrega do seu catálogo
+          </p>
+        </div>
       </div>
 
-      <Card className="p-6">
-        <div className="space-y-6">
+      <Card className="p-6 space-y-2">
+        <div className="space-y-3">
+          <Label>Formas de entrega disponíveis</Label>
+          <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
+            {deliveryOptions.map((deliveryOption) => (
+              <div key={deliveryOption.id} className="flex items-center gap-2">
+                <Checkbox id={deliveryOption.name} />
+                <Label htmlFor={deliveryOption.name}>
+                  {deliveryOption.name}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <Label htmlFor="info-delivery">
+            Informações especiais sobre entrega e envio
+          </Label>
+          <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
+            <Textarea
+              id="info-delivery"
+              className="text-sm"
+              placeholder="Insira aqui informações importantes sobre a entrega que você gostaria que seus clientes soubessem. Ex: Frete grátis a partir de R$200,00"
+            />
+          </div>
+        </div>
+        <div className="space-y-3">
           <Label>Formas de entrega disponíveis</Label>
           <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
             {delivery.map((delivery) => (

@@ -72,3 +72,10 @@ export const delivery = [
   { id: "3", name: "Frete grátis" },
   { id: "4", name: "Não oferecer frete" },
 ];
+
+export const deliveryOptions = [
+  { id: "1", name: "Entrega em domicílio" },
+  { id: "2", name: "Retirada na loja" },
+  { id: "3", name: "Serviço de quarto" },
+  { id: "4", name: "Entrega digital" },
+];
