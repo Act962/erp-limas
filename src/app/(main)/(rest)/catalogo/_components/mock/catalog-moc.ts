@@ -1,54 +1,35 @@
-import {
-  CreditCard,
-  Eye,
-  MessageCircle,
-  Palette,
-  Search,
-  Share2,
-} from "lucide-react";
-
 export const tabs = [
   {
     id: "geral" as const,
     label: "Geral",
-    icon: Search,
-    description: "Configurações gerais",
   },
   {
     id: "visibility" as const,
     label: "Visibilidade",
-    icon: Eye,
-    description: "Controle o que é exibido",
   },
   {
     id: "contact" as const,
     label: "Contato",
-    icon: MessageCircle,
-    description: "Canais de comunicação",
   },
   {
     id: "customization" as const,
     label: "Personalização",
-    icon: Palette,
-    description: "Aparência do catálogo",
   },
   {
     id: "payment" as const,
     label: "Pagamento",
-    icon: CreditCard,
-    description: "Configurações de pagamento",
+  },
+  {
+    id: "delivery" as const,
+    label: "Entrega",
   },
   {
     id: "social" as const,
     label: "Redes Sociais",
-    icon: Share2,
-    description: "Conecte suas redes",
   },
   {
     id: "integrations" as const,
     label: "Integrações",
-    icon: Share2,
-    description: "Conecte seu catalogo a meta",
   },
 ];
 
@@ -83,4 +64,11 @@ export const payments = [
   { id: 5, name: "Cartão de débito" },
   { id: 6, name: "Boleto" },
   { id: 7, name: "Link de pagamento" },
+];
+
+export const delivery = [
+  { id: "1", name: "Combinar via whatsapp" },
+  { id: "2", name: "Combinar valor de frete" },
+  { id: "3", name: "Frete grátis" },
+  { id: "4", name: "Não oferecer frete" },
 ];
