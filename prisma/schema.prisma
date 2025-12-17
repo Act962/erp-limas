@@ -211,12 +211,28 @@ enum CatalogSortOrder {
   OLDEST
 }
 
+enum DeliveryMethod {
+  DELIVERY_HOME
+  PICKUP_STORE
+  ROOM_SERVICE
+  DIGITAL_DELIVERY
+}
+
+enum FreightOption {
+  NEGOTIATE_WHATSAPP
+  NEGOTIATE_FREIGHT
+  FREE_SHIPPING
+  NO_SHIPPING
+}
+
+
 model CatalogSettings {
   id              String       @id @default(cuid())
   organizationId  String       @unique
   // Visibilidade
   isActive        Boolean      @default(true)
   showPrices      Boolean      @default(true)
+  showProductWithoutStock Boolean @default(false)
   showStock       Boolean      @default(false)
   allowOrders     Boolean      @default(false)
   sortOrder       CatalogSortOrder @default(ASC)
@@ -224,13 +240,27 @@ model CatalogSettings {
   whatsappNumber  String?
   showWhatsapp    Boolean      @default(true)
   contactEmail    String?
+  //Adress
+  cep             String?
+  address         String?
+  district        String?
+  number          String?
   // SEO
   metaTitle       String?
   metaDescription String?
+  cnpj            String?
   // Personalização
   bannerImage     String?
   aboutText       String?      @db.Text
   theme           String? 
+  //Payment
+  paymentMethodSettings PaymentMethod[]
+  //Delivery
+  deliveryMethods DeliveryMethod[]
+  freightOptions FreightOption[]
+  //Integrations
+  id_meta         String?
+  pixel_meta      String?
   // Redes Sociais
   instagram       String?
   facebook        String?

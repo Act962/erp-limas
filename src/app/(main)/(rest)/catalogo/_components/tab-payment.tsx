@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { payments } from "./mock/catalog-moc";
-import { Input } from "@/components/ui/input";
 
 export function TabPayment() {
   return (
