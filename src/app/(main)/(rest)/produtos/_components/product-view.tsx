@@ -287,7 +287,13 @@ export function ProductView({ history }: { history: StockHistory[] }) {
               <div>
                 <p className="text-sm text-muted-foreground">Margem de Lucro</p>
                 <p className="text-xl font-semibold text-green-500">
-                  {margin.toFixed(1)}%
+                  {product.costPrice > 0
+                    ? Number(
+                        ((product.salePrice - product.costPrice) /
+                          product.costPrice) *
+                          100
+                      ).toFixed(0) + "%"
+                    : "0%"}
                 </p>
               </div>
             </CardContent>

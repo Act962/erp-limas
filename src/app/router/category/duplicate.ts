@@ -18,6 +18,7 @@ export const duplicateCategory = base
   )
   .output(
     z.object({
+      id: z.string(),
       categoryName: z.string(),
     })
   )
@@ -34,21 +35,19 @@ export const duplicateCategory = base
       });
     }
 
-    const newSlug = categoryExists.slug + `${Date.now()}`;
+    const newSlug = `${categoryExists.slug}-${Date.now()}`;
 
     const duplicatedCategory = await prisma.category.create({
       data: {
-        name: categoryExists.name + " - Duplicado",
-        organizationId: categoryExists.organizationId,
+        ...categoryExists,
+        id: undefined,
         slug: newSlug,
-        parentId: categoryExists.parentId,
-        description: categoryExists.description,
-        image: categoryExists.image,
         order: categoryExists.order + 1,
       },
     });
 
     return {
+      id: duplicatedCategory.id,
       categoryName: duplicatedCategory.name,
     };
   });

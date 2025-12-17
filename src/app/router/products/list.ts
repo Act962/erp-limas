@@ -25,7 +25,8 @@ export const listProducts = base
           costPrice: z.number(),
           currentStock: z.number(),
           minStock: z.number(),
-          images: z.array(z.string()),
+
+          image: z.string().optional(),
           isActive: z.boolean(),
         })
       ),
@@ -50,6 +51,7 @@ export const listProducts = base
           minStock: true,
           images: true,
           isActive: true,
+          thumbnail: true,
         },
         where: {
           organizationId: context.org.id,
@@ -66,7 +68,7 @@ export const listProducts = base
         costPrice: product.costPrice.toNumber(),
         currentStock: product.currentStock.toNumber(),
         minStock: product.minStock.toNumber(),
-        images: product.images,
+        images: product.thumbnail ?? "",
         isActive: product.isActive,
       }));
 
