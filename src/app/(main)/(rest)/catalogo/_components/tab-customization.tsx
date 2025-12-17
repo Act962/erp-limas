@@ -46,20 +46,6 @@ export function TabCustomization({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="aboutText">Texto Sobre a Loja</Label>
-            <Textarea
-              id="aboutText"
-              placeholder="Conte sobre sua loja, produtos e diferenciais..."
-              value={settings.aboutText}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  aboutText: e.target.value,
-                })
-              }
-            />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="ColorPicker">Cor do tema do catálogo</Label>
             <CirclePicker
               width="100%"

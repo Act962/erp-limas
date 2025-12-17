@@ -66,16 +66,16 @@ export const payments = [
   { id: 7, name: "Link de pagamento" },
 ];
 
-export const delivery = [
-  { id: "1", name: "Combinar via whatsapp" },
-  { id: "2", name: "Combinar valor de frete" },
-  { id: "3", name: "Frete grátis" },
-  { id: "4", name: "Não oferecer frete" },
+export const freightOptions = [
+  { id: "NEGOTIATE_WHATSAPP", name: "Combinar via whatsapp" },
+  { id: "NEGOTIATE_FREIGHT", name: "Combinar valor de frete" },
+  { id: "FREE_SHIPPING", name: "Frete grátis" },
+  { id: "NO_SHIPPING", name: "Não oferecer frete" },
 ];
 
-export const deliveryOptions = [
-  { id: "1", name: "Entrega em domicílio" },
-  { id: "2", name: "Retirada na loja" },
-  { id: "3", name: "Serviço de quarto" },
-  { id: "4", name: "Entrega digital" },
+export const deliveryMethods = [
+  { id: "DELIVERY_HOME", name: "Entrega em domicílio" },
+  { id: "PICKUP_STORE", name: "Retirada na loja" },
+  { id: "ROOM_SERVICE", name: "Serviço de quarto" },
+  { id: "DIGITAL_DELIVERY", name: "Entrega digital" },
 ];

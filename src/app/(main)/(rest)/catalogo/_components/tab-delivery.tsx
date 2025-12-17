@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { delivery, deliveryOptions } from "./mock/catalog-moc";
+import { deliveryMethods, freightOptions } from "./mock/catalog-moc";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 export function TabDelivery() {
   const [freeShipping, setFreeShipping] = useState(false);
   const [deliverySelected, setDeliverySelected] = useState<
-    (typeof delivery)[0] | null
-  >(delivery[3]);
+    (typeof deliveryMethods)[0] | null
+  >(deliveryMethods[3]);
   return (
     <div className="space-y-6 mt-4">
       <div>
@@ -30,14 +30,14 @@ export function TabDelivery() {
         <div className="space-y-3">
           <Label>Formas de entrega disponíveis</Label>
           <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
-            {deliveryOptions.map((deliveryOption) => (
-              <div key={deliveryOption.id} className="flex items-center gap-2">
-                <Checkbox id={deliveryOption.name} />
+            {deliveryMethods.map((deliveryMethod) => (
+              <div key={deliveryMethod.id} className="flex items-center gap-2">
+                <Checkbox id={deliveryMethod.name} />
                 <Label
                   className="text-sm text-muted-foreground"
-                  htmlFor={deliveryOption.name}
+                  htmlFor={deliveryMethod.name}
                 >
-                  {deliveryOption.name}
+                  {deliveryMethod.name}
                 </Label>
               </div>
             ))}
@@ -56,23 +56,23 @@ export function TabDelivery() {
           </div>
         </div>
         <div className="space-y-3">
-          <Label>Formas de entrega disponíveis</Label>
+          <Label>Configuração de Precificação do Frete</Label>
           <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
-            {delivery.map((delivery) => (
+            {freightOptions.map((freightOption) => (
               <div
-                key={delivery.id}
+                key={freightOption.id}
                 className="flex items-center gap-2"
-                onClick={() => setDeliverySelected(delivery)}
+                onClick={() => setDeliverySelected(freightOption)}
               >
                 <Checkbox
-                  checked={deliverySelected?.id == delivery.id}
-                  id={delivery.name}
+                  checked={deliverySelected?.id == freightOption.id}
+                  id={freightOption.name}
                 />
                 <Label
                   className="text-sm text-muted-foreground"
-                  htmlFor={delivery.name}
+                  htmlFor={freightOption.name}
                 >
-                  {delivery.name}
+                  {freightOption.name}
                 </Label>
               </div>
             ))}
