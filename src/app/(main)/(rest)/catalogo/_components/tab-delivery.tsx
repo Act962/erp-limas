@@ -33,7 +33,10 @@ export function TabDelivery() {
             {deliveryOptions.map((deliveryOption) => (
               <div key={deliveryOption.id} className="flex items-center gap-2">
                 <Checkbox id={deliveryOption.name} />
-                <Label htmlFor={deliveryOption.name}>
+                <Label
+                  className="text-sm text-muted-foreground"
+                  htmlFor={deliveryOption.name}
+                >
                   {deliveryOption.name}
                 </Label>
               </div>
@@ -65,13 +68,18 @@ export function TabDelivery() {
                   checked={deliverySelected?.id == delivery.id}
                   id={delivery.name}
                 />
-                <Label htmlFor={delivery.name}>{delivery.name}</Label>
+                <Label
+                  className="text-sm text-muted-foreground"
+                  htmlFor={delivery.name}
+                >
+                  {delivery.name}
+                </Label>
               </div>
             ))}
           </div>
           {deliverySelected?.id === "2" && (
             <>
-              <div className="space-y-3">
+              <div className="space-y-3 mt-2">
                 <Label>Como deve ser cobrado o valor do frete:</Label>
 
                 <RadioGroup defaultValue="kg" className="flex gap-6">
