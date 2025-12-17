@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   InputGroup,
   InputGroupAddon,
@@ -16,15 +15,7 @@ import {
 } from "@/components/ui/select";
 
 import { Button } from "@/components/ui/button";
-import {
-  Copy,
-  Eye,
-  Filter,
-  MoreVertical,
-  Pencil,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { Copy, Eye, MoreVertical, Pencil, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import {
   Table,
@@ -46,6 +37,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useProductModal } from "@/hooks/modals/use-product-modal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
+import { toast } from "sonner";
 
 interface Product {
   id: string;
@@ -79,9 +73,31 @@ function getStockStatus(current: number, min: number) {
 }
 
 export function ProductsTable({ products }: { products: Product[] }) {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const { onOpen } = useProductModal();
+
+  const duplicateProductMutation = useMutation(
+    orpc.products.duplicate.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: orpc.products.list.queryKey(),
+        });
+
+        toast.success(`Produto duplicado com sucesso!`);
+      },
+      onError: () => {
+        toast.error(`Erro ao duplicar produto!`);
+      },
+    })
+  );
+
+  const onDuplicate = (id: string) => {
+    duplicateProductMutation.mutate({
+      productId: id,
+    });
+  };
 
   const filteredProducts = products.filter(
     (p) =>
@@ -115,6 +131,8 @@ export function ProductsTable({ products }: { products: Product[] }) {
             <InputGroupInput
               placeholder="Buscar por nome, SKU ou código de barras..."
               className="pl-9"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </InputGroup>
 
@@ -129,10 +147,10 @@ export function ProductsTable({ products }: { products: Product[] }) {
               <SelectItem value="monitores">Monitores</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
+          {/* <Button variant="outline">
             <Filter className="h-4 w-4 mr-2" />
             Filtros
-          </Button>
+          </Button> */}
         </div>
       </CardHeader>
       <CardContent>
@@ -254,13 +272,16 @@ export function ProductsTable({ products }: { products: Product[] }) {
                               Editar
                             </DropdownMenuItem>
                           </Link>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onDuplicate(product.id)}
+                            className="cursor-pointer"
+                          >
                             <Copy className="h-4 w-4 mr-2" />
                             Duplicar
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            className="text-destructive"
+                            className="text-destructive cursor-pointer"
                             onClick={() => {
                               onOpen(product);
                             }}

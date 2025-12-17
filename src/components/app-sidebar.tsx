@@ -152,13 +152,7 @@ export function AppSidebar() {
                       >
                         <SidebarMenuItem>
                           <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.name}
-                              className={cn(
-                                pathname.startsWith(item.href) &&
-                                  "bg-sidebar-accent text-sidebar-accent-foreground"
-                              )}
-                            >
+                            <SidebarMenuButton tooltip={item.name}>
                               {item.icon && (
                                 <item.icon
                                   onClick={() => router.push(item.href)}
@@ -406,7 +400,7 @@ function OrgMenu() {
             <DropdownMenuLabel className="text-muted-foreground text-xs">
               Empresas
             </DropdownMenuLabel>
-            {organizations?.map((org, index) => (
+            {organizations?.map((org) => (
               <DropdownMenuItem
                 key={org.name}
                 className="gap-2 p-2 cursor-pointer"

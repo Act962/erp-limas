@@ -96,6 +96,7 @@ export function CreateProductForm() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        form.setValue("thumbnail", reader.result as string);
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
@@ -389,8 +390,6 @@ export function CreateProductForm() {
                       disabled={isCreating}
                       onChange={(e) => {
                         handleImageChange(e);
-                        const file = e.target.files?.[0];
-                        if (file) form.setValue("thumbnail", file.name);
                       }}
                     />
                   </Label>
