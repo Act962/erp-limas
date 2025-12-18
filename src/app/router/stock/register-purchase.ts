@@ -5,17 +5,17 @@ import { MovementType } from "@/generated/prisma/enums";
 import prisma from "@/lib/db";
 import { z } from "zod";
 
-export const registerOutput = base
+export const registerEntry = base
   .use(requireAuthMiddleware)
   .use(requireOrgMiddleware)
   .route({
     method: "POST",
-    path: "/stock/output",
-    summary: "Register a stock output",
+    path: "/stock/entry",
+    summary: "Register a stock entry",
   })
   .input(
     z.object({
-      type: z.custom<MovementType>().default(MovementType.SAIDA),
+      type: z.custom<MovementType>().default(MovementType.ENTRADA),
       quantity: z.number().min(1),
       productId: z.string(),
       description: z.string().optional(),
@@ -35,17 +35,11 @@ export const registerOutput = base
 
     if (!product) {
       throw errors.NOT_FOUND({
-        message: "Product not found",
+        message: "Producto não encontrado",
       });
     }
 
-    const newStock = product.currentStock.toNumber() - input.quantity;
-
-    if (newStock < 0) {
-      throw errors.BAD_REQUEST({
-        message: "Estoque insuficiente",
-      });
-    }
+    const newStock = product.currentStock.toNumber() + input.quantity;
 
     const moviment = await prisma.stockMovement.create({
       data: {
