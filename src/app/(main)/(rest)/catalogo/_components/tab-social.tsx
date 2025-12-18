@@ -50,19 +50,47 @@ export function TabSocial({ settings, setSettings }: TabSocialProps) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="kwai">KWAI</Label>
-            <Input id="kwai" placeholder="https://kwai.com/minhaloja" />
+            <Input
+              id="kwai"
+              placeholder="https://kwai.com/minhaloja"
+              value={settings.kwai}
+              onChange={(e) =>
+                setSettings({ ...settings, kwai: e.target.value })
+              }
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="x">X (Twitter)</Label>
-            <Input id="x" placeholder="https://x.com/minhaloja" />
+            <Input
+              id="x"
+              placeholder="https://x.com/minhaloja"
+              value={settings.twitter}
+              onChange={(e) =>
+                setSettings({ ...settings, twitter: e.target.value })
+              }
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="youtube">YouTube</Label>
-            <Input id="youtube" placeholder="https://youtube.com/minhaloja" />
+            <Input
+              id="youtube"
+              placeholder="https://youtube.com/minhaloja"
+              value={settings.youtube}
+              onChange={(e) =>
+                setSettings({ ...settings, youtube: e.target.value })
+              }
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="tiktok">TikTok</Label>
-            <Input id="tiktok" placeholder="https://tiktok.com/minhaloja" />
+            <Input
+              id="tiktok"
+              placeholder="https://tiktok.com/minhaloja"
+              value={settings.tiktok}
+              onChange={(e) =>
+                setSettings({ ...settings, tiktok: e.target.value })
+              }
+            />
           </div>
         </div>
       </Card>

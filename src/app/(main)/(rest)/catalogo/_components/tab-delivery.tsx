@@ -9,8 +9,15 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { CatalogSettingsProps } from "./catalog";
+import { DeliveryMethod } from "@/generated/prisma/enums";
 
-export function TabDelivery() {
+interface TabDeliveryProps {
+  settings: CatalogSettingsProps;
+  setSettings: (settings: CatalogSettingsProps) => void;
+}
+
+export function TabDelivery({ settings, setSettings }: TabDeliveryProps) {
   const [freeShipping, setFreeShipping] = useState(false);
   const [deliverySelected, setDeliverySelected] = useState<
     (typeof deliveryMethods)[0] | null
@@ -32,7 +39,26 @@ export function TabDelivery() {
           <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
             {deliveryMethods.map((deliveryMethod) => (
               <div key={deliveryMethod.id} className="flex items-center gap-2">
-                <Checkbox id={deliveryMethod.name} />
+                <Checkbox
+                  id={deliveryMethod.id}
+                  checked={settings.deliveryMethods.includes(
+                    deliveryMethod.method as DeliveryMethod
+                  )}
+                  onCheckedChange={(value) =>
+                    setSettings({
+                      ...settings,
+                      deliveryMethods: value
+                        ? [
+                            ...settings.deliveryMethods,
+                            deliveryMethod.method as DeliveryMethod,
+                          ]
+                        : settings.deliveryMethods.filter(
+                            (deliveryMethod) =>
+                              deliveryMethod !== deliveryMethod
+                          ),
+                    })
+                  }
+                />
                 <Label
                   className="text-sm text-muted-foreground"
                   htmlFor={deliveryMethod.name}
@@ -47,10 +73,11 @@ export function TabDelivery() {
           <Label htmlFor="info-delivery">
             Informações especiais sobre entrega e envio
           </Label>
-          <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
+          <div className="gap-x-5 gap-y-2">
             <Textarea
               id="info-delivery"
-              className="text-sm"
+              rows={6}
+              className="text-sm resize-none"
               placeholder="Insira aqui informações importantes sobre a entrega que você gostaria que seus clientes soubessem. Ex: Frete grátis a partir de R$200,00"
             />
           </div>
@@ -78,19 +105,29 @@ export function TabDelivery() {
             ))}
           </div>
           {deliverySelected?.id === "2" && (
-            <>
+            <div className="space-y-6">
               <div className="space-y-3 mt-2">
                 <Label>Como deve ser cobrado o valor do frete:</Label>
 
                 <RadioGroup defaultValue="kg" className="flex gap-6">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="fixo" id="fixo" />
-                    <Label htmlFor="fixo">Fixo por pedido</Label>
+                    <Label
+                      className="text-sm text-muted-foreground"
+                      htmlFor="fixo"
+                    >
+                      Fixo por pedido
+                    </Label>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="kg" id="kg" />
-                    <Label htmlFor="kg">Valor por Kg</Label>
+                    <Label
+                      className="text-sm text-muted-foreground"
+                      htmlFor="kg"
+                    >
+                      Valor por Kg
+                    </Label>
                   </div>
                 </RadioGroup>
 
@@ -106,8 +143,14 @@ export function TabDelivery() {
                 <Label className="font-medium">Mais opções:</Label>
 
                 <div className="flex items-center justify-between">
-                  <Label>Frete grátis a partir de um valor</Label>
+                  <Label
+                    className="text-sm text-muted-foreground"
+                    htmlFor="moreOptions"
+                  >
+                    Frete grátis a partir de um valor
+                  </Label>
                   <Switch
+                    id="moreOptions"
                     checked={freeShipping}
                     onCheckedChange={setFreeShipping}
                   />
@@ -117,7 +160,7 @@ export function TabDelivery() {
                   <Input placeholder="R$ 0,00" className="w-40" />
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
       </Card>

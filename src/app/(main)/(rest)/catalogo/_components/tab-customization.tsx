@@ -1,9 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { CirclePicker } from "react-color";
 import { CatalogSettingsProps } from "./catalog";
+import { colors } from "./mock/catalog-moc";
 
 interface CustomizationTabProps {
   settings: CatalogSettingsProps;
@@ -47,30 +46,23 @@ export function TabCustomization({
 
           <div className="space-y-2">
             <Label htmlFor="ColorPicker">Cor do tema do catálogo</Label>
-            <CirclePicker
-              width="100%"
-              colors={[
-                "#f44336",
-                "#e91e63",
-                "#9c27b0",
-                "#673ab7",
-                "#3f51b5",
-                "#2196f3",
-                "#03a9f4",
-                "#00bcd4",
-                "#009688",
-                "#4caf50",
-                "#8bc34a",
-                "#cddc39",
-                "#ffeb3b",
-                "#ffc107",
-                "#ff9800",
-                "#ff5722",
-                "#795548",
-                "#607d8b",
-              ]}
-              onChange={(e) => setSettings({ ...settings, theme: e.hex })}
-            />
+            <div className="flex gap-2 flex-wrap">
+              {colors.map((color) => (
+                <div
+                  className={`p-0.5 rounded-full items-center justify-center ${
+                    settings.theme === color &&
+                    "border-2 border-accent-foreground/70 shadow-lg"
+                  }`}
+                  key={`id-${color}`}
+                >
+                  <div
+                    style={{ backgroundColor: color }}
+                    className={`w-5 h-5 rounded-full cursor-pointer hover:scale-110 transition-transform duration-200 `}
+                    onClick={() => setSettings({ ...settings, theme: color })}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </Card>

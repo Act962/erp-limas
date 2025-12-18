@@ -11,6 +11,12 @@ interface ContactTabProps {
 }
 
 export function TabContact({ settings, setSettings }: ContactTabProps) {
+  const formatCEP = (value = "") => {
+    return value
+      .replace(/\D/g, "") // remove tudo que não for número
+      .replace(/(\d{5})(\d)/, "$1-$2") // adiciona o hífen após 5 números
+      .slice(0, 9); // limita no máximo a 9 caracteres (xxxxx-xxx)
+  };
   return (
     <div className="space-y-6 mt-4">
       <div>
@@ -20,7 +26,7 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
         </p>
       </div>
 
-      <Card className="p-6">
+      <Card className="p-y-6">
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="whatsappNumber">Número do WhatsApp</Label>
@@ -88,24 +94,52 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
               <div className="grid grid-cols-1 md:grid-cols-3 space-x-4">
                 <div className="space-y-1">
                   <Label htmlFor="cep">CEP</Label>
-                  <Input id="cep" placeholder="CEP" />
+                  <Input
+                    value={formatCEP(settings.cep)}
+                    onChange={(e) =>
+                      setSettings({ ...settings, cep: e.target.value })
+                    }
+                    id="cep"
+                    placeholder="CEP"
+                  />
                 </div>
 
                 <div className="md:col-span-2 space-y-1">
                   <Label htmlFor="address">Endereço</Label>
-                  <Input id="address" placeholder="Rua, Avenida..." />
+                  <Input
+                    value={settings.address}
+                    onChange={(e) =>
+                      setSettings({ ...settings, address: e.target.value })
+                    }
+                    id="address"
+                    placeholder="Rua, Avenida..."
+                  />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 space-x-4">
                 <div className="md:col-span-2 space-y-1">
                   <Label htmlFor="district">Bairro</Label>
-                  <Input id="district" placeholder="Bairro" />
+                  <Input
+                    value={settings.district}
+                    onChange={(e) =>
+                      setSettings({ ...settings, district: e.target.value })
+                    }
+                    id="district"
+                    placeholder="Bairro"
+                  />
                 </div>
 
                 <div className="space-y-1">
                   <Label htmlFor="number">Número</Label>
-                  <Input id="number" placeholder="Número" />
+                  <Input
+                    value={settings.number}
+                    onChange={(e) =>
+                      setSettings({ ...settings, number: e.target.value })
+                    }
+                    id="number"
+                    placeholder="Número"
+                  />
                 </div>
               </div>
             </div>
