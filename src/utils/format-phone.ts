@@ -17,3 +17,5 @@ export function phoneMask(value: string) {
     .replace(/(\d{5})(\d)/, "$1-$2")
     .replace(/(-\d{4})\d+?$/, "$1");
 }
+
+export const normalizePhone = (value = "") => value.replace(/\D/g, "");

@@ -7,7 +7,7 @@ import { orpc } from "@/lib/orpc";
 import { useDebouncedValue } from "@/utils/use-debouced";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { phoneMask } from "@/utils/format-phone";
+import { phoneMask, normalizePhone } from "@/utils/format-phone";
 
 import { tabs } from "./mock/catalog-moc";
 
@@ -26,6 +26,7 @@ import {
   FreightOption,
   PaymentMethod,
 } from "@/generated/prisma/enums";
+import { TabDomain } from "./tab-domain";
 
 export interface CatalogSettingsProps {
   id: string;
@@ -125,7 +126,6 @@ export function CatalogSettings() {
     })
   );
 
-  const normalizePhone = (value = "") => value.replace(/\D/g, "");
   function onSubmit() {
     updateFieldCatalog.mutate({
       id: catalogSettings.id,
@@ -197,6 +197,9 @@ export function CatalogSettings() {
             </TabsContent>
             <TabsContent value="customization">
               <TabCustomization settings={settings} setSettings={setSettings} />
+            </TabsContent>
+            <TabsContent value="domain">
+              <TabDomain settings={settings} />
             </TabsContent>
             <TabsContent value="payment">
               <TabPayment setSettings={setSettings} settings={settings} />

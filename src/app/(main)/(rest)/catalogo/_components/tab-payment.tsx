@@ -30,7 +30,7 @@ export function TabPayment({ settings, setSettings }: TabPaymentProps) {
             {payments.map((payment) => (
               <div key={payment.id} className="flex items-center gap-2">
                 <Checkbox
-                  id={payment.id}
+                  id={payment.method}
                   checked={settings.paymentMethodSettings.includes(
                     payment.method
                   )}
@@ -47,7 +47,7 @@ export function TabPayment({ settings, setSettings }: TabPaymentProps) {
                 />
                 <Label
                   className="text-sm text-muted-foreground"
-                  htmlFor={payment.name}
+                  htmlFor={payment.method}
                 >
                   {payment.name}
                 </Label>

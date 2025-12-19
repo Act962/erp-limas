@@ -18,6 +18,10 @@ export const tabs = [
     label: "Personalização",
   },
   {
+    id: "domain" as const,
+    label: "Site",
+  },
+  {
     id: "payment" as const,
     label: "Pagamento",
   },
