@@ -7,7 +7,7 @@ import { orpc } from "@/lib/orpc";
 import { useDebouncedValue } from "@/utils/use-debouced";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { phoneMask } from "@/utils/format-phone";
+import { phoneMask, normalizePhone } from "@/utils/format-phone";
 
 import { tabs } from "./mock/catalog-moc";
 
@@ -19,6 +19,14 @@ import { TabPayment } from "./tab-payment";
 import { TabDelivery } from "./tab-delivery";
 import { TabSocial } from "./tab-social";
 import { TabIntegration } from "./tab-integration";
+import {
+  CatalogSortOrder,
+  DeliveryMethod,
+  FreightChargeType,
+  FreightOption,
+  PaymentMethod,
+} from "@/generated/prisma/enums";
+import { TabDomain } from "./tab-domain";
 
 export interface CatalogSettingsProps {
   id: string;
@@ -27,6 +35,7 @@ export interface CatalogSettingsProps {
   showPrices: boolean;
   showStock: boolean;
   allowOrders: boolean;
+  sortOrder: CatalogSortOrder | null;
   whatsappNumber: string;
   showWhatsapp: boolean;
   contactEmail: string;
@@ -37,6 +46,27 @@ export interface CatalogSettingsProps {
   theme: string;
   instagram: string;
   facebook: string;
+  twitter: string;
+  tiktok: string;
+  youtube: string;
+  kwai: string;
+  cep: string;
+  address: string;
+  district: string;
+  number: string;
+  id_meta: string;
+  pixel_meta: string;
+  showProductWithoutStock: boolean;
+  paymentMethodSettings: PaymentMethod[];
+  freightOptions: FreightOption;
+  freightChargeType: FreightChargeType;
+  freightFixedValue: number;
+  freightValuePerKg: number;
+  freeShippingMinValue: number;
+  freeShippingEnabled: boolean;
+  deliveryMethods: DeliveryMethod[];
+  deliverySpecialInfo: string;
+  cnpj: string;
 }
 
 export function CatalogSettings() {
@@ -50,6 +80,7 @@ export function CatalogSettings() {
     showPrices: catalogSettings.showPrices,
     showStock: catalogSettings.showStock,
     allowOrders: catalogSettings.allowOrders,
+    sortOrder: catalogSettings.sortOrder,
     whatsappNumber: phoneMask(String(catalogSettings.whatsappNumber)) ?? "",
     showWhatsapp: catalogSettings.showWhatsapp,
     contactEmail: catalogSettings.contactEmail ?? "",
@@ -60,6 +91,27 @@ export function CatalogSettings() {
     theme: catalogSettings.theme ?? "",
     instagram: catalogSettings.instagram ?? "",
     facebook: catalogSettings.facebook ?? "",
+    twitter: catalogSettings.twitter ?? "",
+    tiktok: catalogSettings.tiktok ?? "",
+    kwai: catalogSettings.kwai ?? "",
+    youtube: catalogSettings.youtube ?? "",
+    cep: catalogSettings.cep ?? "",
+    address: catalogSettings.address ?? "",
+    district: catalogSettings.district ?? "",
+    number: catalogSettings.number ?? "",
+    id_meta: catalogSettings.id_meta ?? "",
+    pixel_meta: catalogSettings.pixel_meta ?? "",
+    showProductWithoutStock: catalogSettings.showProductWithoutStock,
+    paymentMethodSettings: catalogSettings.paymentMethodSettings,
+    freightOptions: catalogSettings.freightOptions,
+    freightChargeType: catalogSettings.freightChargeType,
+    freightFixedValue: catalogSettings.freightFixedValue,
+    freightValuePerKg: catalogSettings.freightValuePerKg,
+    freeShippingMinValue: catalogSettings.freeShippingMinValue ?? 0,
+    freeShippingEnabled: catalogSettings.freeShippingEnabled,
+    deliveryMethods: catalogSettings.deliveryMethods,
+    deliverySpecialInfo: catalogSettings.deliverySpecialInfo ?? "",
+    cnpj: catalogSettings.cnpj ?? "",
   });
   const debounceUpdate = useDebouncedValue(settings, 500);
 
@@ -73,8 +125,6 @@ export function CatalogSettings() {
       },
     })
   );
-
-  const normalizePhone = (value = "") => value.replace(/\D/g, "");
 
   function onSubmit() {
     updateFieldCatalog.mutate({
@@ -93,6 +143,28 @@ export function CatalogSettings() {
       theme: debounceUpdate.theme,
       instagram: debounceUpdate.instagram,
       facebook: debounceUpdate.facebook,
+      twitter: debounceUpdate.twitter,
+      tiktok: debounceUpdate.tiktok,
+      kwai: debounceUpdate.kwai,
+      youtube: debounceUpdate.youtube,
+      sortOrder: debounceUpdate.sortOrder || "ASC",
+      cep: debounceUpdate.cep,
+      address: debounceUpdate.address,
+      district: debounceUpdate.district,
+      number: debounceUpdate.number,
+      id_meta: debounceUpdate.id_meta,
+      pixel_meta: debounceUpdate.pixel_meta,
+      showProductWithoutStock: debounceUpdate.showProductWithoutStock,
+      cnpj: debounceUpdate.cnpj,
+      paymentMethodSettings: debounceUpdate.paymentMethodSettings,
+      freightOptions: debounceUpdate.freightOptions,
+      freightChargeType: debounceUpdate.freightChargeType,
+      freightFixedValue: debounceUpdate.freightFixedValue,
+      freightValuePerKg: debounceUpdate.freightValuePerKg,
+      freeShippingMinValue: debounceUpdate.freeShippingMinValue,
+      freeShippingEnabled: debounceUpdate.freeShippingEnabled,
+      deliveryMethods: debounceUpdate.deliveryMethods,
+      deliverySpecialInfo: debounceUpdate.deliverySpecialInfo,
     });
   }
 
@@ -126,17 +198,20 @@ export function CatalogSettings() {
             <TabsContent value="customization">
               <TabCustomization settings={settings} setSettings={setSettings} />
             </TabsContent>
+            <TabsContent value="domain">
+              <TabDomain settings={settings} />
+            </TabsContent>
             <TabsContent value="payment">
-              <TabPayment />
+              <TabPayment setSettings={setSettings} settings={settings} />
             </TabsContent>
             <TabsContent value="delivery">
-              <TabDelivery />
+              <TabDelivery setSettings={setSettings} settings={settings} />
             </TabsContent>
             <TabsContent value="social">
               <TabSocial settings={settings} setSettings={setSettings} />
             </TabsContent>
             <TabsContent value="integrations">
-              <TabIntegration />
+              <TabIntegration settings={settings} setSettings={setSettings} />
             </TabsContent>
           </Tabs>
         </div>

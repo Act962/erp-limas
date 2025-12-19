@@ -2,19 +2,35 @@
 
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { deliveryMethods, freightOptions } from "./mock/catalog-moc";
+import {
+  deliveryMethods,
+  freightCharges,
+  freightOptions,
+} from "./mock/catalog-moc";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { CatalogSettingsProps } from "./catalog";
+import {
+  DeliveryMethod,
+  FreightChargeType,
+  FreightOption,
+} from "@/generated/prisma/enums";
+import {
+  currencyFormatter,
+  currencyUnformatter,
+  formatCurrencyInput,
+  parseCurrencyInput,
+} from "@/utils/currencyFormatter";
 
-export function TabDelivery() {
-  const [freeShipping, setFreeShipping] = useState(false);
-  const [deliverySelected, setDeliverySelected] = useState<
-    (typeof deliveryMethods)[0] | null
-  >(deliveryMethods[3]);
+interface TabDeliveryProps {
+  settings: CatalogSettingsProps;
+  setSettings: (settings: CatalogSettingsProps) => void;
+}
+
+export function TabDelivery({ settings, setSettings }: TabDeliveryProps) {
   return (
     <div className="space-y-6 mt-4">
       <div>
@@ -32,7 +48,26 @@ export function TabDelivery() {
           <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
             {deliveryMethods.map((deliveryMethod) => (
               <div key={deliveryMethod.id} className="flex items-center gap-2">
-                <Checkbox id={deliveryMethod.name} />
+                <Checkbox
+                  id={deliveryMethod.id}
+                  checked={settings.deliveryMethods.includes(
+                    deliveryMethod.method as DeliveryMethod
+                  )}
+                  onCheckedChange={(value) =>
+                    setSettings({
+                      ...settings,
+                      deliveryMethods: value
+                        ? [
+                            ...settings.deliveryMethods,
+                            deliveryMethod.method as DeliveryMethod,
+                          ]
+                        : settings.deliveryMethods.filter(
+                            (deliveryMethod) =>
+                              deliveryMethod !== deliveryMethod
+                          ),
+                    })
+                  }
+                />
                 <Label
                   className="text-sm text-muted-foreground"
                   htmlFor={deliveryMethod.name}
@@ -47,11 +82,19 @@ export function TabDelivery() {
           <Label htmlFor="info-delivery">
             Informações especiais sobre entrega e envio
           </Label>
-          <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2">
+          <div className="gap-x-5 gap-y-2">
             <Textarea
               id="info-delivery"
-              className="text-sm"
+              rows={6}
+              className="text-sm resize-none"
               placeholder="Insira aqui informações importantes sobre a entrega que você gostaria que seus clientes soubessem. Ex: Frete grátis a partir de R$200,00"
+              value={settings.deliverySpecialInfo}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  deliverySpecialInfo: e.target.value,
+                })
+              }
             />
           </div>
         </div>
@@ -62,10 +105,15 @@ export function TabDelivery() {
               <div
                 key={freightOption.id}
                 className="flex items-center gap-2"
-                onClick={() => setDeliverySelected(freightOption)}
+                onClick={() =>
+                  setSettings({
+                    ...settings,
+                    freightOptions: freightOption.method as FreightOption,
+                  })
+                }
               >
                 <Checkbox
-                  checked={deliverySelected?.id == freightOption.id}
+                  checked={settings.freightOptions == freightOption.method}
                   id={freightOption.name}
                 />
                 <Label
@@ -77,27 +125,61 @@ export function TabDelivery() {
               </div>
             ))}
           </div>
-          {deliverySelected?.id === "2" && (
-            <>
+          {settings.freightOptions === FreightOption.NEGOTIATE_FREIGHT && (
+            <div className="space-y-6">
               <div className="space-y-3 mt-2">
                 <Label>Como deve ser cobrado o valor do frete:</Label>
 
-                <RadioGroup defaultValue="kg" className="flex gap-6">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="fixo" id="fixo" />
-                    <Label htmlFor="fixo">Fixo por pedido</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="kg" id="kg" />
-                    <Label htmlFor="kg">Valor por Kg</Label>
-                  </div>
+                <RadioGroup
+                  defaultValue={settings.freightChargeType}
+                  className="flex gap-6"
+                >
+                  {freightCharges.map((freightCharge) => (
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value={freightCharge.method}
+                        id={freightCharge.method}
+                        onClick={() =>
+                          setSettings({
+                            ...settings,
+                            freightChargeType:
+                              freightCharge.method as FreightChargeType,
+                          })
+                        }
+                      />
+                      <Label
+                        className="text-sm text-muted-foreground"
+                        htmlFor={freightCharge.method}
+                      >
+                        {freightCharge.name}
+                      </Label>
+                    </div>
+                  ))}
                 </RadioGroup>
 
                 <div className="flex items-center gap-2">
-                  <Input placeholder="R$ 0,00" className="w-32" />
+                  <Input
+                    placeholder="R$ 0,00"
+                    className="w-32"
+                    value={
+                      settings.freightChargeType === FreightChargeType.PER_KG
+                        ? settings.freightValuePerKg
+                        : settings.freightFixedValue
+                    }
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        ...(settings.freightChargeType ===
+                        FreightChargeType.PER_KG
+                          ? { freightValuePerKg: Number(e.target.value) }
+                          : { freightFixedValue: Number(e.target.value) }),
+                      })
+                    }
+                  />
                   <span className="text-sm text-muted-foreground">
-                    Por quilo
+                    {settings.freightChargeType === FreightChargeType.PER_KG
+                      ? "Por quilo"
+                      : "Fixo por pedido"}
                   </span>
                 </div>
               </div>
@@ -106,18 +188,43 @@ export function TabDelivery() {
                 <Label className="font-medium">Mais opções:</Label>
 
                 <div className="flex items-center justify-between">
-                  <Label>Frete grátis a partir de um valor</Label>
+                  <Label
+                    className="text-sm text-muted-foreground"
+                    htmlFor="moreOptions"
+                  >
+                    Frete grátis a partir de um valor
+                  </Label>
                   <Switch
-                    checked={freeShipping}
-                    onCheckedChange={setFreeShipping}
+                    id="moreOptions"
+                    checked={settings.freeShippingEnabled}
+                    onCheckedChange={(value) =>
+                      setSettings({
+                        ...settings,
+                        freeShippingEnabled: value,
+                      })
+                    }
                   />
                 </div>
 
-                {freeShipping && (
-                  <Input placeholder="R$ 0,00" className="w-40" />
+                {settings.freeShippingEnabled && (
+                  <Input
+                    placeholder="0,00"
+                    className="w-40"
+                    inputMode="numeric"
+                    value={formatCurrencyInput(
+                      String(settings.freeShippingMinValue * 100)
+                    )}
+                    onChange={(e) => {
+                      const numericValue = parseCurrencyInput(e.target.value);
+                      setSettings({
+                        ...settings,
+                        freeShippingMinValue: numericValue,
+                      });
+                    }}
+                  />
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
       </Card>

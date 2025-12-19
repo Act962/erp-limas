@@ -1,6 +1,13 @@
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
 import { base } from "@/app/middlewares/base";
 import { requireOrgMiddleware } from "@/app/middlewares/org";
+import {
+  CatalogSortOrder,
+  DeliveryMethod,
+  FreightChargeType,
+  FreightOption,
+  PaymentMethod,
+} from "@/generated/prisma/enums";
 import prisma from "@/lib/db";
 import z from "zod";
 
@@ -20,6 +27,7 @@ export const listSettingsCatalog = base
         isActive: z.boolean(),
         showPrices: z.boolean(),
         showStock: z.boolean(),
+        sortOrder: z.enum(CatalogSortOrder),
         allowOrders: z.boolean(),
         whatsappNumber: z.string().nullable(),
         showWhatsapp: z.boolean(),
@@ -31,8 +39,27 @@ export const listSettingsCatalog = base
         theme: z.string().nullable(),
         instagram: z.string().nullable(),
         facebook: z.string().nullable(),
-        createdAt: z.date(),
-        updatedAt: z.date(),
+        twitter: z.string().nullable(),
+        tiktok: z.string().nullable(),
+        youtube: z.string().nullable(),
+        kwai: z.string().nullable(),
+        cep: z.string().nullable(),
+        address: z.string().nullable(),
+        district: z.string().nullable(),
+        number: z.string().nullable(),
+        id_meta: z.string().nullable(),
+        pixel_meta: z.string().nullable(),
+        showProductWithoutStock: z.boolean(),
+        paymentMethodSettings: z.enum(PaymentMethod).array(),
+        deliveryMethods: z.enum(DeliveryMethod).array(),
+        freightOptions: z.enum(FreightOption),
+        freightChargeType: z.enum(FreightChargeType),
+        freightFixedValue: z.number(),
+        freightValuePerKg: z.number(),
+        freeShippingMinValue: z.number(),
+        freeShippingEnabled: z.boolean(),
+        deliverySpecialInfo: z.string().nullable(),
+        cnpj: z.string().nullable(),
       }),
     })
   )
@@ -49,5 +76,12 @@ export const listSettingsCatalog = base
       },
     });
 
-    return { catalogSettings };
+    return {
+      catalogSettings: {
+        ...catalogSettings,
+        freightFixedValue: Number(catalogSettings.freightFixedValue),
+        freightValuePerKg: Number(catalogSettings.freightValuePerKg),
+        freeShippingMinValue: Number(catalogSettings.freeShippingMinValue),
+      },
+    };
   });

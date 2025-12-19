@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { SORT_ORDER } from "./mock/catalog-moc";
+import { CatalogSortOrder } from "@/generated/prisma/enums";
 
 interface VisibilityTabProps {
   settings: CatalogSettingsProps;
@@ -51,30 +52,25 @@ export function VisibilityTab({ settings, setSettings }: VisibilityTabProps) {
           <div className="flex items-center justify-between border-t border-border pt-6">
             <div className="space-y-0.5">
               <Label
-                htmlFor="showProductsWithoutStock"
+                htmlFor="showProductWithoutStock"
                 className="text-base font-medium"
               >
-                Mostrar Preços
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Exibe os preços dos produtos
-              </p>
-            </div>
-            <Switch
-              id="showProductsWithoutStock"
-              checked={settings.showPrices}
-            />
-          </div>
-          <div className="flex items-center justify-between border-t border-border pt-6">
-            <div className="space-y-0.5">
-              <Label htmlFor="showPrices" className="text-base font-medium">
                 Mostrar Produtos fora do estoque
               </Label>
               <p className="text-sm text-muted-foreground">
                 Exibe os produtos que estão fora do estoque
               </p>
             </div>
-            <Switch id="showOutOfStock" />
+            <Switch
+              id="showProductWithoutStock"
+              checked={settings.showProductWithoutStock}
+              onCheckedChange={(checked) =>
+                setSettings({
+                  ...settings,
+                  showProductWithoutStock: checked,
+                })
+              }
+            />
           </div>
           <div className="flex items-center justify-between border-t border-border pt-6">
             <div className="space-y-0.5">
@@ -131,13 +127,24 @@ export function VisibilityTab({ settings, setSettings }: VisibilityTabProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline">
-                    Em ordem alfabética crescente de A a Z
+                    {
+                      SORT_ORDER.find(
+                        (order) => order.method === settings.sortOrder
+                      )?.label
+                    }
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
                   {SORT_ORDER.map((order) => (
                     <div key={order.id}>
-                      <DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem
+                        onCheckedChange={() =>
+                          setSettings({
+                            ...settings,
+                            sortOrder: order.method as CatalogSortOrder,
+                          })
+                        }
+                      >
                         {order.label}
                       </DropdownMenuCheckboxItem>
                     </div>

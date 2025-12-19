@@ -8,3 +8,26 @@ export function currencyFormatter(amount: number) {
 
   return formatter.replace("R$", "");
 }
+
+export function currencyUnformatter(value: string): number {
+  const cleanValue = value.replace(/[^\d,]/g, "");
+  const normalizedValue = cleanValue.replace(",", ".");
+  return Number(normalizedValue) || 0;
+}
+
+export function formatCurrencyInput(value: string): string {
+  const numbers = value.replace(/\D/g, "");
+  if (!numbers) return "";
+  const amount = Number(numbers) / 100;
+
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+export function parseCurrencyInput(value: string): number {
+  const numbers = value.replace(/\D/g, "");
+
+  return numbers ? Number(numbers) / 100 : 0;
+}

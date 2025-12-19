@@ -52,7 +52,14 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
 
           <div className="space-y-2">
             <Label htmlFor="cnpj">CNPJ</Label>
-            <Input id="cnpj" placeholder="Ex: 12.345.678/0001-99" />
+            <Input
+              value={settings.cnpj}
+              onChange={(e) =>
+                setSettings({ ...settings, cnpj: e.target.value })
+              }
+              id="cnpj"
+              placeholder="Ex: 12.345.678/0001-99"
+            />
           </div>
 
           <div className="space-y-2">
@@ -60,6 +67,10 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
             <Textarea
               id="aboutText"
               placeholder="Ex: Digite uma breve descrição sobre a sua loja para que seus clientes possam conhecer um pouco mais sobre ela"
+              value={settings.aboutText}
+              onChange={(e) =>
+                setSettings({ ...settings, aboutText: e.target.value })
+              }
             />
           </div>
         </div>

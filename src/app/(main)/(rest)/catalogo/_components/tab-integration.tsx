@@ -6,8 +6,14 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
+import { CatalogSettingsProps } from "./catalog";
 
-export function TabIntegration() {
+interface TabIntegrationProps {
+  settings: CatalogSettingsProps;
+  setSettings: (settings: CatalogSettingsProps) => void;
+}
+
+export function TabIntegration({ settings, setSettings }: TabIntegrationProps) {
   return (
     <div className="space-y-6 mt-4">
       <div>
@@ -20,7 +26,17 @@ export function TabIntegration() {
         <div className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="googleAnalytics">ID do Google Analytics</Label>
-            <Input id="googleAnalytics" placeholder="000000000000000" />
+            <Input
+              id="googleAnalytics"
+              placeholder="000000000000000"
+              value={settings.id_meta}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  id_meta: e.target.value,
+                })
+              }
+            />
             <p className="text-sm text-muted-foreground">
               Receba os principais eventos do seu eventos do seu catálogo
               diretamente no Google Analytics. Faça análises de tráfego e
@@ -33,7 +49,13 @@ export function TabIntegration() {
             </Label>
             <InputGroup>
               <InputGroupAddon>G- </InputGroupAddon>
-              <InputGroupInput id="metaPixel" />
+              <InputGroupInput
+                id="metaPixel"
+                value={settings.pixel_meta}
+                onChange={(e) =>
+                  setSettings({ ...settings, pixel_meta: e.target.value })
+                }
+              />
             </InputGroup>
             <p className="text-sm text-muted-foreground">
               Integre seu catálogo ao seu Meta Pixel (Facebook) e tenha
