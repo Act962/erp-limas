@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useShoppingCart } from "../../../hooks/use-product";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
 import { CartItem } from "../types/product";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -17,8 +17,14 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { useScrollTop } from "@/hooks/use-scroll-top";
+import { hexToRgba } from "@/utils/convert-hex-to-rgba";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-export function Header() {
+interface HeaderProps {
+  bgColor?: string;
+}
+
+export function Header({ bgColor }: HeaderProps) {
   const router = useRouter();
   const { cartItems, updateQuantity } = useShoppingCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -28,17 +34,26 @@ export function Header() {
 
   function handleGoToCart() {
     setModalIsOpen(false);
-    router.push("/Limas-Atacado/cart");
+    router.push("/cart");
   }
+  const bgDynamic = bgColor
+    ? scrolled
+      ? hexToRgba(bgColor, 1) // forte
+      : hexToRgba(bgColor, 0.1) // fraco
+    : undefined;
 
   return (
     <header
       className={`w-full flex fixed top-0 z-50 items-center justify-center py-3 px-5 transition-colors duration-300 sm:py-5 
-        ${scrolled ? "bg-accent-foreground" : "bg-accent-foreground/10"}`}
+        ${
+          !bgColor &&
+          (scrolled ? "bg-accent-foreground" : "bg-accent-foreground/10")
+        }`}
+      style={bgColor ? { backgroundColor: bgDynamic } : undefined}
     >
       <div className="max-w-6xl flex flex-row w-full justify-between">
         <div
-          onClick={() => router.push("/Limas-Atacado")}
+          onClick={() => router.push("/")}
           className="flex flex-row gap-x-3 items-center cursor-pointer"
         >
           <Avatar>

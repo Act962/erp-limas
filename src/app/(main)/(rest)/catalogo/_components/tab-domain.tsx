@@ -4,11 +4,6 @@ import { Label } from "@/components/ui/label";
 import { CatalogSettingsProps } from "./catalog";
 import { Button } from "@/components/ui/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Dialog,
   DialogClose,
   DialogContent,

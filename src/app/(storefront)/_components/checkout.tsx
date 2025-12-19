@@ -10,9 +10,12 @@ import {
   MapPin,
   Store,
   QrCode,
-  CreditCard,
-  Smartphone,
   Banknote,
+  ArrowRightLeft,
+  CreditCard,
+  CreditCard as DebitCard,
+  FileText,
+  Link as LinkIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -20,10 +23,17 @@ import { DeliveryMethod, PaymentMethod } from "../types/product";
 import { useShoppingCart } from "@/hooks/use-product";
 import { toast } from "sonner";
 import { currencyFormatter } from "@/utils/currencyFormatter";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
+import { payments } from "@/app/(main)/(rest)/catalogo/_components/mock/catalog-moc";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
-export function Checkout() {
+interface CheckoutProps {
+  subdomain: string;
+}
+
+export function Checkout({ subdomain }: CheckoutProps) {
   const router = useRouter();
   const [deliveryMethod, setDeliveryMethod] =
     useState<DeliveryMethod>("delivery");
@@ -31,6 +41,16 @@ export function Checkout() {
   const [address, setAddress] = useState("");
   const [observations, setObservations] = useState("");
   const { cartItems } = useShoppingCart();
+
+  const { data } = useSuspenseQuery(
+    orpc.catalogSettings.public.queryOptions({
+      input: {
+        subdomain: subdomain,
+      },
+    })
+  );
+
+  const { catalogSettings } = data;
 
   const total = cartItems.reduce(
     (sum: number, item) => sum + item.salePrice * item.quantity,
@@ -63,10 +83,8 @@ export function Checkout() {
       return;
     }
 
-    // Montar mensagem do WhatsApp
     let message = "Olá! Gostaria de fazer um pedido:\n\n";
 
-    // Informações do pedido
     message += `*Forma de pagamento:* ${getPaymentMethodLabel(
       paymentMethod
     )}\n`;
@@ -74,19 +92,16 @@ export function Checkout() {
       deliveryMethod
     )}\n`;
 
-    // Adicionar endereço se for entrega
     if (deliveryMethod === "delivery" && address.trim()) {
       message += `*Endereço:* ${address.trim()}\n`;
     }
 
-    // Adicionar observações se houver
     if (observations.trim()) {
       message += `*Observação:* ${observations.trim()}\n`;
     }
 
     message += "\n*Produtos:*\n";
 
-    // Listar produtos
     cartItems.forEach((item, index) => {
       const itemTotal = (item.salePrice * item.quantity).toFixed(2);
       message += `${index + 1}. ${item.name} ${
@@ -187,49 +202,19 @@ export function Checkout() {
                   setPaymentMethod(value as PaymentMethod)
                 }
               >
-                <div className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <RadioGroupItem value="pix" id="pix" />
-                  <Label
-                    htmlFor="pix"
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
-                    <QrCode className="h-5 w-5 text-primary" />
-                    <span className="font-medium">PIX</span>
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <RadioGroupItem value="credit" id="credit" />
-                  <Label
-                    htmlFor="credit"
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
-                    <CreditCard className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Cartão de Crédito</span>
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <RadioGroupItem value="debit" id="debit" />
-                  <Label
-                    htmlFor="debit"
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
-                    <Smartphone className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Cartão de Débito</span>
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-                  <RadioGroupItem value="cash" id="cash" />
-                  <Label
-                    htmlFor="cash"
-                    className="flex items-center gap-2 cursor-pointer flex-1"
-                  >
-                    <Banknote className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Dinheiro</span>
-                  </Label>
-                </div>
+                {catalogSettings.paymentMethodSettings.map((method) => (
+                  <div className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value={method} id={method} />
+                    <Label
+                      htmlFor={method}
+                      className="flex items-center gap-2 cursor-pointer flex-1"
+                    >
+                      <span className="font-medium">
+                        {payments.find((p) => p.method === method)?.name}
+                      </span>
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             </CardContent>
           </Card>

@@ -1,5 +1,26 @@
+import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
 import { Checkout } from "../../_components/checkout";
+import { orpc } from "@/lib/orpc";
 
-export default function Page() {
-  return <Checkout />;
+interface CheckoutProps {
+  params: { subdomain: string };
+}
+export default async function Page({ params }: CheckoutProps) {
+  const queryClient = getQueryClient();
+
+  const { subdomain } = params;
+
+  await queryClient.prefetchQuery(
+    orpc.catalogSettings.public.queryOptions({
+      input: {
+        subdomain: subdomain,
+      },
+    })
+  );
+
+  return (
+    <HydrateClient client={queryClient}>
+      <Checkout subdomain={subdomain} />
+    </HydrateClient>
+  );
 }
