@@ -29,8 +29,6 @@ export const updateProduct = base
       salePrice: z.number().min(0).optional(),
       promotionalPrice: z.number().optional(),
 
-      // Estoque
-      currentStock: z.number().default(0),
       minStock: z.number().default(0),
       maxStock: z.number().optional(),
       location: z.string().optional(),
@@ -87,7 +85,6 @@ export const updateProduct = base
         costPrice: input.costPrice,
         salePrice: input.salePrice,
         promotionalPrice: input.promotionalPrice,
-        currentStock: input.currentStock,
         minStock: input.minStock,
         maxStock: input.maxStock,
         images: input.images,

@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { SubdomainDialog } from "@/components/modals/domain/subdomain-dialog";
 
 interface DomainTabProps {
   settings: CatalogSettingsProps;
@@ -29,7 +30,8 @@ export function TabDomain({ settings }: DomainTabProps) {
       <div>
         <h2 className="text-xl font-semibold text-foreground">Domínio</h2>
         <p className="text-sm text-muted-foreground">
-          Subdomínio do seu catálogo que seus clientes irão acessar
+          Compartilhe esse link com seus clientes e em suas redes sociais para
+          aumentar suas vendas
         </p>
       </div>
 
@@ -37,44 +39,7 @@ export function TabDomain({ settings }: DomainTabProps) {
         <div className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="domain">Customizar domínio</Label>
-            <form>
-              <Dialog>
-                <DialogTrigger>
-                  <Input id="domain" placeholder="www.seudominio.com" />
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-xl">
-                  <DialogHeader>
-                    <DialogTitle>
-                      Alterar endereço (URL) do site do seu catálogo
-                    </DialogTitle>
-                    <DialogDescription>
-                      Este é o endereço atual do site do seu catálogo:
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className=" flex items-center justify-center text-center px-4 py-2 bg-accent-foreground/10 rounded-full w-fit mx-auto">
-                    <span className="text-sm font-semibold text-foreground">
-                      Nome do catálogo aqui
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    <Label htmlFor="name-catalog">
-                      Insira o novo endereço aqui:
-                    </Label>
-                    <Input
-                      id="name-catalog"
-                      name="name-catalog"
-                      placeholder="www.seudominio.com.br"
-                    />
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Cancelar</Button>
-                    </DialogClose>
-                    <Button type="submit">Salvar</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </form>
+            <SubdomainDialog />
             <p className="text-xs text-muted-foreground">
               Subdomínio do seu catálogo que seus clientes irão acessar
             </p>
@@ -93,7 +58,7 @@ export function TabDomain({ settings }: DomainTabProps) {
                 <Dialog>
                   <form>
                     <DialogTrigger asChild>
-                      <Button className="mt-4" variant={"outline"}>
+                      <Button className="mt-4" variant={"outline"} disabled>
                         Configurar o meu domínio próprio
                       </Button>
                     </DialogTrigger>

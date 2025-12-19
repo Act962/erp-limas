@@ -1,6 +1,7 @@
 import prisma from "@/lib/db";
 import { Header } from "../_components/header-catalog";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
 interface StoreFrontLayoutProps {
   children: React.ReactNode;
@@ -8,8 +9,6 @@ interface StoreFrontLayoutProps {
 }
 
 async function getOrganization(subdomain: string) {
-  console.log("🔍 Buscando organização com subdomain:", subdomain);
-
   const org = await prisma.organization.findUnique({
     where: { subdomain },
     include: {
@@ -17,24 +16,39 @@ async function getOrganization(subdomain: string) {
     },
   });
 
-  console.log("📦 Organização encontrada:", org ? org.name : "null");
-
   return org;
+}
+
+export async function generateMetadata({
+  params,
+}: StoreFrontLayoutProps): Promise<Metadata> {
+  const { subdomain } = await params;
+
+  const org = await getOrganization(subdomain);
+
+  if (!org) {
+    return {
+      title: "Organização não encontrada",
+    };
+  }
+
+  const { catalogSettings } = org;
+
+  return {
+    title: catalogSettings?.metaTitle || org.name,
+    description: catalogSettings?.metaDescription || org.name,
+  };
 }
 
 export default async function SubdomainLayout({
   children,
   params,
 }: StoreFrontLayoutProps) {
-  // ✅ AWAIT AQUI, ANTES DE USAR
   const { subdomain } = await params;
-
-  console.log("🎯 Subdomain recebido no layout:", subdomain);
 
   const org = await getOrganization(subdomain);
 
   if (!org) {
-    console.log("❌ Organização não encontrada, mostrando 404");
     notFound();
   }
 
