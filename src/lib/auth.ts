@@ -14,5 +14,20 @@ export const auth = betterAuth({
     maxPasswordLength: 20,
     requireEmailVerification: false,
   },
-  plugins: [organization()],
+  plugins: [
+    organization({
+      organizationHooks: {
+        afterCreateOrganization: async ({ organization }) => {
+          await prisma.organization.update({
+            where: {
+              id: organization.id,
+            },
+            data: {
+              subdomain: organization.slug,
+            },
+          });
+        },
+      },
+    }),
+  ],
 });

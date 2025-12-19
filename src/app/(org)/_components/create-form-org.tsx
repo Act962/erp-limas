@@ -157,6 +157,7 @@ export function CreateFormOrg({
                   id="name"
                   disabled={isLoading}
                   {...form.register("name")}
+                  placeholder="Empresa de Vendas"
                 />
               </Field>
 
@@ -167,6 +168,7 @@ export function CreateFormOrg({
                   disabled={isLoading}
                   {...form.register("slug")}
                   onChange={handleSlugChange}
+                  placeholder="empresa-de-vendas"
                 />
               </Field>
 
