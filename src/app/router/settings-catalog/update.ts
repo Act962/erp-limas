@@ -3,6 +3,7 @@ import { base } from "@/app/middlewares/base";
 import {
   CatalogSortOrder,
   DeliveryMethod,
+  FreightChargeType,
   FreightOption,
   PaymentMethod,
 } from "@/generated/prisma/enums";
@@ -23,7 +24,7 @@ export const updateSettingsCatalog = base
       isActive: z.boolean().optional(),
       showPrices: z.boolean().optional(),
       showStock: z.boolean().optional(),
-      sortOrder: z.enum(CatalogSortOrder),
+      sortOrder: z.enum(CatalogSortOrder).optional(),
       allowOrders: z.boolean().optional(),
       whatsappNumber: z.string().optional(),
       showWhatsapp: z.boolean().optional(),
@@ -47,9 +48,15 @@ export const updateSettingsCatalog = base
       pixel_meta: z.string().optional(),
       showProductWithoutStock: z.boolean().optional(),
       paymentMethodSettings: z.enum(PaymentMethod).array().optional(),
-      freightOptions: z.enum(FreightOption).array().optional(),
       deliveryMethods: z.enum(DeliveryMethod).array().optional(),
+      freightOptions: z.enum(FreightOption).optional(),
+      freightChargeType: z.enum(FreightChargeType).optional(),
+      freightFixedValue: z.number().optional(),
+      freightValuePerKg: z.number().optional(),
+      freeShippingEnabled: z.boolean().optional(),
+      freeShippingMinValue: z.number().optional(),
       cnpj: z.string().optional(),
+      deliverySpecialInfo: z.string().optional(), // ⚠️ FALTANDO
     })
   )
   .handler(async ({ input, errors }) => {
@@ -98,7 +105,13 @@ export const updateSettingsCatalog = base
         showProductWithoutStock: input.showProductWithoutStock,
         paymentMethodSettings: input.paymentMethodSettings,
         freightOptions: input.freightOptions,
+        freightChargeType: input.freightChargeType, // ⚠️ FALTANDO
+        freightFixedValue: input.freightFixedValue, // ⚠️ FALTANDO
+        freightValuePerKg: input.freightValuePerKg, // ⚠️ FALTANDO
+        freeShippingEnabled: input.freeShippingEnabled, // ⚠️ FALTANDO
+        freeShippingMinValue: input.freeShippingMinValue, // ⚠️ FALTANDO
         deliveryMethods: input.deliveryMethods,
+        deliverySpecialInfo: input.deliverySpecialInfo, // ⚠️ FALTANDO
         cnpj: input.cnpj,
       },
     });

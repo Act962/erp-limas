@@ -22,6 +22,7 @@ import { TabIntegration } from "./tab-integration";
 import {
   CatalogSortOrder,
   DeliveryMethod,
+  FreightChargeType,
   FreightOption,
   PaymentMethod,
 } from "@/generated/prisma/enums";
@@ -56,8 +57,14 @@ export interface CatalogSettingsProps {
   pixel_meta: string;
   showProductWithoutStock: boolean;
   paymentMethodSettings: PaymentMethod[];
-  freightOptions: FreightOption[];
+  freightOptions: FreightOption;
+  freightChargeType: FreightChargeType;
+  freightFixedValue: number;
+  freightValuePerKg: number;
+  freeShippingMinValue: number;
+  freeShippingEnabled: boolean;
   deliveryMethods: DeliveryMethod[];
+  deliverySpecialInfo: string;
   cnpj: string;
 }
 
@@ -96,7 +103,13 @@ export function CatalogSettings() {
     showProductWithoutStock: catalogSettings.showProductWithoutStock,
     paymentMethodSettings: catalogSettings.paymentMethodSettings,
     freightOptions: catalogSettings.freightOptions,
+    freightChargeType: catalogSettings.freightChargeType,
+    freightFixedValue: catalogSettings.freightFixedValue,
+    freightValuePerKg: catalogSettings.freightValuePerKg,
+    freeShippingMinValue: catalogSettings.freeShippingMinValue ?? 0,
+    freeShippingEnabled: catalogSettings.freeShippingEnabled,
     deliveryMethods: catalogSettings.deliveryMethods,
+    deliverySpecialInfo: catalogSettings.deliverySpecialInfo ?? "",
     cnpj: catalogSettings.cnpj ?? "",
   });
   const debounceUpdate = useDebouncedValue(settings, 500);
@@ -113,7 +126,6 @@ export function CatalogSettings() {
   );
 
   const normalizePhone = (value = "") => value.replace(/\D/g, "");
-
   function onSubmit() {
     updateFieldCatalog.mutate({
       id: catalogSettings.id,
@@ -146,7 +158,13 @@ export function CatalogSettings() {
       cnpj: debounceUpdate.cnpj,
       paymentMethodSettings: debounceUpdate.paymentMethodSettings,
       freightOptions: debounceUpdate.freightOptions,
+      freightChargeType: debounceUpdate.freightChargeType,
+      freightFixedValue: debounceUpdate.freightFixedValue,
+      freightValuePerKg: debounceUpdate.freightValuePerKg,
+      freeShippingMinValue: debounceUpdate.freeShippingMinValue,
+      freeShippingEnabled: debounceUpdate.freeShippingEnabled,
       deliveryMethods: debounceUpdate.deliveryMethods,
+      deliverySpecialInfo: debounceUpdate.deliverySpecialInfo,
     });
   }
 

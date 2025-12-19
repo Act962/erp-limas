@@ -1,4 +1,4 @@
-import { PaymentMethod } from "@/generated/prisma/enums";
+import { FreightChargeType, PaymentMethod } from "@/generated/prisma/enums";
 
 export const tabs = [
   {
@@ -101,4 +101,9 @@ export const colors = [
   "#ff5722",
   "#795548",
   "#607d8b",
+];
+
+export const freightCharges = [
+  { id: "1", name: "Fixo por pedido ", method: FreightChargeType.FIXED },
+  { id: "2", name: "Valor por quilograma", method: FreightChargeType.PER_KG },
 ];

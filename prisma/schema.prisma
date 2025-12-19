@@ -225,6 +225,11 @@ enum FreightOption {
   NO_SHIPPING
 }
 
+enum FreightChargeType {
+  FIXED 
+  PER_KG 
+}
+
 
 model CatalogSettings {
   id              String       @id @default(cuid())
@@ -257,7 +262,14 @@ model CatalogSettings {
   paymentMethodSettings PaymentMethod[]
   //Delivery
   deliveryMethods DeliveryMethod[]
-  freightOptions FreightOption[]
+  deliverySpecialInfo String?
+  //Settings Delivery
+  freightOptions FreightOption @default(NO_SHIPPING)
+  freightChargeType FreightChargeType @default(FIXED)
+  freightFixedValue      Decimal       @default(0)  @db.Decimal(10, 2)
+  freightValuePerKg      Decimal       @default(0)  @db.Decimal(10, 2)
+  freeShippingEnabled    Boolean      @default(false)
+  freeShippingMinValue   Decimal       @default(0)  @db.Decimal(10, 2)
   //Integrations
   id_meta         String?
   pixel_meta      String?
