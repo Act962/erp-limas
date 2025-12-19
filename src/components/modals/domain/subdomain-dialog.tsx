@@ -119,6 +119,9 @@ export function SubdomainDialog() {
   const updateSubdomainMutation = useMutation(
     orpc.org.updateSubdomain.mutationOptions({
       onSuccess: (response) => {
+        queryClient.invalidateQueries({
+          queryKey: orpc.org.get.key(),
+        });
         toast.success("Subdomínio atualizado com sucesso!");
         setIsOpen(false);
         setIsAvailable(false);
