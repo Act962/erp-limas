@@ -5,12 +5,13 @@ import z, { string } from "zod";
 export const listProducts = base
   .route({
     method: "GET",
-    summary: "Listar produtos",
+    summary: "Listar produtos com e produtos com a catagoria relacionada",
     tags: ["products"],
   })
   .input(
     z.object({
       subdomain: z.string(),
+      productId: z.string(),
     })
   )
   .output(
@@ -25,21 +26,19 @@ export const listProducts = base
           order: z.number(),
         })
       ),
-      products: z.array(
-        z.object({
-          id: z.string(),
-          isActive: z.boolean(),
-          name: z.string(),
-          slug: z.string(),
-          minStock: z.number(),
-          categoryId: z.string().nullable(),
-          weight: z.number().nullable(),
-          thumbnail: z.string(),
-          currentStock: z.number(),
-          salePrice: z.number(),
-          images: z.array(string()).nullable(),
-        })
-      ),
+      products: z.object({
+        id: z.string(),
+        isActive: z.boolean(),
+        name: z.string(),
+        slug: z.string(),
+        minStock: z.number(),
+        categoryId: z.string().nullable(),
+        weight: z.number().nullable(),
+        thumbnail: z.string(),
+        currentStock: z.number(),
+        salePrice: z.number(),
+        images: z.array(string()).nullable(),
+      }),
     })
   )
   .handler(async ({ input, errors }) => {
@@ -53,30 +52,22 @@ export const listProducts = base
       if (!organization) {
         throw errors.NOT_FOUND();
       }
+      const product = await prisma.product.findUnique({
+        where: {
+          id: input.productId,
+        },
+      });
+      if (!product) {
+        throw errors.NOT_FOUND();
+      }
+      if (!product.categoryId) {
+        throw errors.NOT_FOUND();
+      }
       const categories = await prisma.category.findMany({
         where: {
-          organizationId: organization.id,
+          id: product.categoryId,
         },
       });
-      const products = await prisma.product.findMany({
-        where: {
-          organizationId: organization.id,
-        },
-      });
-
-      const productList = products.map((product) => ({
-        id: product.id,
-        isActive: product.isActive,
-        name: product.name,
-        slug: product.slug,
-        minStock: Number(product.minStock),
-        categoryId: product.categoryId,
-        weight: Number(product.weight),
-        thumbnail: product.thumbnail,
-        currentStock: Number(product.currentStock),
-        salePrice: Number(product.salePrice),
-        images: product.images,
-      }));
 
       const categoryList = categories.map((category) => ({
         id: category.id,
@@ -88,7 +79,14 @@ export const listProducts = base
       }));
 
       return {
-        products: productList,
+        products: {
+          ...product,
+          salePrice: Number(product.salePrice),
+          costPrice: Number(product.costPrice),
+          currentStock: Number(product.currentStock),
+          minStock: Number(product.minStock),
+          weight: Number(product.weight),
+        },
         categories: categoryList,
       };
     } catch (error) {
