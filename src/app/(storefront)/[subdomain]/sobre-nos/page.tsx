@@ -3,14 +3,12 @@ import { AboutUs } from "../../_components/about-us";
 import { orpc } from "@/lib/orpc";
 
 interface Props {
-  params: {
-    subdomain: string;
-  };
+  params: Promise<{ subdomain: string }>;
 }
 
 export default async function Page({ params }: Props) {
   const queryClient = getQueryClient();
-  const { subdomain } = params;
+  const { subdomain } = await params;
 
   await queryClient.prefetchQuery(
     orpc.catalogSettings.public.queryOptions({

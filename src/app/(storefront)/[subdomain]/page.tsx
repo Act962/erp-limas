@@ -3,11 +3,11 @@ import { Catalog } from "../_components/catalog";
 import { orpc } from "@/lib/orpc";
 
 interface StoreFrontLayoutProps {
-  params: { subdomain: string };
+  params: Promise<{ subdomain: string }>;
 }
 
 export default async function Page({ params }: StoreFrontLayoutProps) {
-  const { subdomain } = params;
+  const { subdomain } = await params;
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery(
     orpc.catalogSettings.public.queryOptions({

@@ -3,12 +3,12 @@ import { Checkout } from "../../_components/checkout";
 import { orpc } from "@/lib/orpc";
 
 interface CheckoutProps {
-  params: { subdomain: string };
+  params: Promise<{ subdomain: string }>;
 }
 export default async function Page({ params }: CheckoutProps) {
   const queryClient = getQueryClient();
 
-  const { subdomain } = params;
+  const { subdomain } = await params;
 
   await queryClient.prefetchQuery(
     orpc.catalogSettings.public.queryOptions({
