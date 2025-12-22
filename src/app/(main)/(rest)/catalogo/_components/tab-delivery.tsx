@@ -23,7 +23,7 @@ import {
   currencyUnformatter,
   formatCurrencyInput,
   parseCurrencyInput,
-} from "@/utils/currencyFormatter";
+} from "@/utils/currency-formatter";
 
 interface TabDeliveryProps {
   settings: CatalogSettingsProps;

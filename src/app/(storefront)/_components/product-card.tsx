@@ -9,7 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { currencyFormatter } from "../../../utils/currencyFormatter";
+import { currencyFormatter } from "../../../utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
 

@@ -27,95 +27,16 @@ import { useRouter } from "next/navigation";
 import { useState, useMemo, useEffect } from "react";
 import { useShoppingCart } from "@/hooks/use-product";
 import { toast } from "sonner";
-import { currencyFormatter } from "@/utils/currencyFormatter";
+import { currencyFormatter } from "@/utils/currency-formatter";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
+import { deliveryMethodsConfig, paymentMethodsConfig } from "../types/payments";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
 interface CheckoutProps {
   subdomain: string;
 }
-
-// Mapeamento de métodos de pagamento com ícones e labels
-const paymentMethodsConfig = {
-  DINHEIRO: {
-    label: "Dinheiro",
-    icon: Banknote,
-  },
-  PIX: {
-    label: "PIX",
-    icon: Smartphone,
-  },
-  DEBITO: {
-    label: "Cartão de Débito",
-    icon: CreditCard,
-  },
-  CREDITO: {
-    label: "Cartão de Crédito",
-    icon: CreditCard,
-  },
-  BOLETO: {
-    label: "Boleto",
-    icon: FileText,
-  },
-  TRANSFERENCIA: {
-    label: "Transferência Bancária",
-    icon: ArrowLeftRight,
-  },
-  OUTROS: {
-    label: "Outros",
-    icon: Wallet,
-  },
-};
-
-// Mapeamento de métodos de entrega com ícones e labels
-const deliveryMethodsConfig = {
-  DELIVERY_HOME: {
-    label: "Entrega em Casa",
-    description: "Receba no conforto da sua casa",
-    icon: Home,
-  },
-  PICKUP_STORE: {
-    label: "Retirada na Loja",
-    description: "Retire pessoalmente na loja",
-    icon: Store,
-  },
-  ROOM_SERVICE: {
-    label: "Room Service",
-    description: "Entrega no quarto",
-    icon: BedDouble,
-  },
-  DIGITAL_DELIVERY: {
-    label: "Entrega Digital",
-    description: "Receba por e-mail ou download",
-    icon: Download,
-  },
-};
-
-// Mapeamento de opções de frete
-const freightOptionsConfig = {
-  NEGOTIATE_WHATSAPP: {
-    label: "Combinar via WhatsApp",
-    icon: MessageCircle,
-    description: "Valor será combinado no WhatsApp",
-  },
-  NEGOTIATE_FREIGHT: {
-    label: "Combinar Frete",
-    icon: Truck,
-    description: "Valor do frete a combinar",
-  },
-  FREE_SHIPPING: {
-    label: "Frete Grátis",
-    icon: Gift,
-    description: "Entrega sem custo adicional",
-  },
-  NO_SHIPPING: {
-    label: "Sem Entrega",
-    icon: XCircle,
-    description: "Apenas retirada",
-  },
-};
 
 export function Checkout({ subdomain }: CheckoutProps) {
   const router = useRouter();
@@ -237,14 +158,6 @@ export function Checkout({ subdomain }: CheckoutProps) {
     );
   };
 
-  const getFreightOptionLabel = (): string => {
-    const option = catalogSettings.freightOptions;
-    return (
-      freightOptionsConfig[option as keyof typeof freightOptionsConfig]
-        ?.label || "Entrega"
-    );
-  };
-
   const handleConfirmOrder = () => {
     // Validação de método de pagamento
     if (!paymentMethod) {
@@ -320,7 +233,7 @@ export function Checkout({ subdomain }: CheckoutProps) {
   return (
     <div className="mx-auto w-full px-5 max-w-6xl py-4">
       <Button
-        onClick={() => router.push("/Limas-Atacado/cart")}
+        onClick={() => router.push("/cart")}
         variant={"secondary"}
         className="mb-4"
       >
