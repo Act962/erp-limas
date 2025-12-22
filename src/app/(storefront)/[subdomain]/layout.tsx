@@ -2,6 +2,7 @@ import prisma from "@/lib/db";
 import { Header } from "../_components/header-catalog";
 import { notFound } from "next/navigation";
 import { Footer } from "../_components/footer";
+import { Metadata } from "next";
 
 interface StoreFrontLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,27 @@ async function getOrganization(subdomain: string) {
   });
 
   return org;
+}
+
+export async function generateMetadata({
+  params,
+}: StoreFrontLayoutProps): Promise<Metadata> {
+  const { subdomain } = await params;
+
+  const org = await getOrganization(subdomain);
+
+  if (!org) {
+    return {
+      title: "Organização não encontrada",
+    };
+  }
+
+  const { catalogSettings } = org;
+
+  return {
+    title: catalogSettings?.metaTitle || org.name,
+    description: catalogSettings?.metaDescription || org.name,
+  };
 }
 
 export default async function SubdomainLayout({

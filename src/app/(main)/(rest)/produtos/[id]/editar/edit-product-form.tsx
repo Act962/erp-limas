@@ -20,29 +20,33 @@ import { useCategory } from "@/context/category/hooks/use-categories";
 import { ProductUnit } from "@/generated/prisma/enums";
 import { orpc } from "@/lib/orpc";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { ArrowLeft, Save, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Controller, useForm, type Resolver } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const unidades = [
-  { code: "UN", name: "Unidade" },
-  { code: "KG", name: "Quilograma" },
-  { code: "G", name: "Grama" },
-  { code: "L", name: "Litro" },
-  { code: "ML", name: "Mililitro" },
-  { code: "M", name: "Metro" },
-  { code: "M2", name: "Metro Quadrado" },
-  { code: "M3", name: "Metro Cúbico" },
-  { code: "CX", name: "Caixa" },
-  { code: "PC", name: "Peça" },
-  { code: "PAR", name: "Par" },
-  { code: "DZ", name: "Dúzia" },
-];
+const unitLabels: Record<ProductUnit, string> = {
+  UN: "Unidade",
+  KG: "Quilograma",
+  G: "Grama",
+  L: "Litro",
+  ML: "Mililitro",
+  M: "Metro",
+  M2: "Metro Quadrado",
+  M3: "Metro Cúbico",
+  CX: "Caixa",
+  PC: "Peça",
+  PAR: "Par",
+  DZ: "Dúzia",
+};
 
 const productSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -62,6 +66,7 @@ const productSchema = z.object({
 type ProductFormValues = z.infer<typeof productSchema>;
 
 export function EditProductForm() {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const { id: productId } = useParams<{ id: string }>();
   const {
@@ -77,6 +82,14 @@ export function EditProductForm() {
   const updateProductMutation = useMutation(
     orpc.products.update.mutationOptions({
       onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: orpc.products.get.queryKey({
+            input: {
+              id: productId,
+            },
+          }),
+        });
+
         toast.success("Produto atualizado com sucesso!");
         router.push(`/produtos`);
       },
@@ -102,6 +115,7 @@ export function EditProductForm() {
       costPrice: product.costPrice,
       salePrice: product.salePrice,
       minStock: product.minStock,
+
       isActive: product.isActive,
       trackStock: product.trackStock,
       showOnCatalog: product.isFeatured, // Mapping isFeatured to showOnCatalog
@@ -119,8 +133,10 @@ export function EditProductForm() {
   const costPrice = watch("costPrice");
   const salePrice = watch("salePrice");
 
-  const margin =
-    costPrice > 0 ? ((salePrice - costPrice) / costPrice) * 100 : 0;
+  const margin = useMemo(() => {
+    if (!costPrice || costPrice <= 0) return 0;
+    return ((salePrice - costPrice) / costPrice) * 100;
+  }, [costPrice, salePrice]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -137,6 +153,7 @@ export function EditProductForm() {
     updateProductMutation.mutate({
       id: productId,
       ...data,
+      isFeatured: data.showOnCatalog,
     });
   };
 
@@ -223,6 +240,7 @@ export function EditProductForm() {
                   <Textarea
                     id="description"
                     rows={4}
+                    placeholder="Descrição do produto"
                     {...register("description")}
                   />
                 </div>
@@ -235,6 +253,7 @@ export function EditProductForm() {
                     <Input
                       id="sku"
                       {...register("sku")}
+                      placeholder="SKU do produto"
                       aria-invalid={!!errors.sku}
                     />
                     {errors.sku && (
@@ -245,7 +264,11 @@ export function EditProductForm() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="barcode">Código de Barras</Label>
-                    <Input id="barcode" {...register("barcode")} />
+                    <Input
+                      id="barcode"
+                      {...register("barcode")}
+                      placeholder="232838283283"
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="unit">
@@ -264,9 +287,9 @@ export function EditProductForm() {
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
-                            {unidades.map((unit) => (
-                              <SelectItem key={unit.code} value={unit.code}>
-                                {unit.name}
+                            {Object.entries(unitLabels).map(([key, value]) => (
+                              <SelectItem key={key} value={key}>
+                                {value}
                               </SelectItem>
                             ))}
                           </SelectContent>
