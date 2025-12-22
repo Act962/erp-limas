@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Handbag, HandCoins, Minus, Plus, Trash2 } from "lucide-react";
+import { Handbag, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useShoppingCart } from "../../../hooks/use-product";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
