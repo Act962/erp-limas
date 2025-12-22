@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useShoppingCart } from "@/hooks/use-product";
-import { currencyFormatter } from "@/utils/currencyFormatter";
+import { currencyFormatter } from "@/utils/currency-formatter";
 
 export function Cart() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export function Cart() {
       <div className="container mx-auto px-4 py-4">
         <Button
           variant="ghost"
-          onClick={() => router.push("/Limas-Atacado")}
+          onClick={() => router.push("/")}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

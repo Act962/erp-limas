@@ -9,9 +9,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { currencyFormatter } from "../../../utils/currencyFormatter";
+import { currencyFormatter } from "../../../utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
+
+interface ProductCardProps extends ProductCatalog {
+  allowsOrders?: boolean;
+}
 
 export function ProductCard({
   id,
@@ -19,7 +23,8 @@ export function ProductCard({
   salePrice,
   categorySlug,
   thumbnail,
-}: ProductCatalog) {
+  allowsOrders,
+}: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart, cartItems } = useShoppingCart();
   const router = useRouter();
@@ -51,7 +56,7 @@ export function ProductCard({
             className="w-full h-full object-cover transition-transform rounded-sm cursor-pointer"
             src={thumbnail}
             alt={name}
-            onClick={() => router.push(`/product/${id}`)}
+            onClick={() => router.push(`/${id}`)}
           />
         </div>
       )}
@@ -69,43 +74,45 @@ export function ProductCard({
 
         <p className="text-2xl font-bold">R${currencyFormatter(salePrice)}</p>
       </div>
-      <div className="flex items-center gap-y-2">
-        <div className="hidden items-center border border-border rounded-lg overflow-hidden sm:flex">
+      {allowsOrders && (
+        <div className="flex items-center gap-x-2">
+          <div className="hidden items-center border border-border rounded-lg overflow-hidden sm:flex">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-none"
+              onClick={() => setQuantity(quantity - 1)}
+              disabled={isDisabled || quantity <= 1}
+            >
+              <Minus className="size-4" />
+            </Button>
+            <span className="px-4 font-medium min-w-12 text-center">
+              {quantity}
+            </span>
+            <Button
+              disabled={isDisabled}
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-none"
+              onClick={() => setQuantity(quantity + 1)}
+            >
+              <Plus className="size-4" />
+            </Button>
+          </div>
           <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-none"
-            onClick={() => setQuantity(quantity - 1)}
-            disabled={isDisabled || quantity <= 1}
-          >
-            <Minus className="size-4" />
-          </Button>
-          <span className="px-4 font-medium min-w-12 text-center">
-            {quantity}
-          </span>
-          <Button
+            variant="default"
+            onClick={handleAddToCart}
             disabled={isDisabled}
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 rounded-none"
-            onClick={() => setQuantity(quantity + 1)}
           >
-            <Plus className="size-4" />
+            {showAsInCart ? "Adicionado" : "Adicionar"}
+            {showAsInCart ? (
+              <Check className="size-4" />
+            ) : (
+              <CirclePlus className="size-4" />
+            )}
           </Button>
         </div>
-        <Button
-          variant="default"
-          onClick={handleAddToCart}
-          disabled={isDisabled}
-        >
-          {showAsInCart ? "Adicionado" : "Adicionar"}
-          {showAsInCart ? (
-            <Check className="size-4" />
-          ) : (
-            <CirclePlus className="size-4" />
-          )}
-        </Button>
-      </div>
+      )}
     </div>
   );
 }

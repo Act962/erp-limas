@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ProductCatalog } from "../types/product";
-import { currencyFormatter } from "../../../utils/currencyFormatter";
+import { currencyFormatter } from "../../../utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import {
   Check,

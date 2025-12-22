@@ -9,17 +9,31 @@ import { ProductCard } from "./product-card";
 import { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-
-export function Catalog() {
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
+import { notFound } from "next/navigation";
+import { sortProducts } from "@/utils/sorteble-products";
+interface CatalogProps {
+  subdomain: string;
+}
+export function Catalog({ subdomain }: CatalogProps) {
   const options: EmblaOptionsType = { loop: true };
+
+  console.log(subdomain);
+
+  const { data } = useSuspenseQuery(
+    orpc.catalogSettings.public.queryOptions({
+      input: {
+        subdomain: subdomain,
+      },
+    })
+  );
+  const { catalogSettings } = data;
 
   const [categoryParam] = useQueryState("category");
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
     Autoplay({ playOnInit: true, delay: 4000 }),
   ]);
-
-  const { selectedIndex, scrollSnaps, onDotButtonClick } =
-    useDotButton(emblaApi);
 
   const mockedProducts: ProductCatalog[] = [
     {
@@ -33,6 +47,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=111",
       ],
       categorySlug: "notebooks",
+      createdAt: new Date("2024-03-12T10:22:14-03:00"),
     },
     {
       id: "2",
@@ -44,6 +59,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=22",
       ],
       categorySlug: "perifericos",
+      createdAt: new Date("2024-07-28T15:41:03-03:00"),
     },
     {
       id: "3",
@@ -55,6 +71,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=33",
       ],
       categorySlug: "perifericos",
+      createdAt: new Date("2024-11-09T09:12:57-03:00"),
     },
     {
       id: "4",
@@ -66,6 +83,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=44",
       ],
       categorySlug: "monitores",
+      createdAt: new Date("2025-01-18T18:25:44-03:00"),
     },
     {
       id: "5",
@@ -77,6 +95,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=55",
       ],
       categorySlug: "audio",
+      createdAt: new Date("2025-03-04T14:08:30-03:00"),
     },
     {
       id: "6",
@@ -88,6 +107,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=66",
       ],
       categorySlug: "armazenamento",
+      createdAt: new Date("2025-06-22T20:55:10-03:00"),
     },
     {
       id: "7",
@@ -100,6 +120,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=777",
       ],
       categorySlug: "moveis-gamer",
+      createdAt: new Date("2025-08-09T12:37:55-03:00"),
     },
     {
       id: "8",
@@ -108,6 +129,7 @@ export function Catalog() {
       thumbnail: "https://picsum.photos/400/400?random=8",
       images: ["https://picsum.photos/800/800?random=8"],
       categorySlug: "acessorios",
+      createdAt: new Date("2025-10-01T08:19:22-03:00"),
     },
     {
       id: "9",
@@ -119,6 +141,7 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=99",
       ],
       categorySlug: "audio",
+      createdAt: new Date("2025-11-29T21:44:11-03:00"),
     },
     {
       id: "10",
@@ -131,8 +154,14 @@ export function Catalog() {
         "https://picsum.photos/800/800?random=1000",
       ],
       categorySlug: "smartphones",
+      createdAt: new Date("2025-12-19T17:14:48-03:00"),
     },
   ];
+  const sortedProducts = sortProducts(
+    mockedProducts,
+    catalogSettings.sortOrder
+  );
+
   const mockedCategories: CategoryCatalog[] = [
     {
       id: "cat_01",
@@ -220,6 +249,10 @@ export function Catalog() {
     );
   }, [categoryParam]);
 
+  if (catalogSettings.isActive === false) {
+    return notFound();
+  }
+
   return (
     <div className="w-full max-w-6xl mx-auto justify-center">
       <div className="flex flex-col w-full justify-between px-3">
@@ -248,7 +281,7 @@ export function Catalog() {
           <FiltersCatalog categories={mockedCategories} />
         </div>
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {filteredProducts.map((product) => (
+          {sortedProducts.map((product) => (
             <ProductCard
               key={product.id}
               id={product.id}
@@ -256,6 +289,7 @@ export function Catalog() {
               salePrice={product.salePrice}
               thumbnail={product.thumbnail}
               categorySlug={product.categorySlug}
+              allowsOrders={catalogSettings.allowOrders}
             />
           ))}
         </ul>

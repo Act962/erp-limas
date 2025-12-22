@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CatalogSettingsProps } from "./catalog";
+import { formatCNPJ, unformatCNPJ } from "@/utils/format-cnpj";
 
 interface GeneralTabProps {
   settings: CatalogSettingsProps;
@@ -53,9 +54,9 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
           <div className="space-y-2">
             <Label htmlFor="cnpj">CNPJ</Label>
             <Input
-              value={settings.cnpj}
+              value={formatCNPJ(settings.cnpj)}
               onChange={(e) =>
-                setSettings({ ...settings, cnpj: e.target.value })
+                setSettings({ ...settings, cnpj: unformatCNPJ(e.target.value) })
               }
               id="cnpj"
               placeholder="Ex: 12.345.678/0001-99"

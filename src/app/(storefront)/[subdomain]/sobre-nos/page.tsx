@@ -1,14 +1,15 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { Catalog } from "../_components/catalog";
+import { AboutUs } from "../../_components/about-us";
 import { orpc } from "@/lib/orpc";
 
-interface StoreFrontLayoutProps {
+interface Props {
   params: Promise<{ subdomain: string }>;
 }
 
-export default async function Page({ params }: StoreFrontLayoutProps) {
-  const { subdomain } = await params;
+export default async function Page({ params }: Props) {
   const queryClient = getQueryClient();
+  const { subdomain } = await params;
+
   await queryClient.prefetchQuery(
     orpc.catalogSettings.public.queryOptions({
       input: {
@@ -18,10 +19,8 @@ export default async function Page({ params }: StoreFrontLayoutProps) {
   );
 
   return (
-    <>
-      <HydrateClient client={queryClient}>
-        <Catalog subdomain={subdomain} />
-      </HydrateClient>
-    </>
+    <HydrateClient client={queryClient}>
+      <AboutUs subdomain={subdomain} />
+    </HydrateClient>
   );
 }

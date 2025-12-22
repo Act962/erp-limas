@@ -6,6 +6,7 @@ export interface ProductCatalog {
   images?: string[];
   thumbnail: string;
   categorySlug: string;
+  createdAt?: Date;
 }
 
 export interface CartItem extends Omit<ProductCatalog, "images"> {

@@ -1,6 +1,7 @@
 import prisma from "@/lib/db";
 import { Header } from "../_components/header-catalog";
 import { notFound } from "next/navigation";
+import { Footer } from "../_components/footer";
 import { Metadata } from "next";
 
 interface StoreFrontLayoutProps {
@@ -52,12 +53,19 @@ export default async function SubdomainLayout({
     notFound();
   }
 
+  if (!org.catalogSettings) {
+    notFound();
+  }
+
   const settings = org.catalogSettings;
 
   return (
     <div className="bg-accent-foreground/5">
-      <Header />
+      <Header
+        settings={{ metaTitle: settings.metaTitle, theme: settings.theme }}
+      />
       <main className="mt-15 sm:mt-19">{children}</main>
+      <Footer settings={settings} />
     </div>
   );
 }
