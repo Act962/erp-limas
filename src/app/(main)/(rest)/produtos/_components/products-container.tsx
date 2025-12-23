@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ProductsTable } from "./products-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 export function ProductsContainer() {
   const { data } = useSuspenseQuery(orpc.products.list.queryOptions());
@@ -33,7 +34,7 @@ export function ProductsContainer() {
       <ProductsTable
         products={data.products.map((product) => ({
           ...product,
-          image: product.image ?? "",
+          image: product.image ? useConstructUrl(product.image) : "",
         }))}
       />
     </div>
