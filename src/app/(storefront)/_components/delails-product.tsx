@@ -68,6 +68,8 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     setIsMounted(true);
   }, []);
 
+  console.log(product.images);
+
   return (
     <div className="mx-auto w-full max-w-5xl py-8 ">
       <div
@@ -75,24 +77,26 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           sm:px-10"
       >
         <div className="flex items-center text-sm font-semibold mb-3 gap-1">
-          <span className="hover:underline cursor-pointer">{product.slug}</span>
+          <span className="hover:underline cursor-pointer">
+            {product.category.name}
+          </span>
           <ChevronRight className="size-3" />
           <span>{product.name}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
           <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
             <div className="overflow-hidden size-full" ref={emblaRef}>
-              <div className="flex gap-2 size-full">
+              <div className="flex gap-2">
                 {product.images &&
                   product.images.map((image, index) => (
                     <div
-                      className="flex justify-center translate-0 shrink-0 grow-0 size-full"
+                      className="flex justify-center translate-0 shrink-0 grow-0 w-full"
                       key={`image-carousel-${index}`}
                     >
                       <img
                         src={image}
                         alt={`imagem do ${product.name}`}
-                        className="object-cover rounded-2xl"
+                        className="object-cover rounded-2xl size-full"
                       />
                     </div>
                   ))}
@@ -116,7 +120,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             )}
           </div>
           <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center">
-            <div className="flex flex-col gap-4 min-w-13">
+            <div className="flex flex-col gap-4 max-w-10 h-10">
               {product.images &&
                 product.images.map((image) => (
                   <img
@@ -124,8 +128,8 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                     key={image}
                     src={image}
                     alt={product.name}
-                    className="w-15 h-15 rounded-sm cursor-pointer
-                  data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40"
+                    className="size-full rounded-sm cursor-pointer
+                  data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
                     onClick={() => setImageSelected(image)}
                   />
                 ))}
@@ -134,8 +138,8 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               <img
                 src={imageSelected}
                 alt={product.name}
-                className="w-full rounded-2xl
-               object-cover"
+                className="rounded-2xl
+               object-cover size-full"
               />
             </div>
           </div>
@@ -147,7 +151,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             <div className="flex flex-col mt-2">
               <span className="text-md font-medium">Categoria</span>
               <span className="text-md font-medium text-muted-foreground">
-                {product.slug}
+                {product.category.name}
               </span>
             </div>
             <div className="flex flex-wrap items-center mt-4 gap-4">
@@ -218,9 +222,11 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               </div>
             ))}
           </div>
-          <Button className="hidden md:flex">
-            <PlusCircle onClick={() => router.push(`/`)} className="size-4" />{" "}
-            Ver mais
+          <Button
+            className="hidden md:flex"
+            onClick={() => router.push(`/?category=${product.category.slug}`)}
+          >
+            <PlusCircle className="size-4" /> Ver mais
           </Button>
         </div>
       </div>

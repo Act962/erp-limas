@@ -29,6 +29,10 @@ export const getProductAndProductsByCategory = base
         currentStock: z.number(),
         salePrice: z.number(),
         images: z.array(string()).nullable(),
+        category: z.object({
+          name: z.string(),
+          slug: z.string(),
+        }),
       }),
       productsWithThisCategory: z.array(
         z.object({
@@ -62,6 +66,14 @@ export const getProductAndProductsByCategory = base
             slug: input.productSlug,
           },
         },
+        include: {
+          category: {
+            select: {
+              name: true,
+              slug: true,
+            },
+          },
+        },
       });
 
       if (!product) {
@@ -86,11 +98,16 @@ export const getProductAndProductsByCategory = base
       const productsList = productsWithCategory.map((product) => ({
         id: product.id,
         isActive: product.isActive,
-        description: product.description,
         name: product.name,
+        description: product.description,
         slug: product.slug,
+        minStock: Number(product.minStock),
+        categoryId: product.categoryId,
+        weight: Number(product.weight),
         thumbnail: product.thumbnail,
+        currentStock: Number(product.currentStock),
         salePrice: Number(product.salePrice),
+        images: product.images,
       }));
 
       return {
@@ -101,6 +118,7 @@ export const getProductAndProductsByCategory = base
           currentStock: Number(product.currentStock),
           minStock: Number(product.minStock),
           weight: Number(product.weight),
+          category: product.category as { name: string; slug: string },
         },
         productsWithThisCategory: productsList,
       };
