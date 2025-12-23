@@ -36,7 +36,7 @@ export function ProductCard({
   }, []);
 
   const handleAddToCart = () => {
-    addToCart({ id, name, salePrice, thumbnail, quantity });
+    addToCart({ id, name, salePrice, thumbnail, quantity, slug });
   };
 
   const showAsInCart = isMounted && productInCart;

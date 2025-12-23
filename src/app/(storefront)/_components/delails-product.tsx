@@ -33,10 +33,10 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     })
   );
 
-  const { product } = data;
+  const { product, productsWithThisCategory } = data;
 
   const [imageSelected, setImageSelected] = useState(product.thumbnail);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   const { cartItems, updateQuantity, addToCart, removeFromCart } =
     useShoppingCart();
@@ -55,54 +55,6 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
   }
 
   const showAsInCart = productInCart && isMounted;
-
-  const categoryProducts = [
-    {
-      id: "1",
-      name: "Notebook Gamer RTX 4050",
-      salePrice: 5899.9,
-      thumbnail: "https://picsum.photos/400/400?random=1",
-      images: [
-        "https://picsum.photos/800/800?random=1",
-        "https://picsum.photos/800/800?random=11",
-        "https://picsum.photos/800/800?random=111",
-      ],
-      categorySlug: "notebooks",
-    },
-    {
-      id: "2",
-      name: "Mouse Sem Fio Logitech MX",
-      salePrice: 249.9,
-      thumbnail: "https://picsum.photos/400/400?random=2",
-      images: [
-        "https://picsum.photos/800/800?random=2",
-        "https://picsum.photos/800/800?random=22",
-      ],
-      categorySlug: "perifericos",
-    },
-    {
-      id: "3",
-      name: "Teclado Mecânico RGB",
-      salePrice: 399.99,
-      thumbnail: "https://picsum.photos/400/400?random=3",
-      images: [
-        "https://picsum.photos/800/800?random=3",
-        "https://picsum.photos/800/800?random=33",
-      ],
-      categorySlug: "perifericos",
-    },
-    {
-      id: "4",
-      name: 'Monitor 27" Full HD',
-      salePrice: 1299.0,
-      thumbnail: "https://picsum.photos/400/400?random=4",
-      images: [
-        "https://picsum.photos/800/800?random=4",
-        "https://picsum.photos/800/800?random=44",
-      ],
-      categorySlug: "monitores",
-    },
-  ];
 
   const handleAddAndRemoveToCart = () => {
     if (productInCart) {
@@ -230,7 +182,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 )}
               </Button>
             </div>
-            <span className="mt-5 block">{product.description}</span>
+            <span className="mt-5 block text-sm">{product.description}</span>
           </div>
         </div>
       </div>
@@ -241,9 +193,9 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
         <div className="flex items-center justify-center md:justify-between gap-x-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-            {categoryProducts.map((product) => (
+            {productsWithThisCategory.map((product) => (
               <div
-                onClick={() => router.push(`/${product.id}`)}
+                onClick={() => router.push(`/${product.slug}`)}
                 key={product.id}
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
@@ -267,12 +219,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             ))}
           </div>
           <Button className="hidden md:flex">
-            <PlusCircle
-              onClick={() =>
-                router.push(`/catalog?category=${product.categoryId}`)
-              }
-              className="size-4"
-            />{" "}
+            <PlusCircle onClick={() => router.push(`/`)} className="size-4" />{" "}
             Ver mais
           </Button>
         </div>

@@ -113,11 +113,16 @@ export function Header({ settings }: HeaderProps) {
                     <ScrollArea className="w-full rounded-md">
                       {cartItems.map((item) => (
                         <ItemRequested
+                          slug={item.slug}
                           key={item.id}
-                          {...item}
+                          id={item.id}
+                          thumbnail={item.thumbnail ?? ""}
+                          name={item.name}
                           quantityInit={item.quantity}
                           updateQuantity={updateQuantity}
                           contrastColor={contrastColor}
+                          salePrice={item.salePrice}
+                          quantity={item.quantity}
                         />
                       ))}
                     </ScrollArea>
@@ -125,11 +130,8 @@ export function Header({ settings }: HeaderProps) {
 
                   <Button
                     className="w-full mt-3"
+                    variant={"secondary"}
                     onClick={handleGoToCart}
-                    style={{
-                      color: backgroundColor,
-                      backgroundColor: contrastColor,
-                    }}
                   >
                     Finalizar Pedido
                   </Button>

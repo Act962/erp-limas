@@ -37,7 +37,8 @@ export const getProductAndProductsByCategory = base
           description: z.string().nullable(),
           name: z.string(),
           slug: z.string(),
-          thumbnail: z.string().nullable(),
+          thumbnail: z.string(),
+          salePrice: z.number(),
         })
       ),
     })
@@ -79,6 +80,7 @@ export const getProductAndProductsByCategory = base
           categoryId: product.categoryId,
           isActive: true,
         },
+        take: 4,
       });
 
       const productsList = productsWithCategory.map((product) => ({
@@ -88,6 +90,7 @@ export const getProductAndProductsByCategory = base
         name: product.name,
         slug: product.slug,
         thumbnail: product.thumbnail,
+        salePrice: Number(product.salePrice),
       }));
 
       return {
