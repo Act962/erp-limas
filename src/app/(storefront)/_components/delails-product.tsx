@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ProductCatalog } from "../types/product";
 import { currencyFormatter } from "../../../utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,23 +15,28 @@ import { useShoppingCart } from "../../../hooks/use-product";
 import useEmblaCarousel from "embla-carousel-react";
 import { EmblaCarouselType } from "embla-carousel";
 import { useRouter } from "next/navigation";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/lib/orpc";
 
-interface DetailsPoductProps extends ProductCatalog {
-  quantityInit: number;
+interface DetailsPoductProps {
+  subdomain: string;
+  slug: string;
 }
 
-export function DetailsPoduct({
-  id,
-  name,
-  salePrice,
-  categorySlug,
-  images,
-  description,
-  thumbnail,
-  quantityInit,
-}: DetailsPoductProps) {
-  const [imageSelected, setImageSelected] = useState(thumbnail);
-  const [quantity, setQuantity] = useState(quantityInit || 0);
+export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
+  const { data } = useSuspenseQuery(
+    orpc.catalogSettings.relatedProducts.queryOptions({
+      input: {
+        subdomain: subdomain,
+        productSlug: slug,
+      },
+    })
+  );
+
+  const { product } = data;
+
+  const [imageSelected, setImageSelected] = useState(product.thumbnail);
+  const [quantity, setQuantity] = useState(0);
 
   const { cartItems, updateQuantity, addToCart, removeFromCart } =
     useShoppingCart();
@@ -43,11 +47,11 @@ export function DetailsPoduct({
     useDotButton(emblaApi);
   const [isMounted, setIsMounted] = useState(false);
 
-  const productInCart = !!cartItems.find((item) => item.id === id);
+  const productInCart = !!cartItems.find((item) => item.id === product.id);
 
   function handleQuantity(quantity: number) {
     setQuantity(quantity);
-    updateQuantity(id, quantity);
+    updateQuantity(product.id, quantity);
   }
 
   const showAsInCart = productInCart && isMounted;
@@ -102,10 +106,10 @@ export function DetailsPoduct({
 
   const handleAddAndRemoveToCart = () => {
     if (productInCart) {
-      removeFromCart(id);
+      removeFromCart(product.id);
       return;
     }
-    addToCart({ id, name, salePrice, categorySlug, thumbnail }, quantity);
+    addToCart({ ...product, quantity });
   };
 
   useEffect(() => {
@@ -119,23 +123,23 @@ export function DetailsPoduct({
           sm:px-10"
       >
         <div className="flex items-center text-sm font-semibold mb-3 gap-1">
-          <span className="hover:underline cursor-pointer">{categorySlug}</span>
+          <span className="hover:underline cursor-pointer">{product.slug}</span>
           <ChevronRight className="size-3" />
-          <span>{name}</span>
+          <span>{product.name}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
           <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
             <div className="overflow-hidden size-full" ref={emblaRef}>
               <div className="flex gap-2 size-full">
-                {images &&
-                  images.map((image, index) => (
+                {product.images &&
+                  product.images.map((image, index) => (
                     <div
                       className="flex justify-center translate-0 shrink-0 grow-0 size-full"
                       key={`image-carousel-${index}`}
                     >
                       <img
                         src={image}
-                        alt={name}
+                        alt={`imagem do ${product.name}`}
                         className="object-cover rounded-2xl"
                       />
                     </div>
@@ -143,7 +147,7 @@ export function DetailsPoduct({
               </div>
             </div>
             {/* DotsButton */}
-            {images && images.length > 0 && (
+            {product.images && product.images.length > 0 && (
               <div className="flex flex-row gap-1">
                 {scrollSnaps.map((_, index) => (
                   <button
@@ -161,13 +165,13 @@ export function DetailsPoduct({
           </div>
           <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center">
             <div className="flex flex-col gap-4 min-w-13">
-              {images &&
-                images.map((image) => (
+              {product.images &&
+                product.images.map((image) => (
                   <img
                     data-selected={imageSelected === image}
                     key={image}
                     src={image}
-                    alt={name}
+                    alt={product.name}
                     className="w-15 h-15 rounded-sm cursor-pointer
                   data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40"
                     onClick={() => setImageSelected(image)}
@@ -177,21 +181,21 @@ export function DetailsPoduct({
             <div className="items-center sm:block">
               <img
                 src={imageSelected}
-                alt={name}
+                alt={product.name}
                 className="w-full rounded-2xl
                object-cover"
               />
             </div>
           </div>
           <div className="h-full px-4">
-            <h3 className="font-bold text-xl">{name}</h3>
+            <h3 className="font-bold text-xl">{product.name}</h3>
             <h1 className="text-3xl font-semibold opacity-80">
-              R${currencyFormatter(salePrice)}
+              R${currencyFormatter(product.salePrice)}
             </h1>
             <div className="flex flex-col mt-2">
               <span className="text-md font-medium">Categoria</span>
               <span className="text-md font-medium text-muted-foreground">
-                {categorySlug}
+                {product.slug}
               </span>
             </div>
             <div className="flex flex-wrap items-center mt-4 gap-4">
@@ -226,7 +230,7 @@ export function DetailsPoduct({
                 )}
               </Button>
             </div>
-            <span className="mt-5 block">{description}</span>
+            <span className="mt-5 block">{product.description}</span>
           </div>
         </div>
       </div>
@@ -239,7 +243,7 @@ export function DetailsPoduct({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
             {categoryProducts.map((product) => (
               <div
-                onClick={() => router.push(`/${id}`)}
+                onClick={() => router.push(`/${product.id}`)}
                 key={product.id}
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
@@ -264,7 +268,9 @@ export function DetailsPoduct({
           </div>
           <Button className="hidden md:flex">
             <PlusCircle
-              onClick={() => router.push(`/catalog?category=${categorySlug}`)}
+              onClick={() =>
+                router.push(`/catalog?category=${product.categoryId}`)
+              }
               className="size-4"
             />{" "}
             Ver mais

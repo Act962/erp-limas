@@ -21,9 +21,9 @@ export function ProductCard({
   id,
   name,
   salePrice,
-  categorySlug,
   thumbnail,
   allowsOrders,
+  slug,
 }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart, cartItems } = useShoppingCart();
@@ -36,7 +36,7 @@ export function ProductCard({
   }, []);
 
   const handleAddToCart = () => {
-    addToCart({ id, name, salePrice, categorySlug, thumbnail }, quantity);
+    addToCart({ id, name, salePrice, thumbnail, quantity });
   };
 
   const showAsInCart = isMounted && productInCart;
@@ -56,7 +56,7 @@ export function ProductCard({
             className="w-full h-full object-cover transition-transform rounded-sm cursor-pointer"
             src={thumbnail}
             alt={name}
-            onClick={() => router.push(`/${id}`)}
+            onClick={() => router.push(`/${slug}`)}
           />
         </div>
       )}

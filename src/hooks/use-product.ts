@@ -2,10 +2,21 @@ import { ProductCatalog, CartItem } from "../app/(storefront)/types/product";
 import useLocalStorage from "use-local-storage";
 const CART_KEY = "@cart_products";
 
-export function useShoppingCart() {
-  const [cartItems, setCartItems] = useLocalStorage<CartItem[]>(CART_KEY, []);
+interface UseShoppingCartProps {
+  id: string;
+  name: string;
+  quantity: number;
+  salePrice: number;
+  thumbnail?: string;
+}
 
-  function addToCart(product: ProductCatalog, quantity: number = 1) {
+export function useShoppingCart() {
+  const [cartItems, setCartItems] = useLocalStorage<UseShoppingCartProps[]>(
+    CART_KEY,
+    []
+  );
+
+  function addToCart(product: UseShoppingCartProps, quantity: number = 1) {
     const existingItem = cartItems.find((item) => item.id === product.id);
 
     if (existingItem) {

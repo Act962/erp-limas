@@ -1,6 +1,8 @@
 export interface CategoryCatalog {
   id: string;
   name: string;
-  categorySlug: string;
-  description: string;
+  isActive: boolean;
+  slug: string;
+  image: string | null;
+  order: number;
 }

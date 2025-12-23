@@ -11,6 +11,7 @@ export const listProducts = base
   .input(
     z.object({
       subdomain: z.string(),
+      categorySlug: z.array(z.string()).optional(),
     })
   )
   .output(
@@ -61,6 +62,11 @@ export const listProducts = base
       const products = await prisma.product.findMany({
         where: {
           organizationId: organization.id,
+          category: {
+            slug: {
+              in: input.categorySlug,
+            },
+          },
         },
       });
 

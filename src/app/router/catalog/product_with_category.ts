@@ -2,34 +2,25 @@ import { base } from "@/app/middlewares/base";
 import prisma from "@/lib/db";
 import z, { string } from "zod";
 
-export const listProducts = base
+export const getProductAndProductsByCategory = base
   .route({
     method: "GET",
     summary: "Listar produtos com e produtos com a catagoria relacionada",
-    tags: ["products"],
+    tags: ["products_selected_with_category"],
   })
   .input(
     z.object({
       subdomain: z.string(),
-      productId: z.string(),
+      productSlug: z.string(),
     })
   )
   .output(
     z.object({
-      categories: z.array(
-        z.object({
-          id: z.string(),
-          isActive: z.boolean(),
-          name: z.string(),
-          slug: z.string(),
-          image: z.string().nullable(),
-          order: z.number(),
-        })
-      ),
-      products: z.object({
+      product: z.object({
         id: z.string(),
         isActive: z.boolean(),
         name: z.string(),
+        description: z.string().nullable(),
         slug: z.string(),
         minStock: z.number(),
         categoryId: z.string().nullable(),
@@ -39,6 +30,15 @@ export const listProducts = base
         salePrice: z.number(),
         images: z.array(string()).nullable(),
       }),
+      productsWithThisCategory: z.array(
+        z.object({
+          id: z.string(),
+          isActive: z.boolean(),
+          name: z.string(),
+          slug: z.string(),
+          thumbnail: z.string().nullable(),
+        })
+      ),
     })
   )
   .handler(async ({ input, errors }) => {
@@ -52,34 +52,44 @@ export const listProducts = base
       if (!organization) {
         throw errors.NOT_FOUND();
       }
+
       const product = await prisma.product.findUnique({
         where: {
-          id: input.productId,
+          organizationId_slug: {
+            organizationId: organization.id,
+            slug: input.productSlug,
+          },
         },
       });
+
       if (!product) {
         throw errors.NOT_FOUND();
       }
+
       if (!product.categoryId) {
         throw errors.NOT_FOUND();
       }
-      const categories = await prisma.category.findMany({
+
+      const productsWithCategory = await prisma.product.findMany({
         where: {
-          id: product.categoryId,
+          slug: {
+            not: input.productSlug,
+          },
+          categoryId: product.categoryId,
+          isActive: true,
         },
       });
 
-      const categoryList = categories.map((category) => ({
-        id: category.id,
-        isActive: category.isActive,
-        name: category.name,
-        slug: category.slug,
-        image: category.image,
-        order: Number(category.order),
+      const productsList = productsWithCategory.map((product) => ({
+        id: product.id,
+        isActive: product.isActive,
+        name: product.name,
+        slug: product.slug,
+        thumbnail: product.thumbnail,
       }));
 
       return {
-        products: {
+        product: {
           ...product,
           salePrice: Number(product.salePrice),
           costPrice: Number(product.costPrice),
@@ -87,7 +97,7 @@ export const listProducts = base
           minStock: Number(product.minStock),
           weight: Number(product.weight),
         },
-        categories: categoryList,
+        productsWithThisCategory: productsList,
       };
     } catch (error) {
       throw errors.INTERNAL_SERVER_ERROR();
