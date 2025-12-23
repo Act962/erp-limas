@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/s3-client";
 
-export const fileUploadSchema = z.object({
+const fileUploadSchema = z.object({
   fileName: z.string().min(1, "Nome do arquivo é obrigatório"),
   contentType: z.string().min(1, "Content type is required"),
   size: z.number().min(1, "Size is required"),
