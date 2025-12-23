@@ -1,10 +1,16 @@
 "use client";
 
+import { Uploader } from "@/components/file-uploader/uploader";
 import { PageHeader } from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -61,6 +67,7 @@ const productSchema = z.object({
   isActive: z.boolean(),
   trackStock: z.boolean(),
   showOnCatalog: z.boolean(),
+  thumbnail: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -101,8 +108,6 @@ export function EditProductForm() {
 
   const { categories, isLoadingCategories } = useCategory();
 
-  const [imagePreview, setImagePreview] = useState<string>(product.images[0]);
-
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema) as Resolver<ProductFormValues>,
     defaultValues: {
@@ -115,7 +120,7 @@ export function EditProductForm() {
       costPrice: product.costPrice,
       salePrice: product.salePrice,
       minStock: product.minStock,
-
+      thumbnail: product.thumbnail,
       isActive: product.isActive,
       trackStock: product.trackStock,
       showOnCatalog: product.isFeatured, // Mapping isFeatured to showOnCatalog
@@ -127,7 +132,7 @@ export function EditProductForm() {
     control,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = form;
 
   const costPrice = watch("costPrice");
@@ -138,17 +143,6 @@ export function EditProductForm() {
     return ((salePrice - costPrice) / costPrice) * 100;
   }, [costPrice, salePrice]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const onSubmit = async (data: ProductFormValues) => {
     updateProductMutation.mutate({
       id: productId,
@@ -156,6 +150,8 @@ export function EditProductForm() {
       isFeatured: data.showOnCatalog,
     });
   };
+
+  const isUpdating = updateProductMutation.isPending;
 
   return (
     <div className="space-y-6">
@@ -179,112 +175,155 @@ export function EditProductForm() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
+                  <Controller
+                    name="name"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="name">
+                          Nome do Produto{" "}
+                          <span className="text-destructive">*</span>
+                        </FieldLabel>
+
+                        <Input
+                          id="name"
+                          aria-invalid={fieldState.invalid}
+                          placeholder="Ex: Notebook Dell Inspiron 15"
+                          disabled={isUpdating}
+                          {...field}
+                        />
+
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error?.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
                   <div className="space-y-2">
-                    <Label htmlFor="name">
-                      Nome do Produto{" "}
-                      <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="name"
-                      placeholder="Digite o nome do produto"
-                      {...register("name")}
-                      aria-invalid={!!errors.name}
-                    />
-                    <FieldError>{errors.name?.message}</FieldError>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="category">
-                      Categoria <span className="text-destructive">*</span>
-                    </Label>
                     <Controller
                       name="categoryId"
                       control={control}
-                      render={({ field }) => (
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <SelectTrigger id="category" className="w-full">
-                            <SelectValue placeholder="Selecione uma categoria" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {isLoadingCategories ? (
-                              <SelectItem value="loading" disabled>
-                                Carregando...
-                              </SelectItem>
-                            ) : (
-                              categories.map((category) => (
-                                <SelectItem
-                                  key={category.id}
-                                  value={category.id}
-                                >
-                                  {category.name}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel>Categoria</FieldLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            value={field.value}
+                            disabled={isUpdating}
+                          >
+                            <SelectTrigger id="category" className="w-full">
+                              <SelectValue placeholder="Selecione uma categoria" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {isLoadingCategories ? (
+                                <SelectItem value="loading" disabled>
+                                  Carregando...
                                 </SelectItem>
-                              ))
-                            )}
-                          </SelectContent>
-                        </Select>
+                              ) : (
+                                categories.map((category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={category.id}
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))
+                              )}
+                            </SelectContent>
+                          </Select>
+
+                          {fieldState.invalid && (
+                            <FieldError>{fieldState.error?.message}</FieldError>
+                          )}
+                        </Field>
                       )}
                     />
-                    {errors.categoryId && (
-                      <p className="text-sm text-destructive">
-                        {errors.categoryId.message}
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descrição</Label>
-                  <Textarea
-                    id="description"
-                    rows={4}
-                    placeholder="Descrição do produto"
-                    {...register("description")}
-                  />
-                </div>
+                <Controller
+                  name="description"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="description">Descrição</FieldLabel>
+
+                      <Textarea
+                        id="description"
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Descreva o produto em detalhes..."
+                        rows={4}
+                        disabled={isUpdating}
+                        {...field}
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError>{fieldState.error?.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
 
                 <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="sku">
-                      SKU <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="sku"
-                      {...register("sku")}
-                      placeholder="SKU do produto"
-                      aria-invalid={!!errors.sku}
-                    />
-                    {errors.sku && (
-                      <p className="text-sm text-destructive">
-                        {errors.sku.message}
-                      </p>
+                  <Controller
+                    name="sku"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="sku">SKU</FieldLabel>
+
+                        <Input
+                          id="sku"
+                          aria-invalid={fieldState.invalid}
+                          placeholder="NB-001"
+                          disabled={isUpdating}
+                          {...field}
+                        />
+
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error?.message}</FieldError>
+                        )}
+                      </Field>
                     )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="barcode">Código de Barras</Label>
-                    <Input
-                      id="barcode"
-                      {...register("barcode")}
-                      placeholder="232838283283"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="unit">
-                      Unidade <span className="text-destructive">*</span>
-                    </Label>
-                    <Controller
-                      name="unit"
-                      control={control}
-                      render={({ field }) => (
+                  />
+                  <Controller
+                    name="barcode"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="barcode">
+                          Código de Barras
+                        </FieldLabel>
+
+                        <Input
+                          id="barcode"
+                          aria-invalid={fieldState.invalid}
+                          placeholder="7891234567890"
+                          disabled={isUpdating}
+                          {...field}
+                        />
+
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error?.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
+                  <Controller
+                    name="unit"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="unit">Unidade</FieldLabel>
+
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
                           value={field.value}
+                          onValueChange={field.onChange}
+                          disabled={isUpdating}
                         >
-                          <SelectTrigger id="unit" className="w-full">
-                            <SelectValue placeholder="Selecione" />
+                          <SelectTrigger id="unit">
+                            <SelectValue placeholder="Selecione uma unidade" />
                           </SelectTrigger>
                           <SelectContent>
                             {Object.entries(unitLabels).map(([key, value]) => (
@@ -294,14 +333,13 @@ export function EditProductForm() {
                             ))}
                           </SelectContent>
                         </Select>
-                      )}
-                    />
-                    {errors.unit && (
-                      <p className="text-sm text-destructive">
-                        {errors.unit.message}
-                      </p>
+
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error?.message}</FieldError>
+                        )}
+                      </Field>
                     )}
-                  </div>
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -401,55 +439,20 @@ export function EditProductForm() {
                 <CardTitle>Imagem do Produto</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-col items-center gap-4">
-                  <Avatar className="h-40 w-40 rounded-lg">
-                    <AvatarImage
-                      src={imagePreview || "/placeholder.svg"}
-                      alt="Preview"
-                    />
-                    <AvatarFallback className="rounded-lg bg-muted">
-                      <Upload className="h-10 w-10 text-muted-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div className="flex gap-2 w-full">
-                    <Label htmlFor="image-upload" className="flex-1">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full bg-transparent"
-                        asChild
-                      >
-                        <span>
-                          <Upload className="h-4 w-4 mr-2" />
-                          Alterar
-                        </span>
-                      </Button>
-                      <Input
-                        id="image-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageChange}
-                      />
-                    </Label>
-                    {imagePreview && imagePreview !== product.images[0] && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setImagePreview(product.images[0])}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Formatos aceitos: JPG, PNG, GIF
-                    <br />
-                    Tamanho máximo: 5MB
-                  </p>
-                </div>
+                <Controller
+                  name="thumbnail"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field className="text-center">
+                      <Uploader value={field.value} onChange={field.onChange} />
+                      <FieldDescription>
+                        Formatos aceitos: JPG, PNG, GIF
+                        <br />
+                        Tamanho máximo: 5MB
+                      </FieldDescription>
+                    </Field>
+                  )}
+                />
               </CardContent>
             </Card>
 
@@ -523,9 +526,9 @@ export function EditProductForm() {
             </Card>
 
             <div className="flex flex-col gap-2">
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button type="submit" className="w-full" disabled={isUpdating}>
                 <Save className="h-4 w-4 mr-2" />
-                {isSubmitting ? "Salvando..." : "Salvar Alterações"}
+                {isUpdating ? "Salvando..." : "Salvar Alterações"}
               </Button>
               <Button
                 type="button"

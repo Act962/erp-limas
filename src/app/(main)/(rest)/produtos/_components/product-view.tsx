@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProductModal } from "@/hooks/modals/use-product-modal";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 import { orpc } from "@/lib/orpc";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowLeft, DollarSign, Edit, Package, Trash2 } from "lucide-react";
@@ -115,7 +116,11 @@ export function ProductView({ history }: { history: StockHistory[] }) {
               <div className="flex gap-6">
                 <Avatar className="h-32 w-32 rounded-lg">
                   <AvatarImage
-                    src={product.images?.[0] || "/placeholder.svg"}
+                    src={
+                      product.thumbnail
+                        ? useConstructUrl(product.thumbnail)
+                        : "/placeholder.svg"
+                    }
                     alt={product.name}
                   />
                   <AvatarFallback className="rounded-lg">

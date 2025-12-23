@@ -65,7 +65,7 @@ export const getProduct = base
   })
   .input(
     z.object({
-      id: z.string().cuid(),
+      id: z.string(),
     })
   )
   .output(

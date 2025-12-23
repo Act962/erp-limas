@@ -26,7 +26,7 @@ export const listProducts = base
           currentStock: z.number(),
           minStock: z.number(),
 
-          image: z.string().optional(),
+          image: z.string(),
           isActive: z.boolean(),
         })
       ),
@@ -68,7 +68,7 @@ export const listProducts = base
         costPrice: product.costPrice.toNumber(),
         currentStock: product.currentStock.toNumber(),
         minStock: product.minStock.toNumber(),
-        images: product.thumbnail ?? "",
+        image: product.thumbnail ?? "",
         isActive: product.isActive,
       }));
 

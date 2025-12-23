@@ -1,5 +1,6 @@
 "use client";
 
+import { Uploader } from "@/components/file-uploader/uploader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,7 +74,6 @@ export function CreateProductForm() {
   });
   const queryClient = useQueryClient();
   const router = useRouter();
-  const [imagePreview, setImagePreview] = useState<string>("");
 
   const { categories, isLoadingCategories } = useCategory();
 
@@ -90,18 +90,6 @@ export function CreateProductForm() {
       },
     })
   );
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        form.setValue("thumbnail", reader.result as string);
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSubmit = async (data: ProductType) => {
     mutation.mutate({
@@ -414,61 +402,20 @@ export function CreateProductForm() {
               <CardTitle>Imagem do Produto</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col items-center gap-4">
-                {/* PREVIEW */}
-                <Avatar className="h-40 w-40 rounded-lg">
-                  <AvatarImage
-                    src={imagePreview || "/placeholder.svg"}
-                    alt="Preview"
-                  />
-                  <AvatarFallback className="rounded-lg bg-muted">
-                    <Upload className="h-10 w-10 text-muted-foreground" />
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="flex gap-2 w-full">
-                  <Label htmlFor="image-upload" className="flex-1">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      asChild
-                      className="w-full"
-                    >
-                      <span>Upload</span>
-                    </Button>
-                    <Input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      disabled={isCreating}
-                      onChange={(e) => {
-                        handleImageChange(e);
-                      }}
-                    />
-                  </Label>
-
-                  {imagePreview && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      disabled={isCreating}
-                      onClick={() => {
-                        setImagePreview("");
-                        form.setValue("thumbnail", "");
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground text-center">
-                  Formatos aceitos: JPG, PNG, GIF
-                  <br />
-                  Tamanho máximo: 5MB
-                </p>
-              </div>
+              <Controller
+                name="thumbnail"
+                control={form.control}
+                render={({ field }) => (
+                  <Field className="text-center">
+                    <Uploader value={field.value} onChange={field.onChange} />
+                    <FieldDescription>
+                      Formatos aceitos: JPG, PNG, GIF
+                      <br />
+                      Tamanho máximo: 5MB
+                    </FieldDescription>
+                  </Field>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -558,6 +505,7 @@ export function CreateProductForm() {
               variant="outline"
               className="w-full bg-transparent"
               disabled={isCreating}
+              asChild
             >
               <Link href="/produtos">Cancelar</Link>
             </Button>
