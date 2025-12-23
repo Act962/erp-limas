@@ -34,6 +34,7 @@ export const getProductAndProductsByCategory = base
         z.object({
           id: z.string(),
           isActive: z.boolean(),
+          description: z.string().nullable(),
           name: z.string(),
           slug: z.string(),
           thumbnail: z.string().nullable(),
@@ -83,6 +84,7 @@ export const getProductAndProductsByCategory = base
       const productsList = productsWithCategory.map((product) => ({
         id: product.id,
         isActive: product.isActive,
+        description: product.description,
         name: product.name,
         slug: product.slug,
         thumbnail: product.thumbnail,
