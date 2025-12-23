@@ -10,8 +10,12 @@ export const ProductSchema = z.object({
   unit: z.enum(ProductUnit).optional(),
 
   // Preços
-  costPrice: z.number().min(0, "Preço de custo deve ser maior ou igual a 0"),
-  salePrice: z.number().min(0, "Preço de venda deve ser maior ou igual a 0"),
+  costPrice: z
+    .number({ error: "Valor deve ser 0 ou maior" })
+    .min(0, "Preço de custo deve ser maior ou igual a 0"),
+  salePrice: z
+    .number({ error: "Valor deve ser 0 ou maior" })
+    .min(0, "Preço de venda deve ser maior ou igual a 0"),
 
   // Estoque
   currentStock: z.number().optional(),

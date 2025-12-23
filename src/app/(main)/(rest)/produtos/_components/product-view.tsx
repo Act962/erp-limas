@@ -56,7 +56,8 @@ interface StockHistory {
 export function ProductView({ history }: { history: StockHistory[] }) {
   const params = useParams<{ id: string }>();
   const {
-    data: { product },
+    data: { product, stockMovements },
+    isPending,
   } = useSuspenseQuery(
     orpc.products.get.queryOptions({
       input: {
@@ -216,34 +217,43 @@ export function ProductView({ history }: { history: StockHistory[] }) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {history.map((movement) => (
-                      <TableRow key={movement.id}>
-                        <TableCell className="text-sm">
-                          {formatDate(movement.date)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{movement.type}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span
-                            className={`font-semibold ${
-                              movement.quantity > 0
-                                ? "text-success"
-                                : "text-destructive"
-                            }`}
-                          >
-                            {movement.quantity > 0 ? "+" : ""}
-                            {movement.quantity}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {movement.user}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {movement.note}
+                    {!isPending && stockMovements.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          Nenhuma movimentação encontrada
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )}
+                    {!isPending &&
+                      stockMovements.length > 0 &&
+                      stockMovements.map((movement) => (
+                        <TableRow key={movement.id}>
+                          <TableCell className="text-sm">
+                            {formatDate(movement.createdAt.toISOString())}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{movement.type}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <span
+                              className={`font-semibold ${
+                                movement.quantity > 0
+                                  ? "text-success"
+                                  : "text-destructive"
+                              }`}
+                            >
+                              {movement.quantity > 0 ? "+" : ""}
+                              {movement.quantity}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {movement.createdBy.name}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {movement.notes || "Sem observação"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </div>

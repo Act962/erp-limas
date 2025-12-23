@@ -3,7 +3,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,23 +32,23 @@ import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const unidades = [
-  { code: "UN", name: "Unidade" },
-  { code: "KG", name: "Quilograma" },
-  { code: "G", name: "Grama" },
-  { code: "L", name: "Litro" },
-  { code: "ML", name: "Mililitro" },
-  { code: "M", name: "Metro" },
-  { code: "M2", name: "Metro Quadrado" },
-  { code: "M3", name: "Metro Cúbico" },
-  { code: "CX", name: "Caixa" },
-  { code: "PC", name: "Peça" },
-  { code: "PAR", name: "Par" },
-  { code: "DZ", name: "Dúzia" },
-];
+const unitLabels: Record<ProductUnit, string> = {
+  UN: "Unidade",
+  KG: "Quilograma",
+  G: "Grama",
+  L: "Litro",
+  ML: "Mililitro",
+  M: "Metro",
+  M2: "Metro Quadrado",
+  M3: "Metro Cúbico",
+  CX: "Caixa",
+  PC: "Peça",
+  PAR: "Par",
+  DZ: "Dúzia",
+};
 
 export function CreateProductForm() {
   const form = useForm<ProductType>({
@@ -54,18 +60,12 @@ export function CreateProductForm() {
       sku: "",
       barcode: "",
       unit: ProductUnit.UN,
-      costPrice: 0,
-      salePrice: 0,
       currentStock: 0,
       minStock: 0,
       maxStock: 0,
       location: "",
       images: [],
       thumbnail: "",
-      weight: 0,
-      length: 0,
-      width: 0,
-      height: 0,
       isActive: true,
       isFeatured: false,
       trackStock: true,
@@ -108,7 +108,7 @@ export function CreateProductForm() {
       name: data.name,
       description: data.description,
       sku: data.sku,
-      unit: ProductUnit.KG,
+      unit: data.unit,
       costPrice: data.costPrice,
       salePrice: data.salePrice,
       currentStock: data.currentStock,
@@ -143,113 +143,167 @@ export function CreateProductForm() {
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Nome */}
-                <div className="space-y-2">
-                  <Label htmlFor="name">
-                    Nome do Produto <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="name"
-                    placeholder="Ex: Notebook Dell Inspiron 15"
-                    disabled={isCreating}
-                    {...form.register("name")}
-                  />
-                  <FieldError>{form.formState.errors.name?.message}</FieldError>
-                </div>
+                <Controller
+                  name="name"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="name">
+                        Nome do Produto{" "}
+                        <span className="text-destructive">*</span>
+                      </FieldLabel>
 
-                {/* Categoria */}
-                <div className="space-y-2">
-                  <Label htmlFor="categoryId">Categoria</Label>
+                      <Input
+                        id="name"
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Ex: Notebook Dell Inspiron 15"
+                        disabled={isCreating}
+                        {...field}
+                      />
 
-                  <Select
-                    value={form.watch("categoryId")}
-                    onValueChange={(value) =>
-                      form.setValue("categoryId", value)
-                    }
-                  >
-                    <SelectTrigger
-                      disabled={isCreating}
-                      id="categoryId"
-                      className="w-full"
-                    >
-                      <SelectValue placeholder="Selecione uma categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {isLoadingCategories ? (
-                        <SelectItem value="loading">Carregando...</SelectItem>
-                      ) : (
-                        categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))
+                      {fieldState.invalid && (
+                        <FieldError>{fieldState.error?.message}</FieldError>
                       )}
-                    </SelectContent>
-                  </Select>
-                  <FieldError>
-                    {form.formState.errors.categoryId?.message}
-                  </FieldError>
-                </div>
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="categoryId"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="categoryId">Categoria</FieldLabel>
+
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isCreating}
+                      >
+                        <SelectTrigger
+                          id="categoryId"
+                          aria-invalid={fieldState.invalid}
+                        >
+                          <SelectValue placeholder="Selecione uma categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      {fieldState.invalid && (
+                        <FieldError>{fieldState.error?.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
               </div>
 
-              {/* Descrição */}
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Descreva o produto em detalhes..."
-                  rows={4}
-                  disabled={isCreating}
-                  {...form.register("description")}
-                />
-                <FieldError>
-                  {form.formState.errors.description?.message}
-                </FieldError>
-              </div>
+              <Controller
+                name="description"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="description">Descrição</FieldLabel>
+
+                    <Textarea
+                      id="description"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Descreva o produto em detalhes..."
+                      rows={4}
+                      disabled={isCreating}
+                      {...field}
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError>{fieldState.error?.message}</FieldError>
+                    )}
+                  </Field>
+                )}
+              />
 
               {/* SKU / BARCODE / UNIT */}
               <div className="grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor="sku">SKU</Label>
-                  <Input
-                    id="sku"
-                    placeholder="NB-001"
-                    disabled={isCreating}
-                    {...form.register("sku")}
-                  />
-                </div>
+                <Controller
+                  name="sku"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="sku">SKU</FieldLabel>
 
-                <div className="space-y-2">
-                  <Label htmlFor="barcode">Código de Barras</Label>
-                  <Input
-                    id="barcode"
-                    placeholder="7891234567890"
-                    disabled={isCreating}
-                    {...form.register("barcode")}
-                  />
-                </div>
+                      <Input
+                        id="sku"
+                        aria-invalid={fieldState.invalid}
+                        placeholder="NB-001"
+                        disabled={isCreating}
+                        {...field}
+                      />
 
-                {/* UNIDADE */}
-                <div className="space-y-2">
-                  <Label htmlFor="unit">Unidade</Label>
-                  <Select
-                    value={form.watch("unit")}
-                    onValueChange={(value) =>
-                      form.setValue("unit", value as ProductUnit)
-                    }
-                    disabled={isCreating}
-                  >
-                    <SelectTrigger id="unit" disabled={isCreating}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {unidades.map((unit) => (
-                        <SelectItem key={unit.code} value={unit.code}>
-                          {unit.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                      {fieldState.invalid && (
+                        <FieldError>{fieldState.error?.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="barcode"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="barcode">
+                        Código de Barras
+                      </FieldLabel>
+
+                      <Input
+                        id="barcode"
+                        aria-invalid={fieldState.invalid}
+                        placeholder="7891234567890"
+                        disabled={isCreating}
+                        {...field}
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError>{fieldState.error?.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
+
+                <Controller
+                  name="unit"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="unit">Unidade</FieldLabel>
+
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        disabled={isCreating}
+                      >
+                        <SelectTrigger id="unit" disabled={isCreating}>
+                          <SelectValue placeholder="Selecione uma unidade" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(unitLabels).map(([key, value]) => (
+                            <SelectItem key={key} value={key}>
+                              {value}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      {fieldState.invalid && (
+                        <FieldError>{fieldState.error?.message}</FieldError>
+                      )}
+                    </Field>
+                  )}
+                />
               </div>
             </CardContent>
           </Card>
@@ -424,48 +478,71 @@ export function CreateProductForm() {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* isActive */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Produto Ativo</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Disponível para venda
-                  </p>
-                </div>
-                <Switch
-                  disabled={isCreating}
-                  checked={form.watch("isActive")}
-                  onCheckedChange={(v) => form.setValue("isActive", v)}
-                />
-              </div>
+              <Controller
+                name="isActive"
+                control={form.control}
+                render={({ field }) => (
+                  <Field orientation="horizontal" className="items-center">
+                    <div className="space-y-0.5 flex-1">
+                      <Label htmlFor="isActive">Produto Ativo</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Disponível para venda
+                      </p>
+                    </div>
+                    <Switch
+                      id="isActive"
+                      disabled={isCreating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </Field>
+                )}
+              />
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Controlar Estoque</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Rastrear quantidade
-                  </p>
-                </div>
-                <Switch
-                  disabled={isCreating}
-                  checked={form.watch("trackStock")}
-                  onCheckedChange={(v) => form.setValue("trackStock", v)}
-                />
-              </div>
+              <Controller
+                name="trackStock"
+                control={form.control}
+                render={({ field }) => (
+                  <Field orientation="horizontal" className="items-center">
+                    <div className="space-y-0.5 flex-1">
+                      <Label htmlFor="trackStock">Controlar Estoque</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Rastrear quantidade
+                      </p>
+                    </div>
+                    <Switch
+                      id="trackStock"
+                      disabled={isCreating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </Field>
+                )}
+              />
 
               {/* isFeatured */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="isActive">Exibir no Catálogo Online</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Visível para clientes
-                  </p>
-                </div>
-                <Switch
-                  disabled={isCreating}
-                  checked={form.watch("isFeatured")}
-                  onCheckedChange={(v) => form.setValue("isFeatured", v)}
-                />
-              </div>
+              <Controller
+                name="isFeatured"
+                control={form.control}
+                render={({ field }) => (
+                  <Field orientation="horizontal" className="items-center">
+                    <div className="space-y-0.5 flex-1">
+                      <Label htmlFor="isFeatured">
+                        Exibir no Catálogo Online
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Visível para clientes
+                      </p>
+                    </div>
+                    <Switch
+                      id="isFeatured"
+                      disabled={isCreating}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </Field>
+                )}
+              />
             </CardContent>
           </Card>
 
