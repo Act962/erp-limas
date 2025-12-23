@@ -1,6 +1,6 @@
 import { ProductCatalog } from "@/app/(storefront)/types/product";
 
-export function sortProducts(products: ProductCatalog[], method: string) {
+export function sortProducts(products: any, method: string) {
   const sorted = [...products];
 
   switch (method) {

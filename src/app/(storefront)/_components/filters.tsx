@@ -64,7 +64,7 @@ export function FiltersCatalog({
     if (getSelectedCategories().length >= 1) {
       setCategory(
         getSelectedCategories()
-          .map((cat) => cat.categorySlug.toLowerCase())
+          .map((cat) => cat.slug.toLowerCase())
           .join(",")
       );
     } else {
@@ -86,7 +86,7 @@ export function FiltersCatalog({
         .map((s) => s.trim().toLowerCase());
 
       const idsFromSlugs = mockedCategories
-        .filter((cat) => slugsFromUrl.includes(cat.categorySlug.toLowerCase()))
+        .filter((cat) => slugsFromUrl.includes(cat.slug.toLowerCase()))
         .map((cat) => cat.id);
 
       setSelectedIds(idsFromSlugs);

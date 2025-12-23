@@ -65,7 +65,27 @@ export default async function SubdomainLayout({
         settings={{ metaTitle: settings.metaTitle, theme: settings.theme }}
       />
       <main className="mt-15 sm:mt-19">{children}</main>
-      <Footer settings={settings} />
+      <Footer
+        settings={{
+          theme: settings.theme,
+          address: settings.address,
+          cep: settings.cep,
+          paymentMethodSettings: settings.paymentMethodSettings,
+          deliveryMethods: settings.deliveryMethods,
+          whatsappNumber: settings.whatsappNumber,
+          showWhatsapp: settings.showWhatsapp,
+          contactEmail: settings.contactEmail,
+          district: settings.district,
+          number: settings.number,
+          instagram: settings.instagram,
+          facebook: settings.facebook,
+          twitter: settings.twitter,
+          tiktok: settings.tiktok,
+          youtube: settings.youtube,
+          kwai: settings.kwai,
+          deliverySpecialInfo: settings.deliverySpecialInfo,
+        }}
+      />
     </div>
   );
 }

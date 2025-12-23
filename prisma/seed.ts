@@ -1,0 +1,182 @@
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import "dotenv/config";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const prisma = new PrismaClient({
+  adapter,
+});
+
+export async function main() {
+  await prisma.product.createMany({
+    data: [
+      {
+        name: "Notebook Gamer RTX 4050",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-rtx-4050",
+        description: "Notebook gamer com RTX 4050",
+        salePrice: 5899.9,
+        thumbnail: "https://picsum.photos/400/400?random=1",
+        images: [
+          "https://picsum.photos/400/400?random=1",
+          "https://picsum.photos/400/400?random=2",
+          "https://picsum.photos/400/400?random=3",
+          "https://picsum.photos/400/400?random=4",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer RTX 4060",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-rtx-4060",
+        description: "Notebook gamer com RTX 4060",
+        salePrice: 6699.9,
+        thumbnail: "https://picsum.photos/400/400?random=5",
+        images: [
+          "https://picsum.photos/400/400?random=5",
+          "https://picsum.photos/400/400?random=6",
+          "https://picsum.photos/400/400?random=7",
+          "https://picsum.photos/400/400?random=8",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer RTX 4070",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-rtx-4070",
+        description: "Notebook gamer com RTX 4070",
+        salePrice: 8199.9,
+        thumbnail: "https://picsum.photos/400/400?random=9",
+        images: [
+          "https://picsum.photos/400/400?random=9",
+          "https://picsum.photos/400/400?random=10",
+          "https://picsum.photos/400/400?random=11",
+          "https://picsum.photos/400/400?random=12",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer RTX 4080",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-rtx-4080",
+        description: "Notebook gamer com RTX 4080",
+        salePrice: 11999.9,
+        thumbnail: "https://picsum.photos/400/400?random=13",
+        images: [
+          "https://picsum.photos/400/400?random=13",
+          "https://picsum.photos/400/400?random=14",
+          "https://picsum.photos/400/400?random=15",
+          "https://picsum.photos/400/400?random=16",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer Ryzen 5 RTX 3050",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-ryzen-5-rtx-3050",
+        description: "Notebook gamer com Ryzen 5 e RTX 3050",
+        salePrice: 4699.9,
+        thumbnail: "https://picsum.photos/400/400?random=17",
+        images: [
+          "https://picsum.photos/400/400?random=17",
+          "https://picsum.photos/400/400?random=18",
+          "https://picsum.photos/400/400?random=19",
+          "https://picsum.photos/400/400?random=20",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer Ryzen 7 RTX 3060",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-ryzen-7-rtx-3060",
+        description: "Notebook gamer com Ryzen 7 e RTX 3060",
+        salePrice: 5499.9,
+        thumbnail: "https://picsum.photos/400/400?random=21",
+        images: [
+          "https://picsum.photos/400/400?random=21",
+          "https://picsum.photos/400/400?random=22",
+          "https://picsum.photos/400/400?random=23",
+          "https://picsum.photos/400/400?random=24",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer Intel i5 RTX 3050",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-intel-i5-rtx-3050",
+        description: "Notebook gamer com Intel i5 e RTX 3050",
+        salePrice: 4899.9,
+        thumbnail: "https://picsum.photos/400/400?random=25",
+        images: [
+          "https://picsum.photos/400/400?random=25",
+          "https://picsum.photos/400/400?random=26",
+          "https://picsum.photos/400/400?random=27",
+          "https://picsum.photos/400/400?random=28",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer Intel i7 RTX 4060",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-intel-i7-rtx-4060",
+        description: "Notebook gamer com Intel i7 e RTX 4060",
+        salePrice: 6999.9,
+        thumbnail: "https://picsum.photos/400/400?random=29",
+        images: [
+          "https://picsum.photos/400/400?random=29",
+          "https://picsum.photos/400/400?random=30",
+          "https://picsum.photos/400/400?random=31",
+          "https://picsum.photos/400/400?random=32",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        name: "Notebook Gamer Intel i9 RTX 4090",
+        organizationId: "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr",
+        categoryId: "cmjhl97f6001aywva2tkv7fwg",
+        slug: "notebook-gamer-intel-i9-rtx-4090",
+        description: "Notebook gamer topo de linha com RTX 4090",
+        salePrice: 15999.9,
+        thumbnail: "https://picsum.photos/400/400?random=33",
+        images: [
+          "https://picsum.photos/400/400?random=33",
+          "https://picsum.photos/400/400?random=34",
+          "https://picsum.photos/400/400?random=35",
+          "https://picsum.photos/400/400?random=36",
+        ],
+        createdById: "1S3EtgKZtpJyVybQeGLEaAjYs8Q5reor",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+  });
+}
+
+main();

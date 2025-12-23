@@ -65,9 +65,6 @@ export function Cart() {
                         <h3 className="font-semibold text-md sm:text-lg">
                           {item.name}
                         </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {item.description}
-                        </p>
                         <p className="text-sm text-muted-foreground mt-1">
                           {item.quantity} Unidades
                         </p>

@@ -1,0 +1,103 @@
+import { base } from "@/app/middlewares/base";
+import prisma from "@/lib/db";
+import z, { string } from "zod";
+
+export const listProducts = base
+  .route({
+    method: "GET",
+    summary: "Listar produtos",
+    tags: ["products"],
+  })
+  .input(
+    z.object({
+      subdomain: z.string(),
+      categorySlug: z.array(z.string()).optional(),
+    })
+  )
+  .output(
+    z.object({
+      categories: z.array(
+        z.object({
+          id: z.string(),
+          isActive: z.boolean(),
+          name: z.string(),
+          slug: z.string(),
+          image: z.string().nullable(),
+          order: z.number(),
+        })
+      ),
+      products: z.array(
+        z.object({
+          id: z.string(),
+          isActive: z.boolean(),
+          name: z.string(),
+          slug: z.string(),
+          minStock: z.number(),
+          categoryId: z.string().nullable(),
+          weight: z.number().nullable(),
+          thumbnail: z.string(),
+          currentStock: z.number(),
+          salePrice: z.number(),
+          images: z.array(string()).nullable(),
+        })
+      ),
+    })
+  )
+  .handler(async ({ input, errors }) => {
+    try {
+      const { subdomain } = input;
+      const organization = await prisma.organization.findUnique({
+        where: {
+          subdomain,
+        },
+      });
+      if (!organization) {
+        throw errors.NOT_FOUND();
+      }
+      const categories = await prisma.category.findMany({
+        where: {
+          organizationId: organization.id,
+        },
+      });
+      const products = await prisma.product.findMany({
+        where: {
+          organizationId: organization.id,
+          category: {
+            slug: {
+              in: input.categorySlug,
+            },
+          },
+        },
+      });
+
+      const productList = products.map((product) => ({
+        id: product.id,
+        isActive: product.isActive,
+        name: product.name,
+        slug: product.slug,
+        minStock: Number(product.minStock),
+        categoryId: product.categoryId,
+        weight: Number(product.weight),
+        thumbnail: product.thumbnail,
+        currentStock: Number(product.currentStock),
+        salePrice: Number(product.salePrice),
+        images: product.images,
+      }));
+
+      const categoryList = categories.map((category) => ({
+        id: category.id,
+        isActive: category.isActive,
+        name: category.name,
+        slug: category.slug,
+        image: category.image,
+        order: Number(category.order),
+      }));
+
+      return {
+        products: productList,
+        categories: categoryList,
+      };
+    } catch (error) {
+      throw errors.INTERNAL_SERVER_ERROR();
+    }
+  });
