@@ -125,7 +125,7 @@ export function AboutUs({ subdomain }: AboutUsProps) {
               return (
                 <li
                   key={method}
-                  className="flex items-center space-x-3 rounded-lg cursor-pointer"
+                  className="flex items-center space-x-3 rounded-lg "
                 >
                   <div className="flex items-center gap-3 flex-1">
                     {IconComponent && (
@@ -165,7 +165,11 @@ export function AboutUs({ subdomain }: AboutUsProps) {
 
         <span className="flex items-start font-medium gap-2 text-sm text-gray-700">
           <MapPin size={18} />
-          <span>{catalogSettings.address}</span>
+          <span>
+            {" "}
+            {catalogSettings.cep} {catalogSettings.district}{" "}
+            {catalogSettings.address} {catalogSettings.number}
+          </span>
         </span>
 
         {/* <div className="mt-4 w-full h-40 rounded overflow-hidden">

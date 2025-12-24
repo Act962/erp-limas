@@ -54,7 +54,7 @@ export const deliveryMethodsConfig = {
     icon: Store,
   },
   ROOM_SERVICE: {
-    label: "Room Service",
+    label: "Entrega no quarto",
     description: "Entrega no quarto",
     icon: BedDouble,
   },

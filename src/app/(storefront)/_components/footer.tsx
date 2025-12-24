@@ -54,12 +54,12 @@ export function Footer({ settings }: FooterProps) {
                 return (
                   <li
                     key={method}
-                    className="flex items-center space-x-3 rounded-lg cursor-pointer"
+                    className="flex items-center space-x-3 rounded-lg "
                   >
                     <div className="flex items-center gap-3 flex-1">
                       {IconComponent && (
                         <IconComponent
-                          className="size-5 opacity-80"
+                          className="size-4 opacity-80"
                           stroke={contrastColor}
                         />
                       )}
@@ -104,7 +104,7 @@ export function Footer({ settings }: FooterProps) {
                     <div className="flex items-center gap-3 flex-1">
                       {IconComponent && (
                         <IconComponent
-                          className="size-5 opacity-80"
+                          className="size-4 opacity-80"
                           stroke={contrastColor}
                         />
                       )}
@@ -166,7 +166,10 @@ export function Footer({ settings }: FooterProps) {
             style={{ color: contrastColor }}
           >
             <MapPin size={18} stroke={contrastColor} />
-            <span>{settings.address}</span>
+            <span>
+              {settings.cep} {settings.district} {settings.address}{" "}
+              {settings.number}
+            </span>
           </div>
         </div>
       </div>
