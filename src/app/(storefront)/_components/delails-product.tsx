@@ -68,8 +68,6 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     setIsMounted(true);
   }, []);
 
-  console.log(product.images);
-
   return (
     <div className="mx-auto w-full max-w-5xl py-8 ">
       <div
@@ -119,28 +117,33 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               </div>
             )}
           </div>
-          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center">
-            <div className="flex flex-col gap-4 max-w-10 h-10">
+          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
+            <div className="flex flex-col gap-4 max-w-10">
               {product.images &&
                 product.images.map((image) => (
-                  <img
-                    data-selected={imageSelected === image}
+                  <div
                     key={image}
-                    src={image}
-                    alt={product.name}
-                    className="size-full rounded-sm cursor-pointer
-                  data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
-                    onClick={() => setImageSelected(image)}
-                  />
+                    className="flex justify-center items-center w-10 h-10"
+                  >
+                    <img
+                      data-selected={imageSelected === image}
+                      src={image}
+                      alt={product.name}
+                      className="size-full rounded-sm cursor-pointer
+                    data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
+                      onClick={() => setImageSelected(image)}
+                    />
+                  </div>
                 ))}
             </div>
-            <div className="items-center sm:block">
-              <img
-                src={imageSelected}
-                alt={product.name}
-                className="rounded-2xl
-               object-cover size-full"
-              />
+            <div className="items-center w-full">
+              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1">
+                <img
+                  src={imageSelected}
+                  alt={product.name}
+                  className="rounded-2xl object-contain size-full"
+                />
+              </div>
             </div>
           </div>
           <div className="h-full px-4">
@@ -196,7 +199,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
       >
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
         <div className="flex items-center justify-center md:justify-between gap-x-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 items-center">
             {productsWithThisCategory.map((product) => (
               <div
                 onClick={() => router.push(`/${product.slug}`)}
@@ -204,7 +207,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
               >
-                <div className="w-full h-35 rounded-t-2xl overflow-hidden">
+                <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center">
                   <img
                     src={product.thumbnail}
                     alt={product.name}
