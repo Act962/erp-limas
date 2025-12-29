@@ -3,8 +3,6 @@
 import { FiltersCatalog } from "./filters";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
-import { ProductCatalog } from "../types/product";
-import { CategoryCatalog } from "../types/category";
 import { ProductCard } from "./product-card";
 import { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
@@ -18,6 +16,7 @@ interface CatalogProps {
 }
 export function Catalog({ subdomain }: CatalogProps) {
   const options: EmblaOptionsType = { loop: true };
+  const [categoryParam] = useQueryState("category");
 
   const { data } = useSuspenseQuery(
     orpc.catalogSettings.public.queryOptions({
@@ -30,6 +29,7 @@ export function Catalog({ subdomain }: CatalogProps) {
     orpc.catalogSettings.listProducts.queryOptions({
       input: {
         subdomain: subdomain,
+        categorySlug: categoryParam?.split(",").map((s) => s.trim()),
       },
     })
   );
@@ -37,7 +37,6 @@ export function Catalog({ subdomain }: CatalogProps) {
   const { products, categories } = listProducts;
   const { catalogSettings } = data;
 
-  const [categoryParam] = useQueryState("category");
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
     Autoplay({ playOnInit: true, delay: 4000 }),
   ]);

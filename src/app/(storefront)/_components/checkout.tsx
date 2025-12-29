@@ -2,24 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ArrowLeft,
-  CreditCard,
-  Banknote,
-  Smartphone,
-  FileText,
-  ArrowLeftRight,
-  Wallet,
-  Truck,
-  MessageCircle,
-  Gift,
-  XCircle,
-  MapPin,
-  Store,
-  Home,
-  BedDouble,
-  Download,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";

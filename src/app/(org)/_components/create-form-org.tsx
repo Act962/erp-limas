@@ -143,16 +143,16 @@ export function CreateFormOrg({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Crie sua conta</CardTitle>
+          <CardTitle className="text-xl">Crie sua organização</CardTitle>
           <CardDescription>
-            Insira seu e-mail abaixo para criar sua conta
+            Insira os dados abaixo para criar sua organização
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="name">Nome da Empresa</FieldLabel>
+                <FieldLabel htmlFor="name">Nome da Organização</FieldLabel>
                 <Input
                   id="name"
                   disabled={isLoading}

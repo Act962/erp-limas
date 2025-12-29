@@ -75,24 +75,26 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           sm:px-10"
       >
         <div className="flex items-center text-sm font-semibold mb-3 gap-1">
-          <span className="hover:underline cursor-pointer">{product.slug}</span>
+          <span className="hover:underline cursor-pointer">
+            {product.category.name}
+          </span>
           <ChevronRight className="size-3" />
           <span>{product.name}</span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
           <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
             <div className="overflow-hidden size-full" ref={emblaRef}>
-              <div className="flex gap-2 size-full">
+              <div className="flex gap-2">
                 {product.images &&
                   product.images.map((image, index) => (
                     <div
-                      className="flex justify-center translate-0 shrink-0 grow-0 size-full"
+                      className="flex justify-center translate-0 shrink-0 grow-0 w-full"
                       key={`image-carousel-${index}`}
                     >
                       <img
                         src={image}
                         alt={`imagem do ${product.name}`}
-                        className="object-cover rounded-2xl"
+                        className="object-cover rounded-2xl size-full"
                       />
                     </div>
                   ))}
@@ -115,28 +117,33 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               </div>
             )}
           </div>
-          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center">
-            <div className="flex flex-col gap-4 min-w-13">
+          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
+            <div className="flex flex-col gap-4 max-w-10">
               {product.images &&
                 product.images.map((image) => (
-                  <img
-                    data-selected={imageSelected === image}
+                  <div
                     key={image}
-                    src={image}
-                    alt={product.name}
-                    className="w-15 h-15 rounded-sm cursor-pointer
-                  data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40"
-                    onClick={() => setImageSelected(image)}
-                  />
+                    className="flex justify-center items-center w-10 h-10"
+                  >
+                    <img
+                      data-selected={imageSelected === image}
+                      src={image}
+                      alt={product.name}
+                      className="size-full rounded-sm cursor-pointer
+                    data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
+                      onClick={() => setImageSelected(image)}
+                    />
+                  </div>
                 ))}
             </div>
-            <div className="items-center sm:block">
-              <img
-                src={imageSelected}
-                alt={product.name}
-                className="w-full rounded-2xl
-               object-cover"
-              />
+            <div className="items-center w-full">
+              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1">
+                <img
+                  src={imageSelected}
+                  alt={product.name}
+                  className="rounded-2xl object-contain size-full"
+                />
+              </div>
             </div>
           </div>
           <div className="h-full px-4">
@@ -147,7 +154,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             <div className="flex flex-col mt-2">
               <span className="text-md font-medium">Categoria</span>
               <span className="text-md font-medium text-muted-foreground">
-                {product.slug}
+                {product.category.name}
               </span>
             </div>
             <div className="flex flex-wrap items-center mt-4 gap-4">
@@ -186,13 +193,10 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           </div>
         </div>
       </div>
-      <div
-        className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5
-          "
-      >
+      <div className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5">
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
         <div className="flex items-center justify-center md:justify-between gap-x-4">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 items-center">
             {productsWithThisCategory.map((product) => (
               <div
                 onClick={() => router.push(`/${product.slug}`)}
@@ -200,7 +204,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
               >
-                <div className="w-full h-35 rounded-t-2xl overflow-hidden">
+                <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center">
                   <img
                     src={product.thumbnail}
                     alt={product.name}
@@ -218,9 +222,11 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               </div>
             ))}
           </div>
-          <Button className="hidden md:flex">
-            <PlusCircle onClick={() => router.push(`/`)} className="size-4" />{" "}
-            Ver mais
+          <Button
+            className="hidden md:flex"
+            onClick={() => router.push(`/?category=${product.category.slug}`)}
+          >
+            <PlusCircle className="size-4" /> Ver mais
           </Button>
         </div>
       </div>
