@@ -193,10 +193,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           </div>
         </div>
       </div>
-      <div
-        className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5
-          "
-      >
+      <div className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5">
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
         <div className="flex items-center justify-center md:justify-between gap-x-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 items-center">
