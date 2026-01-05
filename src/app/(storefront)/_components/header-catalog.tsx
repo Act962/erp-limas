@@ -17,6 +17,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { getContrastColor } from "@/utils/get-contrast-color";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface Settings {
   metaTitle: string | null;
@@ -42,10 +43,6 @@ export function Header({ settings }: HeaderProps) {
     setModalIsOpen(false);
     router.push("/cart");
   }
-
-  const cardItemsFiltered = cartItems.filter(
-    (item) => item.organizationId === settings.organizationId
-  );
 
   return (
     <header
@@ -122,7 +119,11 @@ export function Header({ settings }: HeaderProps) {
                           key={item.id}
                           id={item.id}
                           organizationId={item.organizationId}
-                          thumbnail={item.thumbnail ?? ""}
+                          thumbnail={
+                            item.thumbnail
+                              ? useConstructUrl(item.thumbnail)
+                              : ""
+                          }
                           name={item.name}
                           quantityInit={item.quantity}
                           updateQuantity={updateQuantity}

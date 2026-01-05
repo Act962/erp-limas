@@ -17,6 +17,7 @@ import { EmblaCarouselType } from "embla-carousel";
 import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -127,7 +128,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   >
                     <img
                       data-selected={imageSelected === image}
-                      src={image}
+                      src={useConstructUrl(image)}
                       alt={product.name}
                       className="size-full rounded-sm cursor-pointer
                     data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
@@ -139,7 +140,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             <div className="items-center w-full">
               <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1">
                 <img
-                  src={imageSelected}
+                  src={useConstructUrl(imageSelected)}
                   alt={product.name}
                   className="rounded-2xl object-contain size-full"
                 />
@@ -206,7 +207,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               >
                 <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center">
                   <img
-                    src={product.thumbnail}
+                    src={useConstructUrl(product.thumbnail)}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
