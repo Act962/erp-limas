@@ -16,8 +16,8 @@ export function middleware(request: NextRequest) {
 
   // ✅ Permite rotas de auth passarem
   if (
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/cadastro") ||
+    // pathname.startsWith("/login") ||
+    // pathname.startsWith("/cadastro") ||
     pathname.startsWith("/auth")
   ) {
     return NextResponse.next();
@@ -34,7 +34,9 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/fornecedores") ||
     pathname.startsWith("/catalogo") ||
     pathname.startsWith("/relatorios") ||
-    pathname.startsWith("/configuracoes")
+    pathname.startsWith("/configuracoes") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/cadastro")
   ) {
     return NextResponse.next();
   }

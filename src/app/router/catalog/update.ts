@@ -56,7 +56,7 @@ export const updateSettingsCatalog = base
       freeShippingEnabled: z.boolean().optional(),
       freeShippingMinValue: z.number().optional(),
       cnpj: z.string().optional(),
-      deliverySpecialInfo: z.string().optional(), // ⚠️ FALTANDO
+      deliverySpecialInfo: z.string().optional(),
     })
   )
   .handler(async ({ input, errors }) => {
@@ -105,13 +105,13 @@ export const updateSettingsCatalog = base
         showProductWithoutStock: input.showProductWithoutStock,
         paymentMethodSettings: input.paymentMethodSettings,
         freightOptions: input.freightOptions,
-        freightChargeType: input.freightChargeType, // ⚠️ FALTANDO
-        freightFixedValue: input.freightFixedValue, // ⚠️ FALTANDO
-        freightValuePerKg: input.freightValuePerKg, // ⚠️ FALTANDO
-        freeShippingEnabled: input.freeShippingEnabled, // ⚠️ FALTANDO
-        freeShippingMinValue: input.freeShippingMinValue, // ⚠️ FALTANDO
+        freightChargeType: input.freightChargeType,
+        freightFixedValue: input.freightFixedValue,
+        freightValuePerKg: input.freightValuePerKg,
+        freeShippingEnabled: input.freeShippingEnabled,
+        freeShippingMinValue: input.freeShippingMinValue,
         deliveryMethods: input.deliveryMethods,
-        deliverySpecialInfo: input.deliverySpecialInfo, // ⚠️ FALTANDO
+        deliverySpecialInfo: input.deliverySpecialInfo,
         cnpj: input.cnpj,
       },
     });

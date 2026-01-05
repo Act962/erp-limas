@@ -62,7 +62,11 @@ export default async function SubdomainLayout({
   return (
     <div className="bg-accent-foreground/5">
       <Header
-        settings={{ metaTitle: settings.metaTitle, theme: settings.theme }}
+        settings={{
+          metaTitle: settings.metaTitle,
+          theme: settings.theme,
+          organizationId: org.id,
+        }}
       />
       <main className="mt-15 sm:mt-19">{children}</main>
       <Footer

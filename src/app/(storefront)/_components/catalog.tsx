@@ -104,6 +104,7 @@ export function Catalog({ subdomain }: CatalogProps) {
             <ProductCard
               key={product.id}
               id={product.id}
+              organizationId={product.organizationId}
               name={product.name}
               slug={product.slug}
               salePrice={product.salePrice}

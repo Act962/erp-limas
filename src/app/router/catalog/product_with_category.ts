@@ -18,6 +18,7 @@ export const getProductAndProductsByCategory = base
     z.object({
       product: z.object({
         id: z.string(),
+        organizationId: z.string(),
         isActive: z.boolean(),
         name: z.string(),
         description: z.string().nullable(),

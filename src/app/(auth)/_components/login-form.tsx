@@ -63,7 +63,7 @@ export function LoginForm({
   const onGoogleLogin = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard",
+      callbackURL: "/catalog",
     });
   };
 

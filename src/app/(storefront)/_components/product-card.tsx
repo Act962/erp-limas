@@ -24,6 +24,7 @@ export function ProductCard({
   thumbnail,
   allowsOrders,
   slug,
+  organizationId,
 }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart, cartItems } = useShoppingCart();
@@ -36,7 +37,15 @@ export function ProductCard({
   }, []);
 
   const handleAddToCart = () => {
-    addToCart({ id, name, salePrice, thumbnail, quantity, slug });
+    addToCart({
+      id,
+      name,
+      salePrice,
+      thumbnail,
+      quantity,
+      slug,
+      organizationId,
+    });
   };
 
   const showAsInCart = isMounted && productInCart;

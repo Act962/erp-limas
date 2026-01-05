@@ -103,7 +103,6 @@ export function CreateFormOrg({
       slug: formData.slug,
       logo: formData.logo,
       metadata,
-      keepCurrentActiveOrganization: true,
     });
 
     if (error) {

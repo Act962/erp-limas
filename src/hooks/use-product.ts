@@ -5,6 +5,7 @@ interface UseShoppingCartProps {
   id: string;
   name: string;
   quantity: number;
+  organizationId: string;
   salePrice: number;
   slug: string;
   thumbnail?: string;
