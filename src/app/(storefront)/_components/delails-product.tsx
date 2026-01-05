@@ -121,9 +121,9 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
             <div className="flex flex-col gap-4 max-w-10">
               {product.images &&
-                product.images.map((image) => (
+                product.images.map((image, index) => (
                   <div
-                    key={image}
+                    key={`image-thumbnail-${index}-${image}`}
                     className="flex justify-center items-center w-10 h-10"
                   >
                     <img
