@@ -7,8 +7,11 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useShoppingCart } from "@/hooks/use-product";
 import { currencyFormatter } from "@/utils/currency-formatter";
+import { useUserStore } from "../context/use-cart-session";
 
 export function Cart() {
+  const { user } = useUserStore();
+
   const router = useRouter();
   const { cartItems, updateQuantity, removeFromCart } = useShoppingCart();
 
@@ -24,6 +27,14 @@ export function Cart() {
     (sum: number, item) => sum + item.salePrice * item.quantity,
     0
   );
+
+  function handlerCheckout() {
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+    router.push("checkout");
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -144,9 +155,9 @@ export function Cart() {
                   <Button
                     className="w-full"
                     size="lg"
-                    onClick={() => router.push("checkout")}
+                    onClick={() => handlerCheckout()}
                   >
-                    Finalizar Pedido
+                    {!user ? "Faça Login" : "Finalizar Pedido"}
                   </Button>
                 </CardContent>
               </Card>

@@ -155,6 +155,8 @@ model Organization {
   catalogSettings   CatalogSettings?
   financialAccounts FinancialAccount[]
   transactions      Transaction[]
+  catalogUsers CatalogUser[]
+
 
   @@index([slug])
   @@index([subdomain])
@@ -273,6 +275,8 @@ model CatalogSettings {
   //Integrations
   id_meta         String?
   pixel_meta      String?
+  //Stripe
+  stripeKey String? @map("stripe_key")
   // Redes Sociais
   instagram       String?
   facebook        String?
@@ -512,6 +516,38 @@ model Supplier {
   @@index([document])
   @@map("suppliers")
 }
+
+
+
+model CatalogUser {
+  id             String   @id @default(cuid())
+  organizationId String
+
+  email          String
+  passwordHash   String
+  name           String?
+
+  // Dados coletados no checkout
+  phone          String?
+  address        String?
+  city           String?
+  state          String?
+  zipCode        String?
+
+  // Stripe
+  stripeCustomerId String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+  @@map("catalog_users")
+}
+
+
 
 // ============================================
 // VENDAS

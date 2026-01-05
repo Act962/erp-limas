@@ -3,6 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CatalogSettingsProps } from "./catalog";
 import { colors } from "./mock/catalog-moc";
+import { Field, FieldDescription } from "@/components/ui/field";
+import { Uploader } from "@/components/file-uploader/uploader";
 
 interface CustomizationTabProps {
   settings: CatalogSettingsProps;
@@ -39,6 +41,21 @@ export function TabCustomization({
                 })
               }
             />
+            <p className="text-xs text-muted-foreground">
+              Aparecerá no topo do catálogo
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="carouselImage">Carrocel inicial</Label>
+
+            <Field className="text-center">
+              <Uploader />
+              <FieldDescription>
+                Formatos aceitos: JPG, PNG, GIF
+                <br />
+                Tamanho máximo: 5MB
+              </FieldDescription>
+            </Field>
             <p className="text-xs text-muted-foreground">
               Aparecerá no topo do catálogo
             </p>

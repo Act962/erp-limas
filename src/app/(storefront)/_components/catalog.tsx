@@ -11,6 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
 import { sortProducts } from "@/utils/sorteble-products";
+import { useUserStore } from "../context/use-cart-session";
 interface CatalogProps {
   subdomain: string;
 }
