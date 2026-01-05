@@ -67,7 +67,6 @@ export function Checkout({ subdomain }: CheckoutProps) {
 
   // Calcular valor do frete
   const calculateFreight = () => {
-    console.log(catalogSettings);
     const {
       freightOptions,
       freightChargeType,

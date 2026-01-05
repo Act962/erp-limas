@@ -50,10 +50,9 @@ export const getProductAndProductsByCategory = base
   )
   .handler(async ({ input, errors }) => {
     try {
-      const { subdomain } = input;
       const organization = await prisma.organization.findUnique({
         where: {
-          subdomain,
+          subdomain: input.subdomain,
         },
       });
       if (!organization) {
@@ -115,7 +114,6 @@ export const getProductAndProductsByCategory = base
         product: {
           ...product,
           salePrice: Number(product.salePrice),
-          costPrice: Number(product.costPrice),
           currentStock: Number(product.currentStock),
           minStock: Number(product.minStock),
           weight: Number(product.weight),

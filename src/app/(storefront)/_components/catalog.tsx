@@ -101,9 +101,9 @@ export function Catalog({ subdomain }: CatalogProps) {
           <FiltersCatalog categories={categories} />
         </div>
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {sortedProducts.map((product) => (
+          {sortedProducts.map((product, index) => (
             <ProductCard
-              key={product.id}
+              key={`product-${product.id}-${index}`}
               id={product.id}
               organizationId={product.organizationId}
               name={product.name}

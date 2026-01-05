@@ -41,8 +41,7 @@ export function FiltersCatalog({
     if (!selectedIds.includes(id)) {
       return;
     }
-    const category = mockedCategories.find((c) => c.id === id);
-    console.log(`removed: ${category?.name}`);
+
     setSelectedIds((prev) => prev.filter((v) => v !== id));
   };
 
