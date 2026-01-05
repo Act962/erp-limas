@@ -2,6 +2,7 @@ export interface ProductCatalog {
   id: string;
   name: string;
   slug: string;
+  organizationId: string;
   salePrice: number;
   description?: string;
   images?: string[];

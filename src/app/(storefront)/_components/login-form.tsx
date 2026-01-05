@@ -24,7 +24,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
 import { useUserStore } from "@/app/(storefront)/context/use-cart-session";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";

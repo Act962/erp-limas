@@ -11,7 +11,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
 import { sortProducts } from "@/utils/sorteble-products";
-import { useUserStore } from "../context/use-cart-session";
 interface CatalogProps {
   subdomain: string;
 }
@@ -105,6 +104,7 @@ export function Catalog({ subdomain }: CatalogProps) {
             <ProductCard
               key={product.id}
               id={product.id}
+              organizationId={product.organizationId}
               name={product.name}
               slug={product.slug}
               salePrice={product.salePrice}

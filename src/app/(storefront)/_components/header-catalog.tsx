@@ -21,6 +21,7 @@ import { getContrastColor } from "@/utils/get-contrast-color";
 interface Settings {
   metaTitle: string | null;
   theme: string | null;
+  organizationId: string;
 }
 
 interface HeaderProps {
@@ -41,6 +42,10 @@ export function Header({ settings }: HeaderProps) {
     setModalIsOpen(false);
     router.push("/cart");
   }
+
+  const cardItemsFiltered = cartItems.filter(
+    (item) => item.organizationId === settings.organizationId
+  );
 
   return (
     <header
@@ -116,6 +121,7 @@ export function Header({ settings }: HeaderProps) {
                           slug={item.slug}
                           key={item.id}
                           id={item.id}
+                          organizationId={item.organizationId}
                           thumbnail={item.thumbnail ?? ""}
                           name={item.name}
                           quantityInit={item.quantity}
