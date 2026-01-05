@@ -12,6 +12,7 @@ import {
 import { currencyFormatter } from "../../../utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface ProductCardProps extends ProductCatalog {
   allowsOrders?: boolean;

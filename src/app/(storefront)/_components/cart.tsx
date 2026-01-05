@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useShoppingCart } from "@/hooks/use-product";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { useUserStore } from "../context/use-cart-session";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 export function Cart() {
   const { user } = useUserStore();
@@ -67,7 +68,9 @@ export function Cart() {
                   <CardContent className="p-4">
                     <div className="flex gap-4">
                       <img
-                        src={item.thumbnail}
+                        src={
+                          item.thumbnail ? useConstructUrl(item.thumbnail) : ""
+                        }
                         alt={item.name}
                         className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg"
                       />

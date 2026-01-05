@@ -1,6 +1,5 @@
-// src/middleware.ts
-
 import { NextResponse } from "next/server";
+
 import type { NextRequest } from "next/server";
 
 export const config = {
@@ -11,19 +10,23 @@ export const config = {
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl;
+
   const hostname = request.headers.get("host") || "";
+
   const pathname = url.pathname;
 
   // ✅ Permite rotas de auth passarem
+
   if (
-    // pathname.startsWith("/login") ||
-    // pathname.startsWith("/cadastro") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/cadastro") ||
     pathname.startsWith("/auth")
   ) {
     return NextResponse.next();
   }
 
   // Ignora rotas do dashboard
+
   if (
     pathname.startsWith("/produtos") ||
     pathname.startsWith("/estoque") ||
@@ -33,16 +36,16 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/clientes") ||
     pathname.startsWith("/fornecedores") ||
     pathname.startsWith("/catalogo") ||
-    pathname.startsWith("/relatorios") ||
-    pathname.startsWith("/configuracoes") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/cadastro")
+    pathname.startsWith("/relatórios") ||
+    pathname.startsWith("/configurações")
   ) {
     return NextResponse.next();
   }
 
   const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "localhost:3000";
+
   const baseHostname = baseDomain.split(":")[0];
+
   const currentHostname = hostname.split(":")[0];
 
   const subdomain = getSubdomain(currentHostname, baseHostname);
@@ -58,6 +61,7 @@ export function middleware(request: NextRequest) {
 
 function getSubdomain(hostname: string, baseDomain: string) {
   const cleanHostname = hostname.replace(/^www\./, "");
+
   const cleanBaseDomain = baseDomain.replace(/^www\./, "");
 
   if (cleanHostname === cleanBaseDomain) {

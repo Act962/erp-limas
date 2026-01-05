@@ -10,8 +10,8 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-const organizationId = "0w9GLWT8zvzzVajkIyeByhPoqQSusHtI";
-const createdById = "bEPjQzgKKEWRqeQEneoYFnmKjrrDmFb1";
+const organizationId = "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr";
+const createdById = "yoxChAjqKEyx16ToqupGUZ0j5xhTewu0";
 
 export async function main() {
   const c1 = await prisma.category.create({
@@ -23,8 +23,8 @@ export async function main() {
   });
   const c2 = await prisma.category.create({
     data: {
-      name: "Informática",
-      slug: "informatica",
+      name: "Mecânica",
+      slug: "mecanica",
       organizationId,
     },
   });
@@ -38,12 +38,13 @@ export async function main() {
         slug: "notebook-gamer-rtx-4050",
         description: "Notebook gamer com RTX 4050",
         salePrice: 5899.9,
-        thumbnail: "https://picsum.photos/400/400?random=1",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=1",
-          "https://picsum.photos/400/400?random=2",
-          "https://picsum.photos/400/400?random=3",
-          "https://picsum.photos/400/400?random=4",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -56,12 +57,13 @@ export async function main() {
         slug: "notebook-gamer-rtx-4060",
         description: "Notebook gamer com RTX 4060",
         salePrice: 6699.9,
-        thumbnail: "https://picsum.photos/400/400?random=5",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=5",
-          "https://picsum.photos/400/400?random=6",
-          "https://picsum.photos/400/400?random=7",
-          "https://picsum.photos/400/400?random=8",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -74,12 +76,13 @@ export async function main() {
         slug: "notebook-gamer-rtx-4070",
         description: "Notebook gamer com RTX 4070",
         salePrice: 8199.9,
-        thumbnail: "https://picsum.photos/400/400?random=9",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=9",
-          "https://picsum.photos/400/400?random=10",
-          "https://picsum.photos/400/400?random=11",
-          "https://picsum.photos/400/400?random=12",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -92,12 +95,13 @@ export async function main() {
         slug: "notebook-gamer-rtx-4080",
         description: "Notebook gamer com RTX 4080",
         salePrice: 11999.9,
-        thumbnail: "https://picsum.photos/400/400?random=13",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=13",
-          "https://picsum.photos/400/400?random=14",
-          "https://picsum.photos/400/400?random=15",
-          "https://picsum.photos/400/400?random=16",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -110,12 +114,13 @@ export async function main() {
         slug: "notebook-gamer-ryzen-5-rtx-3050",
         description: "Notebook gamer com Ryzen 5 e RTX 3050",
         salePrice: 4699.9,
-        thumbnail: "https://picsum.photos/400/400?random=17",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=17",
-          "https://picsum.photos/400/400?random=18",
-          "https://picsum.photos/400/400?random=19",
-          "https://picsum.photos/400/400?random=20",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -128,12 +133,13 @@ export async function main() {
         slug: "notebook-gamer-ryzen-7-rtx-3060",
         description: "Notebook gamer com Ryzen 7 e RTX 3060",
         salePrice: 5499.9,
-        thumbnail: "https://picsum.photos/400/400?random=21",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=21",
-          "https://picsum.photos/400/400?random=22",
-          "https://picsum.photos/400/400?random=23",
-          "https://picsum.photos/400/400?random=24",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -146,12 +152,13 @@ export async function main() {
         slug: "notebook-gamer-intel-i5-rtx-3050",
         description: "Notebook gamer com Intel i5 e RTX 3050",
         salePrice: 4899.9,
-        thumbnail: "https://picsum.photos/400/400?random=25",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=25",
-          "https://picsum.photos/400/400?random=26",
-          "https://picsum.photos/400/400?random=27",
-          "https://picsum.photos/400/400?random=28",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -164,12 +171,13 @@ export async function main() {
         slug: "notebook-gamer-intel-i7-rtx-4060",
         description: "Notebook gamer com Intel i7 e RTX 4060",
         salePrice: 6999.9,
-        thumbnail: "https://picsum.photos/400/400?random=29",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=29",
-          "https://picsum.photos/400/400?random=30",
-          "https://picsum.photos/400/400?random=31",
-          "https://picsum.photos/400/400?random=32",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),
@@ -182,12 +190,13 @@ export async function main() {
         slug: "notebook-gamer-intel-i9-rtx-4090",
         description: "Notebook gamer topo de linha com RTX 4090",
         salePrice: 15999.9,
-        thumbnail: "https://picsum.photos/400/400?random=33",
+        thumbnail:
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         images: [
-          "https://picsum.photos/400/400?random=33",
-          "https://picsum.photos/400/400?random=34",
-          "https://picsum.photos/400/400?random=35",
-          "https://picsum.photos/400/400?random=36",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
+          "c0bbd700-b030-444e-9f67-c16b5406127b-Captura%20de%20tela%202025-10-30%20154432.png",
         ],
         createdById: createdById,
         createdAt: new Date(),

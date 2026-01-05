@@ -11,6 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
 import { sortProducts } from "@/utils/sorteble-products";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 interface CatalogProps {
   subdomain: string;
 }
@@ -108,7 +109,9 @@ export function Catalog({ subdomain }: CatalogProps) {
               name={product.name}
               slug={product.slug}
               salePrice={product.salePrice}
-              thumbnail={product.thumbnail}
+              thumbnail={
+                product.thumbnail ? useConstructUrl(product.thumbnail) : ""
+              }
               allowsOrders={catalogSettings.allowOrders}
             />
           ))}
