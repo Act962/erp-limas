@@ -82,7 +82,9 @@ export function CreateProductForm() {
       onSuccess: () => {
         router.push("/produtos");
 
-        queryClient.invalidateQueries(orpc.products.list.queryOptions());
+        queryClient.invalidateQueries(orpc.products.list.queryOptions({
+          input:{}
+        }));
       },
       onError: (error) => {
         console.log("Error Cliente: ", error);

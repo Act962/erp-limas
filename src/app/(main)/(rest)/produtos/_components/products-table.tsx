@@ -40,6 +40,8 @@ import { useProductModal } from "@/hooks/modals/use-product-modal";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
+import { FilterProducts } from "./filters";
+import { useQueryState } from "nuqs";
 
 interface Product {
   id: string;
@@ -53,6 +55,20 @@ interface Product {
   minStock: number;
   image: string;
   isActive: boolean;
+}
+
+export interface Categories {
+  id: string;
+  name: string;
+  isActive: boolean;
+  slug: string;
+  image: string | null;
+  order: number;
+}
+
+interface ProductTableProps {
+  products: Product[];
+  categories: Categories[];
 }
 
 function getStockStatus(current: number, min: number) {
@@ -72,7 +88,7 @@ function getStockStatus(current: number, min: number) {
   };
 }
 
-export function ProductsTable({ products }: { products: Product[] }) {
+export function ProductsTable({ products, categories }: ProductTableProps) {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -82,7 +98,9 @@ export function ProductsTable({ products }: { products: Product[] }) {
     orpc.products.duplicate.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: orpc.products.list.queryKey(),
+          queryKey: orpc.products.list.queryKey({
+            input: {},
+          }),
         });
 
         toast.success(`Produto duplicado com sucesso!`);
@@ -97,6 +115,10 @@ export function ProductsTable({ products }: { products: Product[] }) {
     duplicateProductMutation.mutate({
       productId: id,
     });
+  };
+
+  const normalizePrices = (price: string | null) => {
+    return Number(price);
   };
 
   const filteredProducts = products.filter(
@@ -135,22 +157,7 @@ export function ProductsTable({ products }: { products: Product[] }) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </InputGroup>
-
-          <Select defaultValue="all">
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas Categorias</SelectItem>
-              <SelectItem value="eletronicos">Eletrônicos</SelectItem>
-              <SelectItem value="perifericos">Periféricos</SelectItem>
-              <SelectItem value="monitores">Monitores</SelectItem>
-            </SelectContent>
-          </Select>
-          {/* <Button variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button> */}
+          <FilterProducts categories={categories} />
         </div>
       </CardHeader>
       <CardContent>

@@ -7,7 +7,11 @@ import { orpc } from "@/lib/orpc";
 export default async function Page() {
   const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery(orpc.products.list.queryOptions());
+  await queryClient.prefetchQuery(
+    orpc.products.list.queryOptions({
+      input: {},
+    })
+  );
 
   await queryClient.prefetchQuery(
     orpc.stocks.list.queryOptions({
