@@ -13,11 +13,12 @@ import {
 } from "lucide-react";
 import { useShoppingCart } from "../../../hooks/use-product";
 import useEmblaCarousel from "embla-carousel-react";
-import { EmblaCarouselType } from "embla-carousel";
+import type { EmblaCarouselType } from "embla-carousel";
 import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import Image from "next/image";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -86,19 +87,18 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
             <div className="overflow-hidden size-full" ref={emblaRef}>
               <div className="flex gap-2">
-                {product.images &&
-                  product.images.map((image, index) => (
-                    <div
-                      className="flex justify-center translate-0 shrink-0 grow-0 w-full"
-                      key={`image-carousel-${index}`}
-                    >
-                      <img
-                        src={image}
-                        alt={`imagem do ${product.name}`}
-                        className="object-cover rounded-2xl size-full"
-                      />
-                    </div>
-                  ))}
+                {product.images.map((image, index) => (
+                  <div
+                    className="flex justify-center translate-0 shrink-0 grow-0 w-full"
+                    key={`image-carousel-${index}`}
+                  >
+                    <img
+                      src={image}
+                      alt={`imagem do ${product.name}`}
+                      className="object-cover rounded-2xl size-full"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
             {/* DotsButton */}
@@ -120,28 +120,29 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           </div>
           <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
             <div className="flex flex-col gap-4 max-w-10">
-              {product.images &&
-                product.images.map((image, index) => (
-                  <div
-                    key={`image-thumbnail-${index}-${image}`}
-                    className="flex justify-center items-center w-10 h-10"
-                  >
-                    <img
-                      data-selected={imageSelected === image}
-                      src={useConstructUrl(image)}
-                      alt={product.name}
-                      className="size-full rounded-sm cursor-pointer
+              {product.images.map((image, index) => (
+                <div
+                  key={`image-thumbnail-${index}-${image}`}
+                  className="flex justify-center items-center w-10 h-10 relative"
+                >
+                  <Image
+                    data-selected={imageSelected === image}
+                    src={useConstructUrl(image)}
+                    alt={product.name}
+                    fill
+                    className="size-full rounded-sm cursor-pointer
                     data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
-                      onClick={() => setImageSelected(image)}
-                    />
-                  </div>
-                ))}
+                    onClick={() => setImageSelected(image)}
+                  />
+                </div>
+              ))}
             </div>
             <div className="items-center w-full">
-              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1">
-                <img
+              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1 relative">
+                <Image
                   src={useConstructUrl(imageSelected)}
                   alt={product.name}
+                  fill
                   className="rounded-2xl object-contain size-full"
                 />
               </div>
@@ -205,11 +206,12 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
               >
-                <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center">
-                  <img
+                <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center relative">
+                  <Image
                     src={useConstructUrl(product.thumbnail)}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 <div className="flex flex-col px-5 ">

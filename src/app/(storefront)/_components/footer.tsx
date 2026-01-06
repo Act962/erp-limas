@@ -1,6 +1,6 @@
 "use client";
 
-import { DeliveryMethod, PaymentMethod } from "@/generated/prisma/enums";
+import type { DeliveryMethod, PaymentMethod } from "@/generated/prisma/enums";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { deliveryMethodsConfig, paymentMethodsConfig } from "../types/payments";
 import { getContrastColor } from "@/utils/get-contrast-color";

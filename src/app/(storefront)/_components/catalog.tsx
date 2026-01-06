@@ -4,7 +4,7 @@ import { FiltersCatalog } from "./filters";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryState } from "nuqs";
 import { ProductCard } from "./product-card";
-import { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
+import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -79,19 +79,18 @@ export function Catalog({ subdomain }: CatalogProps) {
         {/*Carousel */}
         <div className="overflow-hidden size-full mt-7" ref={emblaRef}>
           <div className="flex gap-2 size-full">
-            {mockedImagesCatalog &&
-              mockedImagesCatalog.map((image, index) => (
-                <div
-                  className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full"
-                  key={`image-carousel-${index}`}
-                >
-                  <img
-                    src={image}
-                    alt="Imagem do catalogo"
-                    className="object-cover w-full"
-                  />
-                </div>
-              ))}
+            {mockedImagesCatalog.map((image, index) => (
+              <div
+                className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full"
+                key={`image-carousel-${index}`}
+              >
+                <img
+                  src={image}
+                  alt="Imagem do catalogo"
+                  className="object-cover w-full"
+                />
+              </div>
+            ))}
           </div>
         </div>
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6 ">
@@ -109,9 +108,7 @@ export function Catalog({ subdomain }: CatalogProps) {
               name={product.name}
               slug={product.slug}
               salePrice={product.salePrice}
-              thumbnail={
-                product.thumbnail ? useConstructUrl(product.thumbnail) : ""
-              }
+              thumbnail={product.thumbnail}
               allowsOrders={catalogSettings.allowOrders}
             />
           ))}

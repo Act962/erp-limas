@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { getContrastColor } from "@/utils/get-contrast-color";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import Image from "next/image";
 
 interface Settings {
   metaTitle: string | null;
@@ -173,15 +174,19 @@ function ItemRequested({
     setQuantity(qtd);
     updateQuantity(id, qtd);
   }
+  console.log(thumbnail);
 
   return (
     <Item>
       <ItemContent className="flex flex-row items-center gap-x-2">
-        <img
-          src={thumbnail}
-          alt={name}
-          className="w-12 h-12 object-cover rounded-sm"
-        />
+        <div className="relative h-15 w-15">
+          <Image
+            src={thumbnail}
+            alt={name}
+            fill
+            className="object-cover rounded-sm "
+          />
+        </div>
 
         <div className="space-y-2">
           <ItemDescription>{name}</ItemDescription>

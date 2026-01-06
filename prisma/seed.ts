@@ -10,8 +10,8 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-const organizationId = "pxC4X6KZzkAFCEL0fZ4hjz3l5FYZxQcr";
-const createdById = "yoxChAjqKEyx16ToqupGUZ0j5xhTewu0";
+const organizationId = "0w9GLWT8zvzzVajkIyeByhPoqQSusHtI";
+const createdById = "bEPjQzgKKEWRqeQEneoYFnmKjrrDmFb1";
 
 export async function main() {
   const c1 = await prisma.category.create({
