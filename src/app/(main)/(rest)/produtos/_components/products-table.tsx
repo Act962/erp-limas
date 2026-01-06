@@ -37,7 +37,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useProductModal } from "@/hooks/modals/use-product-modal";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
 
@@ -53,6 +57,17 @@ interface Product {
   minStock: number;
   image: string;
   isActive: boolean;
+}
+
+interface Categories {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface ProductTableProps {
+  products: Product[];
+  categories: Categories[];
 }
 
 function getStockStatus(current: number, min: number) {
@@ -72,7 +87,7 @@ function getStockStatus(current: number, min: number) {
   };
 }
 
-export function ProductsTable({ products }: { products: Product[] }) {
+export function ProductsTable({ products, categories }: ProductTableProps) {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -142,9 +157,11 @@ export function ProductsTable({ products }: { products: Product[] }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas Categorias</SelectItem>
-              <SelectItem value="eletronicos">Eletrônicos</SelectItem>
-              <SelectItem value="perifericos">Periféricos</SelectItem>
-              <SelectItem value="monitores">Monitores</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {/* <Button variant="outline">

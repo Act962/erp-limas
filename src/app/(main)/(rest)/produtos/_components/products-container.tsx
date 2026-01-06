@@ -9,7 +9,12 @@ import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 
 export function ProductsContainer() {
-  const { data } = useSuspenseQuery(orpc.products.list.queryOptions());
+  const { data: Products } = useSuspenseQuery(
+    orpc.products.list.queryOptions()
+  );
+  const { products } = Products;
+  const { data } = useSuspenseQuery(orpc.categories.list.queryOptions());
+  const { categories } = data;
 
   return (
     <div className="px-4 mt-8 space-y-4">
@@ -32,10 +37,11 @@ export function ProductsContainer() {
       </div>
 
       <ProductsTable
-        products={data.products.map((product) => ({
+        products={products.map((product) => ({
           ...product,
           image: product.image ? useConstructUrl(product.image) : "",
         }))}
+        categories={categories}
       />
     </div>
   );
