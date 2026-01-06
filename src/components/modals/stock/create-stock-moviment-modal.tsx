@@ -117,7 +117,9 @@ export function CreateStockMovimentModal() {
   });
 
   const { data, isPending } = useSuspenseQuery(
-    orpc.products.list.queryOptions()
+    orpc.products.list.queryOptions({
+      input: {},
+    })
   );
 
   const onSucessFinish = () => {
