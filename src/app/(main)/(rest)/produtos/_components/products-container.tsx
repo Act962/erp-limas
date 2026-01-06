@@ -7,13 +7,25 @@ import { ProductsTable } from "./products-table";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import { useQueryState } from "nuqs";
 
 export function ProductsContainer() {
+  const [category] = useQueryState("category");
+  const [sku] = useQueryState("sku");
+  const [minValue] = useQueryState("min_value");
+  const [maxValue] = useQueryState("max_value");
   const { data: Products } = useSuspenseQuery(
-    orpc.products.list.queryOptions()
+    orpc.products.list.queryOptions({
+      input: {
+        category: category?.split(",").map((c) => c.trim()),
+        sku: sku ?? undefined,
+        minValue: minValue ?? undefined,
+        maxValue: maxValue ?? undefined,
+      },
+    })
   );
   const { products } = Products;
-  const { data } = useSuspenseQuery(orpc.categories.list.queryOptions());
+  const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());
   const { categories } = data;
 
   return (

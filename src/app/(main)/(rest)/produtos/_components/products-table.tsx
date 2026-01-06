@@ -37,13 +37,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useProductModal } from "@/hooks/modals/use-product-modal";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
+import { FilterProducts } from "./filters";
+import { useQueryState } from "nuqs";
 
 interface Product {
   id: string;
@@ -59,10 +57,13 @@ interface Product {
   isActive: boolean;
 }
 
-interface Categories {
+export interface Categories {
   id: string;
   name: string;
+  isActive: boolean;
   slug: string;
+  image: string | null;
+  order: number;
 }
 
 interface ProductTableProps {
@@ -97,7 +98,9 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
     orpc.products.duplicate.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: orpc.products.list.queryKey(),
+          queryKey: orpc.products.list.queryKey({
+            input: {},
+          }),
         });
 
         toast.success(`Produto duplicado com sucesso!`);
@@ -112,6 +115,10 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
     duplicateProductMutation.mutate({
       productId: id,
     });
+  };
+
+  const normalizePrices = (price: string | null) => {
+    return Number(price);
   };
 
   const filteredProducts = products.filter(
@@ -150,24 +157,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </InputGroup>
-
-          <Select defaultValue="all">
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas Categorias</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {/* <Button variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
-            Filtros
-          </Button> */}
+          <FilterProducts categories={categories} />
         </div>
       </CardHeader>
       <CardContent>

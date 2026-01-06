@@ -12,6 +12,14 @@ export const listProducts = base
     summary: "Listar todos os produtos",
     tags: ["products"],
   })
+  .input(
+    z.object({
+      category: z.array(z.string()).optional(),
+      sku: z.string().optional(),
+      minValue: z.string().optional(),
+      maxValue: z.string().optional(),
+    })
+  )
   .output(
     z.object({
       products: z.array(
@@ -32,7 +40,8 @@ export const listProducts = base
       ),
     })
   )
-  .handler(async ({ context }) => {
+  .handler(async ({ context, input }) => {
+    console.log(input);
     try {
       const products = await prisma.product.findMany({
         select: {
@@ -55,6 +64,18 @@ export const listProducts = base
         },
         where: {
           organizationId: context.org.id,
+          category: {
+            slug: {
+              in: input.category,
+            },
+          },
+          sku: {
+            contains: input.sku,
+          },
+          salePrice: {
+            gte: input.minValue ? Number(input.minValue) / 100 : undefined,
+            lte: input.maxValue ? Number(input.maxValue) / 100 : undefined,
+          },
         },
       });
 

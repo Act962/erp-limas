@@ -15,8 +15,8 @@ export function currencyUnformatter(value: string): number {
   return Number(normalizedValue) || 0;
 }
 
-export function formatCurrencyInput(value: string): string {
-  const numbers = value.replace(/\D/g, "");
+export function formatCurrencyInput(value: string | undefined): string {
+  const numbers = value?.replace(/\D/g, "");
   if (!numbers) return "";
   const amount = Number(numbers) / 100;
 
@@ -26,8 +26,14 @@ export function formatCurrencyInput(value: string): string {
   }).format(amount);
 }
 
-export function parseCurrencyInput(value: string): number {
-  const numbers = value.replace(/\D/g, "");
+export function parseCurrencyInput(value: string | undefined): number {
+  const numbers = value?.replace(/\D/g, "");
 
   return numbers ? Number(numbers) / 100 : 0;
+}
+
+export function parseCurrencyPenny(value: string | undefined): number {
+  const numbers = value?.replace(/\D/g, "");
+
+  return numbers ? Number(numbers) : 0;
 }

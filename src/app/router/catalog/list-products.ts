@@ -45,7 +45,6 @@ export const listProducts = base
   )
   .handler(async ({ input, errors }) => {
     try {
-      console.log(input.categorySlug);
       const { subdomain } = input;
       const organization = await prisma.organization.findUnique({
         where: {
