@@ -87,18 +87,20 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
             <div className="overflow-hidden size-full" ref={emblaRef}>
               <div className="flex gap-2">
-                {product.images.map((image, index) => (
-                  <div
-                    className="flex justify-center translate-0 shrink-0 grow-0 w-full"
-                    key={`image-carousel-${index}`}
-                  >
-                    <img
-                      src={image}
-                      alt={`imagem do ${product.name}`}
-                      className="object-cover rounded-2xl size-full"
-                    />
-                  </div>
-                ))}
+                {product.images &&
+                  product.images.length > 0 &&
+                  product.images.map((image, index) => (
+                    <div
+                      className="flex justify-center translate-0 shrink-0 grow-0 w-full"
+                      key={`image-carousel-${index}`}
+                    >
+                      <img
+                        src={image}
+                        alt={`imagem do ${product.name}`}
+                        className="object-cover rounded-2xl size-full"
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
             {/* DotsButton */}
