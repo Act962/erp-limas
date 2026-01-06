@@ -88,7 +88,6 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             <div className="overflow-hidden size-full" ref={emblaRef}>
               <div className="flex gap-2">
                 {product.images &&
-                  product.images.length > 0 &&
                   product.images.map((image, index) => (
                     <div
                       className="flex justify-center translate-0 shrink-0 grow-0 w-full"
@@ -122,22 +121,23 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           </div>
           <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
             <div className="flex flex-col gap-4 max-w-10">
-              {product.images.map((image, index) => (
-                <div
-                  key={`image-thumbnail-${index}-${image}`}
-                  className="flex justify-center items-center w-10 h-10 relative"
-                >
-                  <Image
-                    data-selected={imageSelected === image}
-                    src={useConstructUrl(image)}
-                    alt={product.name}
-                    fill
-                    className="size-full rounded-sm cursor-pointer
+              {product.images &&
+                product.images.map((image, index) => (
+                  <div
+                    key={`image-thumbnail-${index}-${image}`}
+                    className="flex justify-center items-center w-10 h-10 relative"
+                  >
+                    <Image
+                      data-selected={imageSelected === image}
+                      src={useConstructUrl(image)}
+                      alt={product.name}
+                      fill
+                      className="size-full rounded-sm cursor-pointer
                     data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
-                    onClick={() => setImageSelected(image)}
-                  />
-                </div>
-              ))}
+                      onClick={() => setImageSelected(image)}
+                    />
+                  </div>
+                ))}
             </div>
             <div className="items-center w-full">
               <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1 relative">
