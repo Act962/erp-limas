@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ProductCatalog } from "../types/product";
+import type { ProductCatalog } from "../types/product";
 import { useShoppingCart } from "../../../hooks/use-product";
 import { useRouter } from "next/navigation";
 import {
@@ -12,6 +12,7 @@ import {
 import { currencyFormatter } from "../../../utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
+import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface ProductCardProps extends ProductCatalog {
@@ -61,11 +62,12 @@ export function ProductCard({
       hover:shadow-lg hover:shadow-elegant"
     >
       {thumbnail && (
-        <div className="aspect-square overflow-hidden w-full">
-          <img
-            className="w-full h-full object-cover transition-transform rounded-sm cursor-pointer"
-            src={thumbnail}
+        <div className="aspect-square overflow-hidden w-full relative">
+          <Image
+            className="object-cover transition-transform rounded-sm cursor-pointer"
+            src={thumbnail ? useConstructUrl(thumbnail) : ""}
             alt={name}
+            fill
             onClick={() => router.push(`/${slug}`)}
           />
         </div>

@@ -13,11 +13,12 @@ import {
 } from "lucide-react";
 import { useShoppingCart } from "../../../hooks/use-product";
 import useEmblaCarousel from "embla-carousel-react";
-import { EmblaCarouselType } from "embla-carousel";
+import type { EmblaCarouselType } from "embla-carousel";
 import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import Image from "next/image";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -124,12 +125,13 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 product.images.map((image, index) => (
                   <div
                     key={`image-thumbnail-${index}-${image}`}
-                    className="flex justify-center items-center w-10 h-10"
+                    className="flex justify-center items-center w-10 h-10 relative"
                   >
-                    <img
+                    <Image
                       data-selected={imageSelected === image}
                       src={useConstructUrl(image)}
                       alt={product.name}
+                      fill
                       className="size-full rounded-sm cursor-pointer
                     data-[selected=true]:ring-2 data-[selected=true]:ring-primary/40 object-cover"
                       onClick={() => setImageSelected(image)}
@@ -138,10 +140,11 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 ))}
             </div>
             <div className="items-center w-full">
-              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1">
-                <img
+              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1 relative">
+                <Image
                   src={useConstructUrl(imageSelected)}
                   alt={product.name}
+                  fill
                   className="rounded-2xl object-contain size-full"
                 />
               </div>
@@ -205,11 +208,12 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
               >
-                <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center">
-                  <img
+                <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center relative">
+                  <Image
                     src={useConstructUrl(product.thumbnail)}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 <div className="flex flex-col px-5 ">

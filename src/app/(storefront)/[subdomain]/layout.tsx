@@ -2,7 +2,7 @@ import prisma from "@/lib/db";
 import { Header } from "../_components/header-catalog";
 import { notFound } from "next/navigation";
 import { Footer } from "../_components/footer";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 interface StoreFrontLayoutProps {
   children: React.ReactNode;
@@ -60,7 +60,7 @@ export default async function SubdomainLayout({
   const settings = org.catalogSettings;
 
   return (
-    <div className="bg-accent-foreground/5">
+    <div className="bg-accent-foreground/5 h-full">
       <Header
         settings={{
           metaTitle: settings.metaTitle,
@@ -68,7 +68,7 @@ export default async function SubdomainLayout({
           organizationId: org.id,
         }}
       />
-      <main className="mt-15 sm:mt-19">{children}</main>
+      <main className="mt-15 sm:mt-19 h-full">{children}</main>
       <Footer
         settings={{
           theme: settings.theme,
