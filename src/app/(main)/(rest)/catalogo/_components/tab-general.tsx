@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CatalogSettingsProps } from "./catalog";
 import { formatCNPJ, unformatCNPJ } from "@/utils/format-cnpj";
+import { Field, FieldDescription } from "@/components/ui/field";
+import { Uploader } from "../_components/file-uploader/uploader";
 
 interface GeneralTabProps {
   settings: CatalogSettingsProps;
@@ -49,6 +51,19 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
             <p className="text-xs text-muted-foreground">
               Recomendado: 150-160 caracteres
             </p>
+          </div>
+          <div>
+            <div className="space-y-2">
+              <Label htmlFor="carouselImage">Imagem do banner</Label>
+              <Field className="text-center">
+                <Uploader />
+                <FieldDescription>
+                  Formatos aceitos: JPG, PNG, GIF
+                  <br />
+                  Tamanho máximo: 5MB
+                </FieldDescription>
+              </Field>
+            </div>
           </div>
 
           <div className="space-y-2">
