@@ -46,7 +46,7 @@ export function TabCustomization({
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="carouselImage">Carrocel inicial</Label>
+            <Label htmlFor="carouselImage">Carrossel inicial</Label>
 
             <Field className="text-center">
               <Uploader />
