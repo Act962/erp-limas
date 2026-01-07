@@ -8,25 +8,49 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useQueryState } from "nuqs";
+import dayjs from "dayjs";
+import { useMemo, useEffect } from "react";
 
 export function ProductsContainer() {
   const [category] = useQueryState("category");
   const [sku] = useQueryState("sku");
   const [minValue] = useQueryState("min_value");
   const [maxValue] = useQueryState("max_value");
+  const [date_init] = useQueryState("date_init");
+  const [date_end] = useQueryState("date_end");
+
+  const queryInput = useMemo(
+    () => ({
+      category: category?.split(",").map((c) => c.trim()),
+      sku: sku ?? undefined,
+      minValue: minValue ?? undefined,
+      maxValue: maxValue ?? undefined,
+      date_init: date_init
+        ? dayjs(date_init).startOf("day").toDate()
+        : undefined,
+      date_end: date_end ? dayjs(date_end).endOf("day").toDate() : undefined,
+    }),
+    [category, sku, minValue, maxValue, date_init, date_end]
+  );
+
   const { data: Products } = useSuspenseQuery(
     orpc.products.list.queryOptions({
-      input: {
-        category: category?.split(",").map((c) => c.trim()),
-        sku: sku ?? undefined,
-        minValue: minValue ?? undefined,
-        maxValue: maxValue ?? undefined,
-      },
+      input: queryInput,
     })
   );
+
   const { products } = Products;
   const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());
   const { categories } = data;
+
+  const productsWithUrls = useMemo(
+    () =>
+      products.map((product) => ({
+        ...product,
+        image: product.image ? useConstructUrl(product.image) : "",
+      })),
+    [products]
+  );
 
   return (
     <div className="px-4 mt-8 space-y-4">

@@ -1,29 +1,20 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
 import { ProductsContainer } from "./_components/products-container";
 import { orpc } from "@/lib/orpc";
-import {
-  createSearchParamsCache,
-  parseAsArrayOf,
-  parseAsString,
-} from "nuqs/server";
 import z from "zod";
+import dayjs from "dayjs";
 
 interface ProductParams {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
-
-const searchParamsCache = createSearchParamsCache({
-  category: parseAsArrayOf(parseAsString, ",").withDefault([]),
-  sku: parseAsString,
-  min_value: parseAsString,
-  max_value: parseAsString,
-});
 
 const filterSchema = z.object({
   category: z.string().optional(),
   sku: z.string().optional(),
   min_value: z.string().optional(),
   max_value: z.string().optional(),
+  date_init: z.string().optional(),
+  date_end: z.string().optional(),
 });
 
 export default async function Page({ searchParams }: ProductParams) {
@@ -35,6 +26,8 @@ export default async function Page({ searchParams }: ProductParams) {
     sku,
     min_value: minValue,
     max_value: maxValue,
+    date_init: dateInit,
+    date_end: dateEnd,
   } = filterSchema.parse(search);
 
   await queryClient.prefetchQuery(
@@ -44,6 +37,10 @@ export default async function Page({ searchParams }: ProductParams) {
         sku: sku ?? undefined,
         minValue: minValue ?? undefined,
         maxValue: maxValue ?? undefined,
+        date_init: dateInit
+          ? dayjs(dateInit).startOf("day").toDate()
+          : undefined,
+        date_end: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
       },
     })
   );

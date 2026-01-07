@@ -41,7 +41,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { toast } from "sonner";
 import { FilterProducts } from "./filters";
-import { useQueryState } from "nuqs";
+import { currencyFormatter } from "@/utils/currency-formatter";
+import { CalendarFilter } from "./filter-calendar";
 
 interface Product {
   id: string;
@@ -117,10 +118,6 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
     });
   };
 
-  const normalizePrices = (price: string | null) => {
-    return Number(price);
-  };
-
   const filteredProducts = products.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -157,6 +154,9 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </InputGroup>
+          <CalendarFilter>
+            <span className="hidden sm:block">Calendário</span>
+          </CalendarFilter>
           <FilterProducts categories={categories} />
         </div>
       </CardHeader>
@@ -244,7 +244,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
                     </TableCell>
                     <TableCell>{product.category || "N/A"}</TableCell>
                     <TableCell className="text-right font-semibold">
-                      R$ {product.salePrice.toFixed(2).replace(".", ",")}
+                      R$ {currencyFormatter(product.salePrice)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="font-medium">
