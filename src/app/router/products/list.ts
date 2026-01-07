@@ -18,6 +18,8 @@ export const listProducts = base
       sku: z.string().optional(),
       minValue: z.string().optional(),
       maxValue: z.string().optional(),
+      date_init: z.date().optional(),
+      date_end: z.date().optional(),
     })
   )
   .output(
@@ -41,7 +43,6 @@ export const listProducts = base
     })
   )
   .handler(async ({ context, input }) => {
-    console.log(input);
     try {
       const products = await prisma.product.findMany({
         select: {
@@ -76,6 +77,13 @@ export const listProducts = base
             gte: input.minValue ? Number(input.minValue) / 100 : undefined,
             lte: input.maxValue ? Number(input.maxValue) / 100 : undefined,
           },
+          ...(input.date_init &&
+            input.date_end && {
+              createdAt: {
+                gte: input.date_init,
+                lte: input.date_end,
+              },
+            }),
         },
       });
 

@@ -32,8 +32,8 @@ export function parseCurrencyInput(value: string | undefined): number {
   return numbers ? Number(numbers) / 100 : 0;
 }
 
-export function parseCurrencyPenny(value: string | undefined): number {
+export function parseCurrencyPenny(value: string | undefined): string | null {
   const numbers = value?.replace(/\D/g, "");
 
-  return numbers ? Number(numbers) : 0;
+  return numbers ? numbers : null;
 }

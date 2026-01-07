@@ -41,7 +41,6 @@ import {
 import { cn } from "@/lib/utils";
 import {
   formatCurrencyInput,
-  parseCurrencyInput,
   parseCurrencyPenny,
 } from "@/utils/currency-formatter";
 
@@ -101,8 +100,8 @@ export function FilterProducts({ categories }: FilterProductsProps) {
 
     // Aplica outros filtros
     setSku(form.getValues("sku") || null);
-    setMinValue(String(parseCurrencyPenny(form.getValues("minValue"))) || null);
-    setMaxValue(String(parseCurrencyPenny(form.getValues("maxValue"))) || null);
+    setMinValue(parseCurrencyPenny(form.getValues("minValue")) || null);
+    setMaxValue(parseCurrencyPenny(form.getValues("maxValue")) || null);
 
     setModalIsOpen(false);
   };
@@ -118,13 +117,14 @@ export function FilterProducts({ categories }: FilterProductsProps) {
     setSku(null);
     setMinValue(null);
     setMaxValue(null);
+
     setModalIsOpen(false);
   };
 
   return (
     <Sheet open={modalOpen} onOpenChange={setModalIsOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" className="rounded-full">
+        <Button variant="outline">
           <Filter className="size-4" />
         </Button>
       </SheetTrigger>
