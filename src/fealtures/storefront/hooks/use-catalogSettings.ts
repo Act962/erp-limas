@@ -6,15 +6,17 @@ interface UseCatalogSettingsProps {
 }
 
 export function useCatalogSettings({ subdomain }: UseCatalogSettingsProps) {
-  const { data } = useQuery(
+  const { data, isLoading } = useQuery(
     orpc.catalogSettings.public.queryOptions({
       input: {
         subdomain,
       },
+      enabled: !!subdomain,
     })
   );
 
   return {
-    data: data?.catalogSettings || undefined,
+    data: data?.catalogSettings,
+    isLoading,
   };
 }
