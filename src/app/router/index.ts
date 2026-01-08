@@ -3,6 +3,7 @@ import { orgRoutes } from "./org";
 import { productsRoutes } from "./products";
 import { catalogSettingsRouter } from "./catalog";
 import { stockRoutes } from "./stock";
+import { checkoutRouter } from "./checkout";
 
 export const router = {
   products: productsRoutes,
@@ -10,4 +11,5 @@ export const router = {
   catalogSettings: catalogSettingsRouter,
   stocks: stockRoutes,
   org: orgRoutes,
+  checkout: checkoutRouter,
 };

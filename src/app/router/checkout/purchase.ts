@@ -1,0 +1,112 @@
+import { base } from "@/app/middlewares/base";
+import { CheckoutMetadata, ProductMetadata } from "@/context/checkout/types";
+import { useConstructUrl } from "@/hooks/use-construct-url";
+import prisma from "@/lib/db";
+import { stripe } from "@/lib/stripe";
+import Stripe from "stripe";
+import z from "zod";
+
+export const purchase = base
+  .input(
+    z.object({
+      products: z
+        .array(
+          z.object({
+            id: z.string(),
+            quantity: z.number().int().positive(),
+          })
+        )
+        .min(1),
+      domain: z.string().min(1),
+      email: z.email(),
+      customerId: z.string().min(1),
+    })
+  )
+  .output(
+    z.object({
+      url: z.string().min(1),
+    })
+  )
+  .handler(async ({ input, errors }) => {
+    const organization = await prisma.organization.findUnique({
+      where: {
+        subdomain: input.domain,
+      },
+    });
+
+    if (!organization) {
+      throw errors.NOT_FOUND({
+        message: "Oganização não encontrada!",
+      });
+    }
+
+    const productIds = input.products.map((p) => p.id);
+    const products = await prisma.product.findMany({
+      where: {
+        id: {
+          in: productIds,
+        },
+        currentStock: {
+          gte: 1,
+        },
+        organizationId: organization.id,
+      },
+    });
+
+    if (products.length !== input.products.length) {
+      throw errors.NOT_FOUND({
+        message: "Alguns produtos não foram encontrados ou estão sem estoque!",
+      });
+    }
+
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+      input.products.map((inputProduct) => {
+        const product = products.find((p) => p.id === inputProduct.id)!;
+
+        return {
+          quantity: inputProduct.quantity,
+          price_data: {
+            unit_amount: Math.round(Number(product.salePrice) * 100),
+            currency: "brl",
+            product_data: {
+              name: product.name,
+              images: product.thumbnail
+                ? [useConstructUrl(product.thumbnail)]
+                : [],
+              metadata: {
+                id: product.id,
+                name: product.name,
+                price: Number(product.salePrice),
+                organizationId: organization.id,
+                organizationName: organization.name,
+              } as ProductMetadata,
+            },
+          },
+        };
+      });
+
+    const url = `http://${input.domain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
+
+    const checkout = await stripe.checkout.sessions.create({
+      customer_email: input.email,
+      success_url: `${url}/checkout?success=true`,
+      cancel_url: `${url}/checkout?cancel=true`,
+      mode: "payment",
+      line_items: lineItems,
+      invoice_creation: {
+        enabled: true,
+      },
+      metadata: {
+        customerId: input.customerId,
+        organizationId: organization.id,
+      } as CheckoutMetadata,
+    });
+
+    if (!checkout.url) {
+      throw errors.INTERNAL_SERVER_ERROR({
+        message: "Erro ao criar sessão de checkout!",
+      });
+    }
+
+    return { url: checkout.url };
+  });

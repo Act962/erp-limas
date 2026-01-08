@@ -257,7 +257,8 @@ model CatalogSettings {
   metaDescription String?
   cnpj            String?
   // Personalização
-  bannerImage     String?
+  logo     String?
+  bannerImages    String[]    @default([])
   aboutText       String?      @db.Text
   theme           String? 
   //Payment
@@ -471,6 +472,9 @@ model Customer {
   // Relações
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   sales          Sale[]
+  userCatalog  CatalogUser? @relation(fields: [clientId], references: [id])
+  clientId String? @unique
+  
 
   @@unique([organizationId, document])
   @@index([organizationId])
@@ -517,8 +521,6 @@ model Supplier {
   @@map("suppliers")
 }
 
-
-
 model CatalogUser {
   id             String   @id @default(cuid())
   organizationId String
@@ -541,6 +543,7 @@ model CatalogUser {
   updatedAt      DateTime @updatedAt
 
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer Customer?
 
   @@unique([organizationId, email])
   @@index([organizationId])
@@ -595,11 +598,11 @@ model Sale {
   updatedAt      DateTime        @updatedAt
   completedAt    DateTime?
   cancelledAt    DateTime?
-  createdById    String
+  createdById    String?
   // Relações
   organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   customer       Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  createdBy      User            @relation("CreatedSales", fields: [createdById], references: [id])
+  createdBy      User?            @relation("CreatedSales", fields: [createdById], references: [id])
   items          SaleItem[]
   stockMovements StockMovement[]
   transactions   Transaction[]
