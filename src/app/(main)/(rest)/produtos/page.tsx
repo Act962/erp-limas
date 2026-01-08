@@ -6,7 +6,7 @@ import { SearchParams } from "nuqs";
 import { productParamsLoader } from "@/fealtures/products/server/params-loader";
 
 interface ProductParams {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function Page({ searchParams }: ProductParams) {
