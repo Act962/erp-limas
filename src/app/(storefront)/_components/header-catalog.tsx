@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Handbag, Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +24,7 @@ interface Settings {
   metaTitle: string | null;
   theme: string | null;
   organizationId: string;
+  bannerImage: string | null;
 }
 
 interface HeaderProps {
@@ -61,9 +62,15 @@ export function Header({ settings }: HeaderProps) {
           className="flex flex-row gap-x-3 items-center cursor-pointer"
         >
           <Avatar>
-            <AvatarImage src="https://github.com/ElFabrica.png" />
+            <AvatarImage
+              src={
+                settings.bannerImage
+                  ? useConstructUrl(settings.bannerImage)
+                  : ""
+              }
+            />
+            <AvatarFallback>{settings.metaTitle?.slice(0, 2)}</AvatarFallback>
           </Avatar>
-
           <h1 className="text-xl font-bold" style={{ color: contrastColor }}>
             {settings.metaTitle ?? "Minha loja"}
           </h1>
