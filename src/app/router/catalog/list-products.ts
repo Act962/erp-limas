@@ -1,5 +1,6 @@
 import { base } from "@/app/middlewares/base";
 import prisma from "@/lib/db";
+import { sortProducts } from "@/utils/sorteble-products";
 import z, { string } from "zod";
 
 export const listProducts = base
@@ -30,6 +31,7 @@ export const listProducts = base
         z.object({
           id: z.string(),
           isActive: z.boolean(),
+          organizationId: z.string(),
           name: z.string(),
           slug: z.string(),
           minStock: z.number(),
@@ -54,6 +56,11 @@ export const listProducts = base
       if (!organization) {
         throw errors.NOT_FOUND();
       }
+      const catalogSettings = await prisma.catalogSettings.findUnique({
+        where: {
+          organizationId: organization.id,
+        },
+      });
       const categories = await prisma.category.findMany({
         where: {
           organizationId: organization.id,
@@ -70,9 +77,10 @@ export const listProducts = base
         },
       });
 
-      const productList = products.map((product) => ({
+      let productList = products.map((product) => ({
         id: product.id,
         isActive: product.isActive,
+        organizationId: product.organizationId,
         name: product.name,
         slug: product.slug,
         minStock: Number(product.minStock),
@@ -83,6 +91,10 @@ export const listProducts = base
         salePrice: Number(product.salePrice),
         images: product.images,
       }));
+
+      if (catalogSettings?.sortOrder) {
+        productList = sortProducts(productList, catalogSettings.sortOrder);
+      }
 
       const categoryList = categories.map((category) => ({
         id: category.id,

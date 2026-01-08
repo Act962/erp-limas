@@ -15,6 +15,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { deliveryMethodsConfig, paymentMethodsConfig } from "../types/payments";
 import { useUserStore } from "../context/use-cart-session";
+import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
@@ -62,20 +63,23 @@ export function Checkout({ subdomain }: CheckoutProps) {
     });
 
   const { catalogSettings } = data;
+  const { data: catalogSettings, isLoading } = useCatalogSettings({
+    subdomain,
+  });
 
   // Filtrar apenas os métodos de pagamento disponíveis
   const availablePaymentMethods = useMemo(() => {
-    return catalogSettings.paymentMethodSettings.filter(
+    return catalogSettings?.paymentMethodSettings.filter(
       (method) => method in paymentMethodsConfig
     );
-  }, [catalogSettings.paymentMethodSettings]);
+  }, [catalogSettings?.paymentMethodSettings]);
 
   // Filtrar apenas os métodos de entrega disponíveis
   const availableDeliveryMethods = useMemo(() => {
-    return catalogSettings.deliveryMethods.filter(
+    return catalogSettings?.deliveryMethods.filter(
       (method) => method in deliveryMethodsConfig
     );
-  }, [catalogSettings.deliveryMethods]);
+  }, [catalogSettings?.deliveryMethods]);
 
   // Calcular total do carrinho
   const subtotal = cartItems.reduce(
@@ -98,7 +102,7 @@ export function Checkout({ subdomain }: CheckoutProps) {
       freightValuePerKg,
       freeShippingEnabled,
       freeShippingMinValue,
-    } = catalogSettings;
+    } = catalogSettings || {};
 
     // Se frete grátis estiver habilitado e o valor mínimo for atingido
     if (freeShippingEnabled && subtotal >= Number(freeShippingMinValue)) {
@@ -133,19 +137,27 @@ export function Checkout({ subdomain }: CheckoutProps) {
 
   // Verificar se frete grátis foi aplicado
   const isFreeShippingApplied =
-    catalogSettings.freeShippingEnabled &&
-    subtotal >= Number(catalogSettings.freeShippingMinValue) &&
+    catalogSettings?.freeShippingEnabled &&
+    subtotal >= Number(catalogSettings?.freeShippingMinValue) &&
     freightValue === 0;
 
   // Definir o primeiro método disponível como padrão
   useEffect(() => {
-    if (availablePaymentMethods.length > 0 && !paymentMethod) {
+    if (
+      availablePaymentMethods &&
+      availablePaymentMethods.length > 0 &&
+      !paymentMethod
+    ) {
       setPaymentMethod(availablePaymentMethods[0]);
     }
   }, [availablePaymentMethods, paymentMethod]);
 
   useEffect(() => {
-    if (availableDeliveryMethods.length > 0 && !deliveryMethod) {
+    if (
+      availableDeliveryMethods &&
+      availableDeliveryMethods.length > 0 &&
+      !deliveryMethod
+    ) {
       setDeliveryMethod(availableDeliveryMethods[0]);
     }
   }, [availableDeliveryMethods, deliveryMethod]);
@@ -200,10 +212,10 @@ export function Checkout({ subdomain }: CheckoutProps) {
     if (freightValue > 0) {
       message += `*Valor do frete:* R$ ${freightValue.toFixed(2)}\n`;
     } else if (isFreeShippingApplied) {
-      message += `*Frete:* Grátis (pedido acima de R$ ${catalogSettings.freeShippingMinValue})\n`;
+      message += `*Frete:* Grátis (pedido acima de R$ ${catalogSettings?.freeShippingMinValue})\n`;
     } else if (
-      catalogSettings.freightOptions === "NEGOTIATE_WHATSAPP" ||
-      catalogSettings.freightOptions === "NEGOTIATE_FREIGHT"
+      catalogSettings?.freightOptions === "NEGOTIATE_WHATSAPP" ||
+      catalogSettings?.freightOptions === "NEGOTIATE_FREIGHT"
     ) {
       message += `*Frete:* A combinar\n`;
     }
@@ -256,7 +268,8 @@ export function Checkout({ subdomain }: CheckoutProps) {
               <CardTitle>Método de Entrega</CardTitle>
             </CardHeader>
             <CardContent>
-              {availableDeliveryMethods.length > 0 ? (
+              {availableDeliveryMethods &&
+              availableDeliveryMethods.length > 0 ? (
                 <RadioGroup
                   value={deliveryMethod}
                   onValueChange={(value) => setDeliveryMethod(value)}
@@ -311,7 +324,7 @@ export function Checkout({ subdomain }: CheckoutProps) {
               )}
 
               {/* Informações sobre o frete */}
-              {catalogSettings.deliverySpecialInfo && (
+              {catalogSettings?.deliverySpecialInfo && (
                 <div className="mt-4 p-3 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground">
                     {catalogSettings.deliverySpecialInfo}
@@ -327,7 +340,7 @@ export function Checkout({ subdomain }: CheckoutProps) {
               <CardTitle>Forma de Pagamento</CardTitle>
             </CardHeader>
             <CardContent>
-              {availablePaymentMethods.length > 0 ? (
+              {availablePaymentMethods && availablePaymentMethods.length > 0 ? (
                 <RadioGroup
                   value={paymentMethod}
                   onValueChange={(value) => setPaymentMethod(value)}
@@ -436,9 +449,9 @@ export function Checkout({ subdomain }: CheckoutProps) {
                 </div>
 
                 {/* Mensagem de frete grátis próximo */}
-                {catalogSettings.freeShippingEnabled &&
+                {catalogSettings?.freeShippingEnabled &&
                   !isFreeShippingApplied &&
-                  subtotal < Number(catalogSettings.freeShippingMinValue) && (
+                  subtotal < Number(catalogSettings?.freeShippingMinValue) && (
                     <p className="text-xs text-muted-foreground text-center pt-2">
                       Faltam R${" "}
                       {currencyFormatter(
@@ -454,9 +467,8 @@ export function Checkout({ subdomain }: CheckoutProps) {
                 size="lg"
                 onClick={onCheckout}
                 disabled={
-                  availablePaymentMethods.length === 0 ||
-                  availableDeliveryMethods.length === 0 ||
-                  purchase.isPending
+                  availablePaymentMethods?.length === 0 ||
+                  availableDeliveryMethods?.length === 0
                 }
               >
                 Confirmar Pedido

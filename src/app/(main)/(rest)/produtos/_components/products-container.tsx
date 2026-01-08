@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ProductsTable } from "./products-table";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
 import { useMemo, useEffect } from "react";
+import { useProducts } from "@/fealtures/products/hooks/use-products";
 
 export function ProductsContainer() {
   const [category] = useQueryState("category");
@@ -30,27 +31,13 @@ export function ProductsContainer() {
         : undefined,
       date_end: date_end ? dayjs(date_end).endOf("day").toDate() : undefined,
     }),
-    [category, sku, minValue, maxValue, date_init, date_end]
+    [category, sku, minValue, maxValue]
   );
 
-  const { data: Products } = useSuspenseQuery(
-    orpc.products.list.queryOptions({
-      input: queryInput,
-    })
-  );
+  const { data: products } = useProducts(queryInput);
 
-  const { products } = Products;
   const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());
   const { categories } = data;
-
-  const productsWithUrls = useMemo(
-    () =>
-      products.map((product) => ({
-        ...product,
-        image: product.image ? useConstructUrl(product.image) : "",
-      })),
-    [products]
-  );
 
   return (
     <div className="px-4 mt-8 space-y-4">

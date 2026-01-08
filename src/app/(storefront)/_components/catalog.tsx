@@ -10,7 +10,8 @@ import Autoplay from "embla-carousel-autoplay";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
-import { sortProducts } from "@/utils/sorteble-products";
+import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
+import { Skeleton } from "@/components/ui/skeleton";
 interface CatalogProps {
   subdomain: string;
 }
@@ -18,13 +19,10 @@ export function Catalog({ subdomain }: CatalogProps) {
   const options: EmblaOptionsType = { loop: true };
   const [categoryParam] = useQueryState("category");
 
-  const { data } = useSuspenseQuery(
-    orpc.catalogSettings.public.queryOptions({
-      input: {
-        subdomain: subdomain,
-      },
-    })
-  );
+  const { data: catalogSettings, isLoading } = useCatalogSettings({
+    subdomain,
+  });
+
   const { data: listProducts } = useSuspenseQuery(
     orpc.catalogSettings.listProducts.queryOptions({
       input: {
@@ -35,13 +33,10 @@ export function Catalog({ subdomain }: CatalogProps) {
   );
 
   const { products, categories } = listProducts;
-  const { catalogSettings } = data;
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
     Autoplay({ playOnInit: true, delay: 4000 }),
   ]);
-
-  const sortedProducts = sortProducts(products, catalogSettings.sortOrder);
 
   const mockedImagesCatalog = [
     "https://picsum.photos/800/200?random=1",
@@ -56,17 +51,47 @@ export function Catalog({ subdomain }: CatalogProps) {
     "https://picsum.photos/800/200?random=10",
   ];
 
-  const filteredProducts = useMemo(() => {
-    if (!categoryParam) {
-      return sortedProducts;
-    }
-
-    const selectedSlugs = categoryParam.split(",").map((s) => s.trim());
-
-    return sortedProducts.filter((product) =>
-      selectedSlugs.includes(product.categorySlug)
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto justify-center">
+        <div className="flex flex-col w-full justify-between px-3">
+          {/*Carousel */}
+          <div className="overflow-hidden size-full mt-7" ref={emblaRef}>
+            <div className="flex gap-2 size-full">
+              {Array.from({ length: 10 }).map((_, index) => (
+                <div
+                  className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full"
+                  key={`image-carousel-${index}`}
+                >
+                  <Skeleton
+                    className="h-64 w-full bg-accent-foreground/10"
+                    key={index}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6 ">
+            <Skeleton className="w-24 h-6 bg-accent-foreground/10" />
+            <Skeleton className="w-24 h-6 bg-accent-foreground/10" />
+          </div>
+          <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="h-64 w-full bg-accent-foreground/10"
+              />
+            ))}
+          </ul>
+        </div>
+      </div>
     );
-  }, [categoryParam]);
+  }
+
+  if (catalogSettings === undefined) {
+    console.log("Catalog settings not found", catalogSettings);
+    return notFound();
+  }
 
   if (catalogSettings.isActive === false) {
     return notFound();
@@ -94,12 +119,12 @@ export function Catalog({ subdomain }: CatalogProps) {
         </div>
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6 ">
           <span className="hidden sm:block text-sm text-muted-foreground">
-            {filteredProducts.length} produto(s) encontrado(s)
+            {products.length} produto(s) encontrado(s)
           </span>
           <FiltersCatalog categories={categories} />
         </div>
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {sortedProducts.map((product, index) => (
+          {products.map((product, index) => (
             <ProductCard
               key={`product-${product.id}-${index}`}
               id={product.id}

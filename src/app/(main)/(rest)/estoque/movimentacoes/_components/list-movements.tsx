@@ -34,6 +34,9 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
+import { CalendarFilter } from "../../../produtos/_components/filter-calendar";
+import { FilterMoviments } from "./filters";
+import { useQueryState } from "nuqs";
 
 const movementTypeConfig = {
   ENTRADA: {
@@ -68,9 +71,21 @@ const movementTypeConfig = {
   },
 };
 
-export function ListMovements() {
+export interface UserBase {
+  id: string;
+  name: string;
+  email: string;
+  image: string | null | undefined;
+}
+
+interface ListMovementsProps {
+  members: UserBase[];
+}
+
+export function ListMovements({ members }: ListMovementsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [users] = useQueryState("users");
 
   const {
     data: { moviments },
@@ -80,6 +95,7 @@ export function ListMovements() {
       input: {
         offset: 1,
         limit: 100,
+        userIds: users?.split(",").map((user) => user.trim()),
       },
     })
   );
@@ -145,10 +161,8 @@ export function ListMovements() {
                   <SelectItem value="month">Este mês</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filtros
-              </Button>
+              <CalendarFilter />
+              <FilterMoviments members={members} />
             </div>
           </CardHeader>
           <CardContent>

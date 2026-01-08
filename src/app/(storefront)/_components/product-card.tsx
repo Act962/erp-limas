@@ -61,17 +61,15 @@ export function ProductCard({
       transition-shadow overflow-hidden animate-fade-in
       hover:shadow-lg hover:shadow-elegant"
     >
-      {thumbnail && (
-        <div className="aspect-square overflow-hidden w-full relative">
-          <Image
-            className="object-cover transition-transform rounded-sm cursor-pointer"
-            src={thumbnail ? useConstructUrl(thumbnail) : ""}
-            alt={name}
-            fill
-            onClick={() => router.push(`/${slug}`)}
-          />
-        </div>
-      )}
+      <div className="aspect-square overflow-hidden w-full relative">
+        <Image
+          className="object-cover transition-transform rounded-sm cursor-pointer"
+          src={thumbnail ? useConstructUrl(thumbnail) : ""}
+          alt={name}
+          fill
+          onClick={() => router.push(`/${slug}`)}
+        />
+      </div>
       <div className="flex flex-col items-center w-full px-5">
         <Tooltip>
           <TooltipTrigger asChild>

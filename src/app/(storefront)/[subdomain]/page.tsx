@@ -28,14 +28,6 @@ export default async function Page({
   const queryClient = getQueryClient();
 
   await queryClient.prefetchQuery(
-    orpc.catalogSettings.public.queryOptions({
-      input: {
-        subdomain: subdomain,
-      },
-    })
-  );
-
-  await queryClient.prefetchQuery(
     orpc.catalogSettings.listProducts.queryOptions({
       input: {
         subdomain: subdomain,
