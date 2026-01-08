@@ -41,7 +41,7 @@ export interface CatalogSettingsProps {
   contactEmail: string;
   metaTitle: string;
   metaDescription: string;
-  bannerImage: string;
+  logo: string;
   aboutText: string;
   theme: string;
   instagram: string;
@@ -86,7 +86,7 @@ export function CatalogSettings() {
     contactEmail: catalogSettings.contactEmail ?? "",
     metaTitle: catalogSettings.metaTitle ?? "",
     metaDescription: catalogSettings.metaDescription ?? "",
-    bannerImage: catalogSettings.bannerImage ?? "",
+    logo: catalogSettings.logo ?? "",
     aboutText: catalogSettings.aboutText ?? "",
     theme: catalogSettings.theme ?? "",
     instagram: catalogSettings.instagram ?? "",
@@ -138,7 +138,7 @@ export function CatalogSettings() {
       contactEmail: debounceUpdate.contactEmail,
       metaTitle: debounceUpdate.metaTitle,
       metaDescription: debounceUpdate.metaDescription,
-      bannerImage: debounceUpdate.bannerImage,
+      logo: debounceUpdate.logo,
       aboutText: debounceUpdate.aboutText,
       theme: debounceUpdate.theme,
       instagram: debounceUpdate.instagram,

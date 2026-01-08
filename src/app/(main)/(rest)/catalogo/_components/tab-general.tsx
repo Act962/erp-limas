@@ -16,16 +16,16 @@ interface GeneralTabProps {
 }
 
 export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
-  const [bannerImage, setBannerImage] = useState(settings.bannerImage);
+  const [bannerImage, setBannerImage] = useState(settings.logo);
 
   const handlerUpload = (value: string) => {
     setBannerImage(value);
-    setSettings({ ...settings, bannerImage: value });
+    setSettings({ ...settings, logo: value });
   };
 
   useEffect(() => {
-    setBannerImage(settings.bannerImage);
-  }, [settings.bannerImage]);
+    setBannerImage(settings.logo);
+  }, [settings.logo]);
 
   return (
     <div className="space-y-6 mt-4">

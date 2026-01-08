@@ -32,14 +32,6 @@ export function Checkout({ subdomain }: CheckoutProps) {
   const { cartItems } = useShoppingCart();
   const { user } = useUserStore();
 
-  const { data } = useSuspenseQuery(
-    orpc.catalogSettings.public.queryOptions({
-      input: {
-        subdomain: subdomain,
-      },
-    })
-  );
-
   const purchase = useMutation(
     orpc.checkout.purchase.mutationOptions({
       onSuccess: (data) => {
@@ -62,7 +54,6 @@ export function Checkout({ subdomain }: CheckoutProps) {
       email: user?.email || "",
     });
 
-  const { catalogSettings } = data;
   const { data: catalogSettings, isLoading } = useCatalogSettings({
     subdomain,
   });
@@ -468,7 +459,8 @@ export function Checkout({ subdomain }: CheckoutProps) {
                 onClick={onCheckout}
                 disabled={
                   availablePaymentMethods?.length === 0 ||
-                  availableDeliveryMethods?.length === 0
+                  availableDeliveryMethods?.length === 0 ||
+                  purchase.isPending
                 }
               >
                 Confirmar Pedido
