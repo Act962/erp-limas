@@ -33,6 +33,7 @@ export const signupCatalog = base
         email: {
           equals: input.email,
         },
+        organizationId: organization.id,
       },
     });
 
@@ -48,6 +49,14 @@ export const signupCatalog = base
         email: input.email,
         passwordHash: hashedPassword,
         organizationId: organization.id,
+        customer: {
+          create: {
+            name: input.name,
+            email: input.email,
+            document: "",
+            organizationId: organization.id,
+          },
+        },
       },
     });
 

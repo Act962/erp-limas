@@ -11,9 +11,10 @@ import { useState, useMemo, useEffect } from "react";
 import { useShoppingCart } from "@/hooks/use-product";
 import { toast } from "sonner";
 import { currencyFormatter } from "@/utils/currency-formatter";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { deliveryMethodsConfig, paymentMethodsConfig } from "../types/payments";
+import { useUserStore } from "../context/use-cart-session";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
@@ -28,6 +29,7 @@ export function Checkout({ subdomain }: CheckoutProps) {
   const [address, setAddress] = useState("");
   const [observations, setObservations] = useState("");
   const { cartItems } = useShoppingCart();
+  const { user } = useUserStore();
 
   const { data } = useSuspenseQuery(
     orpc.catalogSettings.public.queryOptions({
@@ -36,6 +38,28 @@ export function Checkout({ subdomain }: CheckoutProps) {
       },
     })
   );
+
+  const purchase = useMutation(
+    orpc.checkout.purchase.mutationOptions({
+      onSuccess: (data) => {
+        window.location.href = data.url;
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
+  );
+
+  const onCheckout = () =>
+    purchase.mutate({
+      domain: subdomain,
+      products: cartItems.map((item) => ({
+        id: item.id.toString(),
+        quantity: item.quantity,
+      })),
+      customerId: user?.id || "",
+      email: user?.email || "",
+    });
 
   const { catalogSettings } = data;
 
@@ -428,10 +452,11 @@ export function Checkout({ subdomain }: CheckoutProps) {
               <Button
                 className="w-full"
                 size="lg"
-                onClick={handleConfirmOrder}
+                onClick={onCheckout}
                 disabled={
                   availablePaymentMethods.length === 0 ||
-                  availableDeliveryMethods.length === 0
+                  availableDeliveryMethods.length === 0 ||
+                  purchase.isPending
                 }
               >
                 Confirmar Pedido
