@@ -66,6 +66,7 @@ export default async function SubdomainLayout({
           metaTitle: settings.metaTitle,
           theme: settings.theme,
           organizationId: org.id,
+          bannerImage: settings.bannerImage,
         }}
       />
       <main className="mt-15 sm:mt-19 h-full">{children}</main>

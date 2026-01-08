@@ -29,23 +29,6 @@ export function TabCustomization({
       <Card className="p-6">
         <div className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="bannerImage">URL da Imagem do Banner</Label>
-            <Input
-              id="bannerImage"
-              placeholder="https://exemplo.com/banner.jpg"
-              value={settings.bannerImage}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  bannerImage: e.target.value,
-                })
-              }
-            />
-            <p className="text-xs text-muted-foreground">
-              Aparecerá no topo do catálogo
-            </p>
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="carouselImage">Carrossel inicial</Label>
 
             <Field className="text-center">
