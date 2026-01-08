@@ -11,6 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
 import { sortProducts } from "@/utils/sorteble-products";
+import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 interface CatalogProps {
   subdomain: string;
 }
@@ -18,13 +19,12 @@ export function Catalog({ subdomain }: CatalogProps) {
   const options: EmblaOptionsType = { loop: true };
   const [categoryParam] = useQueryState("category");
 
-  const { data } = useSuspenseQuery(
-    orpc.catalogSettings.public.queryOptions({
-      input: {
-        subdomain: subdomain,
-      },
-    })
-  );
+  const { data: catalogSettings } = useCatalogSettings({ subdomain });
+
+  if (!catalogSettings) {
+    return notFound();
+  }
+
   const { data: listProducts } = useSuspenseQuery(
     orpc.catalogSettings.listProducts.queryOptions({
       input: {
@@ -35,7 +35,6 @@ export function Catalog({ subdomain }: CatalogProps) {
   );
 
   const { products, categories } = listProducts;
-  const { catalogSettings } = data;
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
     Autoplay({ playOnInit: true, delay: 4000 }),
