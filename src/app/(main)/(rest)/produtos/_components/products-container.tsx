@@ -43,15 +43,6 @@ export function ProductsContainer() {
   const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());
   const { categories } = data;
 
-  const productsWithUrls = useMemo(
-    () =>
-      products.map((product) => ({
-        ...product,
-        image: product.image ? useConstructUrl(product.image) : "",
-      })),
-    [products]
-  );
-
   return (
     <div className="px-4 mt-8 space-y-4">
       <div className="flex items-center justify-between">
