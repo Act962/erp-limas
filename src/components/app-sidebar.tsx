@@ -28,6 +28,7 @@ import {
   Store,
   Tag,
   TrendingUp,
+  UsersIcon,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -97,11 +98,11 @@ const navigation = [
   //     { name: "Fluxo de Caixa", href: "/financeiro/fluxo", icon: CreditCard },
   //   ],
   // },
-  // {
-  //   name: "Clientes",
-  //   href: "/clientes",
-  //   icon: Users,
-  // },
+  {
+    name: "Clientes",
+    href: "/clientes",
+    icon: UsersIcon,
+  },
   // {
   //   name: "Fornecedores",
   //   href: "/fornecedores",
