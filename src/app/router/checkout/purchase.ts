@@ -87,6 +87,8 @@ export const purchase = base
 
     const url = `http://${input.domain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
 
+    console.log(url);
+
     const checkout = await stripe.checkout.sessions.create({
       customer_email: input.email,
       success_url: `${url}/checkout?success=true`,
