@@ -85,7 +85,7 @@ export const purchase = base
         };
       });
 
-    const url = `http://${input.domain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
+    const url = `https://${input.domain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
 
     console.log(url);
 
