@@ -452,7 +452,7 @@ model Customer {
   // Identificação
   name           String
   personType     PersonType   @default(FISICA)
-  document       String // CPF ou CNPJ
+  document       String? // CPF ou CNPJ
   email          String?
   phone          String?
   // Endereço
@@ -476,7 +476,7 @@ model Customer {
   clientId String? @unique
   
 
-  @@unique([organizationId, document])
+  // @@unique([organizationId, document])
   @@index([organizationId])
   @@index([document])
   @@index([email])
