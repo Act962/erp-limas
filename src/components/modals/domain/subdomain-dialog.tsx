@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { CheckCircle2, Edit2, Loader2 } from "lucide-react";
+import { ArrowUpRightIcon, CheckCircle2, Edit2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
@@ -28,6 +28,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const DEFAULT_DOMAIN =
   process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
@@ -185,15 +186,23 @@ export function SubdomainDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        {isPending ? (
-          <Skeleton className="h-10 w-[310px]" />
-        ) : (
-          <Button variant="secondary">
-            {CUSTOM_DOMAIN} <Edit2 className="size-4" />
-          </Button>
-        )}
-      </DialogTrigger>
+      <div className="flex items-center gap-2">
+        <DialogTrigger asChild>
+          {isPending ? (
+            <Skeleton className="h-10 w-77.5" />
+          ) : (
+            <Button variant="secondary">
+              {CUSTOM_DOMAIN} <Edit2 className="size-4" />
+            </Button>
+          )}
+        </DialogTrigger>
+        <Button variant="secondary" size="icon" asChild>
+          <Link href={EDIT_DOMAIN} target="_blank">
+            <ArrowUpRightIcon className="size-4" />
+          </Link>
+        </Button>
+      </div>
+
       <DialogContent showCloseButton={false} className="sm:max-w-xl">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <DialogHeader>
