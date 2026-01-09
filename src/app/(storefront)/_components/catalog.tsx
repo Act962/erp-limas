@@ -12,6 +12,7 @@ import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCatalogProducts } from "@/fealtures/storefront/hooks/use-catalog-products";
 interface CatalogProps {
   subdomain: string;
 }
@@ -23,16 +24,10 @@ export function Catalog({ subdomain }: CatalogProps) {
     subdomain,
   });
 
-  const { data: listProducts } = useSuspenseQuery(
-    orpc.catalogSettings.listProducts.queryOptions({
-      input: {
-        subdomain: subdomain,
-        categorySlug: categoryParam?.split(",").map((s) => s.trim()),
-      },
-    })
-  );
-
-  const { products, categories } = listProducts;
+  const { data, isLoadingProducts } = useCatalogProducts({
+    subdomain,
+    categoriesSlugs: categoryParam?.split(",").map((s) => s.trim()),
+  });
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
     Autoplay({ playOnInit: true, delay: 4000 }),
@@ -51,7 +46,7 @@ export function Catalog({ subdomain }: CatalogProps) {
     "https://picsum.photos/800/200?random=10",
   ];
 
-  if (isLoading) {
+  if (isLoading || isLoadingProducts) {
     return (
       <div className="w-full max-w-6xl mx-auto justify-center">
         <div className="flex flex-col w-full justify-between px-3">
@@ -93,9 +88,16 @@ export function Catalog({ subdomain }: CatalogProps) {
     return notFound();
   }
 
+  if (data === undefined) {
+    console.log("Produtos não encontrados", data);
+    return notFound();
+  }
+
   if (catalogSettings.isActive === false) {
     return notFound();
   }
+
+  const { products, categories } = data;
 
   return (
     <div className="w-full max-w-6xl mx-auto justify-center">
@@ -127,6 +129,7 @@ export function Catalog({ subdomain }: CatalogProps) {
           {products.map((product, index) => (
             <ProductCard
               key={`product-${product.id}-${index}`}
+              description={product.description ?? ""}
               id={product.id}
               organizationId={product.organizationId}
               name={product.name}

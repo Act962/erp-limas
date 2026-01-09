@@ -6,13 +6,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import placeholder from "@/assets/background-default-image.svg";
 
 import { Button } from "@/components/ui/button";
 import { Copy, Eye, MoreVertical, Pencil, Search, Trash2 } from "lucide-react";
@@ -26,7 +20,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +36,7 @@ import { toast } from "sonner";
 import { FilterProducts } from "./filters";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { CalendarFilter } from "./filter-calendar";
+import Image from "next/image";
 
 interface Product {
   id: string;
@@ -222,15 +216,13 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 rounded-md">
-                          <AvatarImage
-                            src={product.image || "/placeholder.svg"}
-                            alt={product.name}
-                          />
-                          <AvatarFallback>
-                            {product.name.substring(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Image
+                          src={product.image || placeholder}
+                          alt={product.name}
+                          width={40}
+                          height={40}
+                          className="rounded-md"
+                        />
                         <div>
                           <div className="font-medium">{product.name}</div>
                           <div className="text-xs text-muted-foreground">

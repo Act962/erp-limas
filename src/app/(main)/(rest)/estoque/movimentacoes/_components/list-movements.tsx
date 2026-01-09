@@ -5,14 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
-import {
   Table,
   TableBody,
   TableCell,
@@ -21,13 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { orpc } from "@/lib/orpc";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   ArrowDownRight,
   ArrowUpRight,
   Eye,
-  Filter,
   PackageX,
   Pencil,
   Search,
@@ -37,6 +26,9 @@ import { useState } from "react";
 import { CalendarFilter } from "../../../produtos/_components/filter-calendar";
 import { FilterMoviments } from "./filters";
 import { useQueryState } from "nuqs";
+import { useStock } from "@/fealtures/stock/hooks/use-stock";
+import { Skeleton } from "@/components/ui/skeleton";
+import dayjs from "dayjs";
 
 const movementTypeConfig = {
   ENTRADA: {
@@ -85,27 +77,22 @@ interface ListMovementsProps {
 export function ListMovements({ members }: ListMovementsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [dateInit] = useQueryState("date_init");
+  const [dateEnd] = useQueryState("date_end");
   const [users] = useQueryState("users");
 
-  const {
-    data: { moviments },
-    isPending,
-  } = useSuspenseQuery(
-    orpc.stocks.list.queryOptions({
-      input: {
-        offset: 1,
-        limit: 100,
-        userIds: users?.split(",").map((user) => user.trim()),
-      },
-    })
-  );
+  const { data, isStockLoading } = useStock({
+    limit: 100,
+    offset: 1,
+    userIds: users?.split(",").map((user) => user.trim()),
+    dateInit: dateInit ? dayjs(dateInit).startOf("day").toDate() : undefined,
+    dateEnd: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
+  });
 
-  const filteredMovements = moviments.filter((movement) => {
+  const filteredMovements = data.filter((movement) => {
     const matchesSearch = movement.product.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    // ||
-    // movement?.product.sku.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesType = typeFilter === "all" || movement.type === typeFilter;
 
@@ -150,17 +137,6 @@ export function ListMovements({ members }: ListMovementsProps) {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os períodos</SelectItem>
-                  <SelectItem value="today">Hoje</SelectItem>
-                  <SelectItem value="week">Esta semana</SelectItem>
-                  <SelectItem value="month">Este mês</SelectItem>
-                </SelectContent>
-              </Select>
               <CalendarFilter />
               <FilterMoviments members={members} />
             </div>
@@ -184,14 +160,17 @@ export function ListMovements({ members }: ListMovementsProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isPending && (
+                  {isStockLoading && (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center">
-                        <Spinner />
+                      <TableCell colSpan={9} className="text-center space-y-2">
+                        <Skeleton className="h-10" />
+                        <Skeleton className="h-10" />
+                        <Skeleton className="h-10" />
+                        <Skeleton className="h-10" />
                       </TableCell>
                     </TableRow>
                   )}
-                  {!isPending && filteredMovements.length === 0 && (
+                  {!isStockLoading && data.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={9} className="text-center">
                         <span className="text-muted-foreground text-sm">
@@ -200,7 +179,7 @@ export function ListMovements({ members }: ListMovementsProps) {
                       </TableCell>
                     </TableRow>
                   )}
-                  {!isPending &&
+                  {!isStockLoading &&
                     filteredMovements.length > 0 &&
                     filteredMovements.map((movement) => {
                       const config =
@@ -281,7 +260,7 @@ export function ListMovements({ members }: ListMovementsProps) {
 
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Mostrando {filteredMovements.length} de {moviments.length}{" "}
+                Mostrando {filteredMovements.length} de {data.length}{" "}
                 movimentações
               </p>
               <div className="flex items-center gap-2">

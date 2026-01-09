@@ -19,6 +19,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import Image from "next/image";
+import placeholder from "@/assets/background-default-image.svg";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -70,6 +71,11 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     setIsMounted(true);
   }, []);
 
+  const imageSrc =
+    product.thumbnail && product.thumbnail.trim() !== ""
+      ? useConstructUrl(product.thumbnail)
+      : placeholder;
+
   return (
     <div className="mx-auto w-full max-w-5xl py-8 ">
       <div
@@ -94,7 +100,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                       key={`image-carousel-${index}`}
                     >
                       <img
-                        src={image}
+                        src={imageSrc}
                         alt={`imagem do ${product.name}`}
                         className="object-cover rounded-2xl size-full"
                       />
@@ -142,7 +148,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             <div className="items-center w-full">
               <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1 relative">
                 <Image
-                  src={useConstructUrl(imageSelected)}
+                  src={imageSrc}
                   alt={product.name}
                   fill
                   className="rounded-2xl object-contain size-full"
@@ -210,7 +216,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               >
                 <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center relative">
                   <Image
-                    src={useConstructUrl(product.thumbnail)}
+                    src={imageSrc}
                     alt={product.name}
                     fill
                     className="object-cover"

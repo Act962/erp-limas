@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import placeholder from "@/assets/background-default-image.svg";
 
 interface ProductCardProps extends ProductCatalog {
   allowsOrders?: boolean;
@@ -22,6 +23,7 @@ interface ProductCardProps extends ProductCatalog {
 export function ProductCard({
   id,
   name,
+  description,
   salePrice,
   thumbnail,
   allowsOrders,
@@ -53,6 +55,11 @@ export function ProductCard({
   const showAsInCart = isMounted && productInCart;
   const isDisabled = isMounted && productInCart;
 
+  const imageSrc =
+    thumbnail && thumbnail.trim() !== ""
+      ? useConstructUrl(thumbnail)
+      : placeholder;
+
   return (
     <div
       id={id}
@@ -61,10 +68,10 @@ export function ProductCard({
       transition-shadow overflow-hidden animate-fade-in
       hover:shadow-lg hover:shadow-elegant"
     >
-      <div className="aspect-square overflow-hidden w-full relative">
+      <div className="aspect-square overflow-hidden w-full relative h-45">
         <Image
           className="object-cover transition-transform rounded-sm cursor-pointer"
-          src={thumbnail ? useConstructUrl(thumbnail) : ""}
+          src={imageSrc}
           alt={name}
           fill
           onClick={() => router.push(`/${slug}`)}
@@ -79,6 +86,14 @@ export function ProductCard({
           </TooltipTrigger>
           <TooltipContent>
             <p>{name}</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <h2 className="text-xs line-clamp-2 min-h-[35px]">{description}</h2>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{description}</p>
           </TooltipContent>
         </Tooltip>
 

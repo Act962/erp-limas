@@ -9,6 +9,7 @@ import { useShoppingCart } from "@/hooks/use-product";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { useUserStore } from "../context/use-cart-session";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import placeholder from "@/assets/background-default-image.svg";
 
 export function Cart() {
   const { user } = useUserStore();
@@ -69,7 +70,9 @@ export function Cart() {
                     <div className="flex gap-4">
                       <img
                         src={
-                          item.thumbnail ? useConstructUrl(item.thumbnail) : ""
+                          item.thumbnail
+                            ? useConstructUrl(item.thumbnail)
+                            : placeholder
                         }
                         alt={item.name}
                         className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded-lg"

@@ -3,6 +3,7 @@ import { Header } from "../_components/header-catalog";
 import { notFound } from "next/navigation";
 import { Footer } from "../_components/footer";
 import type { Metadata } from "next";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface StoreFrontLayoutProps {
   children: React.ReactNode;
@@ -38,6 +39,12 @@ export async function generateMetadata({
   return {
     title: catalogSettings?.metaTitle || org.name,
     description: catalogSettings?.metaDescription || org.name,
+    icons: [
+      {
+        url: useConstructUrl(catalogSettings?.logo || ""),
+        type: "image/png",
+      },
+    ],
   };
 }
 
