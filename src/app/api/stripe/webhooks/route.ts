@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/db";
 import { ExpandedLineItem } from "@/context/checkout/types";
+import { SaleStatus } from "@/generated/prisma/enums";
 
 export async function POST(req: Request) {
   console.log("Chegou aqui!!!");
@@ -111,6 +112,7 @@ export async function POST(req: Request) {
               subtotal,
               total,
               saleNumber,
+              status: SaleStatus.CONFIRMED,
               items: {
                 createMany: {
                   data: lineItems.map((item) => ({

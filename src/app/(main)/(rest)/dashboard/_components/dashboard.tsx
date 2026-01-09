@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -26,8 +28,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/page-header";
+import { useDashboard } from "@/fealtures/dashboard/hooks/use-dashboars";
+import { formatCurrencyInput } from "@/utils/currency-formatter";
+import { formatDistanceToNow } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ptBR } from "date-fns/locale";
+import {
+  getSaleStatusBadgeClass,
+  getSaleStatusLabel,
+} from "@/utils/convert-sale-status";
 
 export default function DashboardPage() {
+  const { data, isDashboardLoading } = useDashboard({});
+
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard" description="Visão geral do seu negócio" />
@@ -42,7 +55,13 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">R$ 45.231,89</div>
+            <div className="text-2xl font-semibold">
+              {isDashboardLoading ? (
+                <Skeleton className="h-6 w-20" />
+              ) : (
+                <>{data?.salesTotal}</>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               <ArrowUpRight className="h-3 w-3 text-green-500" />
               <span className="text-green-500">+12.5%</span> desde o mês passado
@@ -58,7 +77,13 @@ export default function DashboardPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">1.234</div>
+            <div className="text-2xl font-semibold">
+              {isDashboardLoading ? (
+                <Skeleton className="h-6 w-20" />
+              ) : (
+                <>{data?.productsActive}</>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               <Plus className="h-3 w-3 text-green-500" />
               <span className="text-green-500">+5</span> novos hoje
@@ -74,7 +99,13 @@ export default function DashboardPage() {
             <AlertTriangle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">23</div>
+            <div className="text-2xl font-semibold">
+              {isDashboardLoading ? (
+                <Skeleton className="h-6 w-20" />
+              ) : (
+                <>{data?.productsLowStock}</>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               <ArrowDownRight className="h-3 w-3 text-red-500" />
               <span className="text-red-500">-3</span> desde ontem
@@ -90,7 +121,13 @@ export default function DashboardPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">45</div>
+            <div className="text-2xl font-semibold">
+              {isDashboardLoading ? (
+                <Skeleton className="h-6 w-20" />
+              ) : (
+                <>{data?.salesToday}</>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
               <ArrowUpRight className="h-3 w-3 text-green-500" />
               <span className="text-green-500">+8</span> em relação a ontem
@@ -104,7 +141,9 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Últimas Vendas</CardTitle>
-            <CardDescription>Você teve 45 vendas hoje</CardDescription>
+            <CardDescription>
+              Você teve {data?.salesToday} vendas hoje
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -116,96 +155,64 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">João da Silva</div>
-                        <div className="text-xs text-muted-foreground">
-                          há 5 min
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-success text-success-foreground">
-                      Concluído
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">
-                    R$ 234,50
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>MS</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">Maria Santos</div>
-                        <div className="text-xs text-muted-foreground">
-                          há 12 min
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-primary text-primary-foreground">
-                      Confirmado
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">
-                    R$ 156,00
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>PC</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">Pedro Costa</div>
-                        <div className="text-xs text-muted-foreground">
-                          há 24 min
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-success text-success-foreground">
-                      Concluído
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">
-                    R$ 89,90
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>AL</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">Ana Lima</div>
-                        <div className="text-xs text-muted-foreground">
-                          há 1h
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">Rascunho</Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">
-                    R$ 450,00
-                  </TableCell>
-                </TableRow>
+                {isDashboardLoading
+                  ? // Skeleton para loading
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <TableRow key={`skeleton-${index}`}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="h-8 w-8 rounded-full" />
+                            <div className="space-y-2">
+                              <Skeleton className="h-4 w-32" />
+                              <Skeleton className="h-3 w-24" />
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-6 w-20" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Skeleton className="h-4 w-24 ml-auto" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : // Dados reais
+                    data?.latestSales.map((sale) => (
+                      <TableRow key={sale.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>
+                                {sale.customer.name.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">
+                                {sale.customer.name}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                há{" "}
+                                {formatDistanceToNow(new Date(sale.createdAt), {
+                                  locale: ptBR,
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`bg-success text-success-foreground ${getSaleStatusBadgeClass(
+                              sale.status
+                            )}`}
+                          >
+                            {getSaleStatusLabel(sale.status)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          R$ {formatCurrencyInput(sale.total.toString())}
+                        </TableCell>
+                      </TableRow>
+                    ))}
               </TableBody>
             </Table>
           </CardContent>
@@ -215,72 +222,71 @@ export default function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Produtos com Estoque Baixo</CardTitle>
-            <CardDescription>23 produtos precisam de atenção</CardDescription>
+            <CardDescription>
+              {data?.productsLowStock} produtos precisam de atenção
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {[
-                {
-                  name: "Notebook Dell Inspiron",
-                  sku: "NB-001",
-                  stock: 2,
-                  min: 5,
-                },
-                {
-                  name: "Mouse Logitech MX Master",
-                  sku: "MO-045",
-                  stock: 3,
-                  min: 10,
-                },
-                {
-                  name: "Teclado Mecânico RGB",
-                  sku: "TC-023",
-                  stock: 1,
-                  min: 8,
-                },
-                {
-                  name: "Monitor LG 24 Polegadas",
-                  sku: "MN-012",
-                  stock: 0,
-                  min: 5,
-                },
-                { name: "Webcam Full HD", sku: "WC-008", stock: 4, min: 12 },
-              ].map((product) => (
-                <div
-                  key={product.sku}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex-1">
-                    <div className="font-medium">{product.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      SKU: {product.sku}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <div className="text-sm font-medium">
-                        {product.stock} un
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Min: {product.min}
-                      </div>
-                    </div>
-                    <Badge
-                      className={
-                        product.stock === 0
-                          ? "bg-destructive text-white"
-                          : "bg-orange-500 text-white"
-                      }
+            <div className="space-y-4 ">
+              {isDashboardLoading
+                ? // Skeleton para loading
+                  Array.from({ length: 4 }).map((_, index) => (
+                    <div
+                      key={`skeleton-${index}`}
+                      className="flex items-center justify-between"
                     >
-                      {product.stock === 0 ? "Sem estoque" : "Baixo"}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
+                      <div className="flex-1">
+                        <Skeleton className="h-4 w-32 mb-2" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <Skeleton className="h-4 w-12 mb-1" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
+                        <Skeleton className="h-6 w-20" />
+                      </div>
+                    </div>
+                  ))
+                : // Dados reais
+                  data?.productWithLowStock.slice(0, 4).map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex-1">
+                        <div className="font-medium">{product.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          SKU: {product.sku || "N/A"}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className="text-sm font-medium">
+                            {product.stock} un
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Min: {product.stockMin}
+                          </div>
+                        </div>
+                        <Badge
+                          className={
+                            product.stock === 0
+                              ? "bg-destructive text-white"
+                              : "bg-orange-500 text-white"
+                          }
+                        >
+                          {product.stock === 0 ? "Sem estoque" : "Baixo"}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
             </div>
-            <Button variant="outline" className="w-full mt-4 bg-transparent">
-              Ver Todos os Alertas
-            </Button>
+            {data && data?.productsLowStock > 4 && (
+              <Button variant="outline" className="w-full mt-4 bg-transparent">
+                Ver Todos os Alertas
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

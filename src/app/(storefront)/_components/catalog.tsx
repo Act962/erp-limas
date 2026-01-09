@@ -26,7 +26,7 @@ export function Catalog({ subdomain }: CatalogProps) {
 
   const { data, isLoadingProducts } = useCatalogProducts({
     subdomain,
-    categoriesSlugs: categoryParam?.split(",").map((s) => s.trim()),
+    categorySlugs: categoryParam?.split(",").map((category) => category.trim()),
   });
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [

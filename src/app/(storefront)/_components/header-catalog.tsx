@@ -90,12 +90,16 @@ export function Header({ settings }: HeaderProps) {
               Sobre Nós
             </Button>
           </Link>
-
           {/* Carrinho */}
           <Popover open={modalIsOpen} onOpenChange={setModalIsOpen}>
             <PopoverTrigger asChild>
-              <Button variant="secondary" className="rounded-full">
+              <Button variant="secondary" className="rounded-full relative">
                 <Handbag className="size-4" />
+                {cartItems.length > 0 && (
+                  <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 text-center text-xs flex items-center justify-center rounded-full">
+                    {cartItems.length}
+                  </span>
+                )}
               </Button>
             </PopoverTrigger>
 
