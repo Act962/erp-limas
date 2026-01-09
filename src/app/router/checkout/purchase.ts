@@ -3,7 +3,7 @@ import { CheckoutMetadata, ProductMetadata } from "@/context/checkout/types";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe";
-import { constructUrl } from "@/lib/utils";
+import { constructUrl, getCustomDomain } from "@/lib/utils";
 import Stripe from "stripe";
 import z from "zod";
 
@@ -73,12 +73,13 @@ export const purchase = base
           try {
             new URL(imageUrl); // Lança erro se URL for inválida
             images = [imageUrl];
+
+            console.log(images);
           } catch (error) {
             console.error(
               `Invalid image URL for product ${product.id}:`,
               imageUrl
             );
-            // Não adiciona imagem - o Stripe continuará funcionando sem ela
           }
         }
 
@@ -102,7 +103,7 @@ export const purchase = base
         };
       });
 
-    const url = `https://${input.domain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
+    const url = getCustomDomain(input.domain);
 
     console.log(url);
 
