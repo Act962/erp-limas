@@ -13,6 +13,8 @@ import { notFound } from "next/navigation";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCatalogProducts } from "@/fealtures/storefront/hooks/use-catalog-products";
+import Image from "next/image";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 interface CatalogProps {
   subdomain: string;
 }
@@ -105,18 +107,20 @@ export function Catalog({ subdomain }: CatalogProps) {
         {/*Carousel */}
         <div className="overflow-hidden size-full mt-7" ref={emblaRef}>
           <div className="flex gap-2 size-full">
-            {mockedImagesCatalog.map((image, index) => (
-              <div
-                className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full"
-                key={`image-carousel-${index}`}
-              >
-                <img
-                  src={image}
-                  alt="Imagem do catalogo"
-                  className="object-cover w-full"
-                />
-              </div>
-            ))}
+            {catalogSettings.bannerImages &&
+              catalogSettings.bannerImages.map((image, index) => (
+                <div
+                  className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full h-50 relative"
+                  key={`image-carousel-${index}`}
+                >
+                  <Image
+                    src={useConstructUrl(image)}
+                    alt="Imagem do catalogo"
+                    className="object-cover w-full"
+                    fill
+                  />
+                </div>
+              ))}
           </div>
         </div>
         <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6 ">
