@@ -3,6 +3,7 @@ import { CheckoutMetadata, ProductMetadata } from "@/context/checkout/types";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe";
+import { constructUrl } from "@/lib/utils";
 import Stripe from "stripe";
 import z from "zod";
 
@@ -63,6 +64,24 @@ export const purchase = base
       input.products.map((inputProduct) => {
         const product = products.find((p) => p.id === inputProduct.id)!;
 
+        let images: string[] = [];
+
+        if (product.thumbnail) {
+          const imageUrl = constructUrl(product.thumbnail);
+
+          // Valida se a URL foi construída corretamente
+          try {
+            new URL(imageUrl); // Lança erro se URL for inválida
+            images = [imageUrl];
+          } catch (error) {
+            console.error(
+              `Invalid image URL for product ${product.id}:`,
+              imageUrl
+            );
+            // Não adiciona imagem - o Stripe continuará funcionando sem ela
+          }
+        }
+
         return {
           quantity: inputProduct.quantity,
           price_data: {
@@ -70,9 +89,7 @@ export const purchase = base
             currency: "brl",
             product_data: {
               name: product.name,
-              images: product.thumbnail
-                ? [useConstructUrl(product.thumbnail)]
-                : [],
+              images,
               metadata: {
                 id: product.id,
                 name: product.name,
