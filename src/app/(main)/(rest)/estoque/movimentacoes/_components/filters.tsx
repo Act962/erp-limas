@@ -10,17 +10,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Check, ChevronsUpDown, Filter, X } from "lucide-react";
+import { Check, ChevronsUpDown, Filter } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
-import { Categories } from "../../../produtos/_components/products-table";
-import { Label } from "@/components/ui/label";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "@/components/ui/input-group";
+import { useState } from "react";
 import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

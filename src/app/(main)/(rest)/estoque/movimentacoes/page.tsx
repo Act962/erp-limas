@@ -27,16 +27,6 @@ export default async function Page({ searchParams }: TrackingPageProps) {
 
   const queryParams = await stockParamsLoader(searchParams);
 
-  await queryClient.prefetchQuery(
-    orpc.stocks.list.queryOptions({
-      input: {
-        offset: 1,
-        limit: 100,
-        userIds: queryParams.participant,
-      },
-    })
-  );
-
   return (
     <div className="space-y-6">
       <PageHeader

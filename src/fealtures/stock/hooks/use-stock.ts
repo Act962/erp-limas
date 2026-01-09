@@ -1,0 +1,24 @@
+import { orpc } from "@/lib/orpc";
+import { useQuery } from "@tanstack/react-query";
+
+interface UseStockProps {
+  userIds: string[] | undefined;
+  limit: number;
+  offset: number;
+}
+
+export const useStock = ({ userIds, limit, offset }: UseStockProps) => {
+  const { data: stock, isLoading } = useQuery(
+    orpc.stocks.list.queryOptions({
+      input: {
+        userIds,
+        limit,
+        offset,
+      },
+    })
+  );
+  return {
+    data: stock?.moviments ?? [],
+    isStockLoading: isLoading,
+  };
+};
