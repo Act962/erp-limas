@@ -12,7 +12,7 @@ export const listProducts = base
   .input(
     z.object({
       subdomain: z.string(),
-      categorySlug: z.array(z.string()).optional(),
+      categorySlugs: z.array(z.string()).optional(),
     })
   )
   .output(
@@ -73,7 +73,7 @@ export const listProducts = base
           organizationId: organization.id,
           category: {
             slug: {
-              in: input.categorySlug,
+              in: input.categorySlugs,
             },
           },
         },

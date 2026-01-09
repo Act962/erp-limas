@@ -3,18 +3,18 @@ import { useQuery } from "@tanstack/react-query";
 
 interface UseCatalogProductsProps {
   subdomain: string;
-  categoriesSlugs?: string[];
+  categorySlugs?: string[];
 }
 
 export function useCatalogProducts({
   subdomain,
-  categoriesSlugs,
+  categorySlugs,
 }: UseCatalogProductsProps) {
   const { data, isLoading } = useQuery(
     orpc.catalogSettings.listProducts.queryOptions({
       input: {
         subdomain,
-        categoriesSlugs,
+        categorySlugs,
       },
       enabled: !!subdomain,
     })
