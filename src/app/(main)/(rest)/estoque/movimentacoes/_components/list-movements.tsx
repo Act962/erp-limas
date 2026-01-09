@@ -5,14 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
-import {
   Table,
   TableBody,
   TableCell,
@@ -36,6 +28,7 @@ import { FilterMoviments } from "./filters";
 import { useQueryState } from "nuqs";
 import { useStock } from "@/fealtures/stock/hooks/use-stock";
 import { Skeleton } from "@/components/ui/skeleton";
+import dayjs from "dayjs";
 
 const movementTypeConfig = {
   ENTRADA: {
@@ -84,12 +77,16 @@ interface ListMovementsProps {
 export function ListMovements({ members }: ListMovementsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [dateInit] = useQueryState("date_init");
+  const [dateEnd] = useQueryState("date_end");
   const [users] = useQueryState("users");
 
   const { data, isStockLoading } = useStock({
     limit: 100,
     offset: 1,
     userIds: users?.split(",").map((user) => user.trim()),
+    dateInit: dateInit ? dayjs(dateInit).startOf("day").toDate() : undefined,
+    dateEnd: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
   });
 
   const filteredMovements = data.filter((movement) => {
@@ -140,17 +137,6 @@ export function ListMovements({ members }: ListMovementsProps) {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os períodos</SelectItem>
-                  <SelectItem value="today">Hoje</SelectItem>
-                  <SelectItem value="week">Esta semana</SelectItem>
-                  <SelectItem value="month">Este mês</SelectItem>
-                </SelectContent>
-              </Select>
               <CalendarFilter />
               <FilterMoviments members={members} />
             </div>

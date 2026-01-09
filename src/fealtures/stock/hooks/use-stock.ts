@@ -5,15 +5,25 @@ interface UseStockProps {
   userIds: string[] | undefined;
   limit: number;
   offset: number;
+  dateInit?: Date;
+  dateEnd?: Date;
 }
 
-export const useStock = ({ userIds, limit, offset }: UseStockProps) => {
+export const useStock = ({
+  userIds,
+  limit,
+  offset,
+  dateInit,
+  dateEnd,
+}: UseStockProps) => {
   const { data: stock, isLoading } = useQuery(
     orpc.stocks.list.queryOptions({
       input: {
         userIds,
         limit,
         offset,
+        dateInit,
+        dateEnd,
       },
     })
   );

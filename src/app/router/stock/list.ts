@@ -19,6 +19,8 @@ export const listStock = base
       offset: z.number().min(0).default(0),
       limit: z.number().min(1).max(100).default(10),
       userIds: z.array(z.string()).optional(),
+      dateInit: z.date().optional(),
+      dateEnd: z.date().optional(),
     })
   )
   .output(
@@ -46,6 +48,7 @@ export const listStock = base
     })
   )
   .handler(async ({ context, input }) => {
+    console.log(input);
     const skip = (input.offset - 1) * input.limit;
 
     const query = await prisma.stockMovement.findMany({
@@ -56,6 +59,10 @@ export const listStock = base
         createdBy: {
           id: {
             in: input.userIds,
+          },
+          createdAt: {
+            gte: input.dateInit,
+            lte: input.dateEnd,
           },
         },
       },
