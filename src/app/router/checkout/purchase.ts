@@ -5,7 +5,7 @@ import prisma from "@/lib/db";
 import { stripe } from "@/lib/stripe";
 import { constructUrl, getCustomDomain } from "@/lib/utils";
 import Stripe from "stripe";
-import z from "zod";
+import { z } from "zod";
 
 export const purchase = base
   .input(

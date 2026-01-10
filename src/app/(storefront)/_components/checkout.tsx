@@ -33,7 +33,7 @@ export function Checkout({ subdomain }: CheckoutProps) {
   const { user } = useUserStore();
 
   const purchase = useMutation(
-    orpc.checkout.purchase.mutationOptions({
+    orpc.checkout.purchaseAssas.mutationOptions({
       onSuccess: (data) => {
         window.location.href = data.url;
       },
