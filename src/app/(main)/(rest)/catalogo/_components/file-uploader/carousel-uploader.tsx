@@ -1,17 +1,18 @@
 "use client";
+
 import { useCallback, useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   RenderEmptyState,
   RenderErrorState,
   RenderUploadedState,
   RenderUploadingState,
+  RenderPreviewState,
 } from "./render-state";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { Spinner } from "../ui/spinner";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface UploaderState {
@@ -28,17 +29,19 @@ interface UploaderState {
 
 const MAX_SIZE = 1024 * 1024 * 5;
 
-interface UploaderProps {
+interface CarouselUploaderProps {
   value?: string;
   onChange?: (value: string) => void;
+  onConfirm?: (value: string) => void;
   fileTypeAccepted?: "image" | "video";
 }
 
-export function Uploader({
+export function CarouselUploader({
   value,
   onChange,
+  onConfirm,
   fileTypeAccepted = "image",
-}: UploaderProps) {
+}: CarouselUploaderProps) {
   const fileUrl = useConstructUrl(value || "");
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
@@ -51,6 +54,8 @@ export function Uploader({
     key: value,
     objectUrl: value ? fileUrl : undefined,
   });
+
+  const [showPreview, setShowPreview] = useState(false);
 
   const uploadFile = useCallback(
     async (file: File) => {
@@ -81,7 +86,6 @@ export function Uploader({
             progress: 0,
             error: true,
           }));
-
           return;
         }
 
@@ -92,11 +96,10 @@ export function Uploader({
 
           xhr.upload.onprogress = (event) => {
             if (event.lengthComputable) {
-              const precentageCompleted = (event.loaded / event.total) * 100;
-
+              const percentageCompleted = (event.loaded / event.total) * 100;
               setFileState((prev) => ({
                 ...prev,
-                progress: Math.round(precentageCompleted),
+                progress: Math.round(percentageCompleted),
               }));
             }
           };
@@ -111,9 +114,8 @@ export function Uploader({
               }));
 
               onChange?.(key);
-
+              setShowPreview(true);
               toast.success("Arquivo enviado com sucesso");
-
               resolve();
             } else {
               reject(new Error("Upload failed..."));
@@ -130,7 +132,6 @@ export function Uploader({
         });
       } catch {
         toast.error("Falha ao enviar arquivo");
-
         setFileState((prev) => ({
           ...prev,
           progress: 0,
@@ -163,13 +164,11 @@ export function Uploader({
 
       if (!response.ok) {
         toast.error("Falha ao deletar arquivo");
-
         setFileState((prev) => ({
           ...prev,
           isDeleting: false,
           error: true,
         }));
-
         return;
       }
 
@@ -178,28 +177,44 @@ export function Uploader({
       }
 
       onChange?.("");
-
-      setFileState(() => ({
-        file: null,
-        uploading: false,
-        progress: 0,
-        objectUrl: undefined,
-        error: false,
-        fileType: fileTypeAccepted,
-        id: null,
-        isDeleting: false,
-      }));
-
+      resetUploader();
       toast.success("Arquivo deletado com sucesso");
     } catch {
       toast.error("Falha ao deletar arquivo. Por favor, tente novamente.");
-
       setFileState((prev) => ({
         ...prev,
         isDeleting: false,
         error: true,
       }));
     }
+  }
+
+  function resetUploader() {
+    if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
+      URL.revokeObjectURL(fileState.objectUrl);
+    }
+
+    setFileState({
+      file: null,
+      uploading: false,
+      progress: 0,
+      objectUrl: undefined,
+      error: false,
+      fileType: fileTypeAccepted,
+      id: null,
+      isDeleting: false,
+    });
+
+    setShowPreview(false);
+    onChange?.("");
+  }
+
+  function handleConfirm() {
+    if (!fileState.key) return;
+
+    onConfirm?.(fileState.key);
+    resetUploader();
+    toast.success("Imagem adicionada ao carrossel");
   }
 
   const onDrop = useCallback(
@@ -262,6 +277,17 @@ export function Uploader({
       return <RenderErrorState />;
     }
 
+    if (showPreview && fileState.objectUrl && fileState.key) {
+      return (
+        <RenderPreviewState
+          previewUrl={fileState.objectUrl}
+          onConfirm={handleConfirm}
+          onCancel={resetUploader}
+          fileType={fileState.fileType}
+        />
+      );
+    }
+
     if (fileState.objectUrl) {
       return (
         <RenderUploadedState
@@ -292,8 +318,9 @@ export function Uploader({
     multiple: false,
     maxSize: MAX_SIZE,
     onDropRejected: rejectedFiles,
-    disabled: fileState.uploading || !!fileState.objectUrl,
+    disabled: fileState.uploading || showPreview,
   });
+
   return (
     <Card
       {...getRootProps()}
@@ -301,12 +328,12 @@ export function Uploader({
         "relative border-2 border-dashed transition-colors duration-200 ease-in-out w-full h-40",
         isDragActive
           ? "border-primary bg-primary/10 border-solid"
-          : "border-border hover:border-primary"
+          : "border-border hover:border-primary",
+        showPreview && "border-solid"
       )}
     >
-      <CardContent className="flex items-center justify-center h-full w-full p-4">
+      <CardContent className="flex items-center justify-center h-full w-full">
         <input {...getInputProps()} />
-
         {renderContent()}
       </CardContent>
     </Card>

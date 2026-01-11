@@ -5,11 +5,10 @@ import { Label } from "@/components/ui/label";
 import { CatalogSettingsProps } from "./catalog";
 import { colors } from "./mock/catalog-moc";
 import { Field, FieldDescription } from "@/components/ui/field";
-import { Uploader } from "@/components/file-uploader/uploader";
+import { CarouselUploader } from "./file-uploader/carousel-uploader";
 import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { Trash2Icon } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface CustomizationTabProps {
@@ -54,7 +53,11 @@ export function TabCustomization({
             <Label htmlFor="carouselImage">Carrossel inicial</Label>
 
             <Field className="text-center">
-              <Uploader onChange={onChangeImage} value={imageSelected} />
+              <CarouselUploader
+                fileTypeAccepted="image"
+                onConfirm={onChangeImage}
+                value={imageSelected}
+              />
               <FieldDescription>
                 Formatos aceitos: JPG, PNG, GIF
                 <br />

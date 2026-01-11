@@ -7,8 +7,6 @@ import { ProductCard } from "./product-card";
 import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { orpc } from "@/lib/orpc";
 import { notFound } from "next/navigation";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,37 +33,16 @@ export function Catalog({ subdomain }: CatalogProps) {
     Autoplay({ playOnInit: true, delay: 4000 }),
   ]);
 
-  const mockedImagesCatalog = [
-    "https://picsum.photos/800/200?random=1",
-    "https://picsum.photos/800/200?random=2",
-    "https://picsum.photos/800/200?random=3",
-    "https://picsum.photos/800/200?random=4",
-    "https://picsum.photos/800/200?random=5",
-    "https://picsum.photos/800/200?random=6",
-    "https://picsum.photos/800/200?random=7",
-    "https://picsum.photos/800/200?random=8",
-    "https://picsum.photos/800/200?random=9",
-    "https://picsum.photos/800/200?random=10",
-  ];
-
   if (isLoading || isLoadingProducts) {
     return (
       <div className="w-full max-w-6xl mx-auto justify-center">
         <div className="flex flex-col w-full justify-between px-3">
           {/*Carousel */}
-          <div className="overflow-hidden size-full mt-7" ref={emblaRef}>
+          <div className="overflow-hidden size-full mt-7">
             <div className="flex gap-2 size-full">
-              {Array.from({ length: 10 }).map((_, index) => (
-                <div
-                  className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full"
-                  key={`image-carousel-${index}`}
-                >
-                  <Skeleton
-                    className="h-64 w-full bg-accent-foreground/10"
-                    key={index}
-                  />
-                </div>
-              ))}
+              <div className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full">
+                <Skeleton className="h-64 w-full bg-accent-foreground/10" />
+              </div>
             </div>
           </div>
           <div className="flex flex-row w-full items-center justify-between gap-x-3 py-6 ">
@@ -110,7 +87,7 @@ export function Catalog({ subdomain }: CatalogProps) {
             {catalogSettings.bannerImages &&
               catalogSettings.bannerImages.map((image, index) => (
                 <div
-                  className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full h-50 relative"
+                  className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full h-60 relative"
                   key={`image-carousel-${index}`}
                 >
                   <Image
