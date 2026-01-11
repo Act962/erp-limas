@@ -15,6 +15,7 @@ import { Check, CirclePlus, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import placeholder from "@/assets/background-default-image.svg";
+import Link from "next/link";
 
 interface ProductCardProps extends ProductCatalog {
   allowsOrders?: boolean;
@@ -69,13 +70,14 @@ export function ProductCard({
       hover:shadow-lg hover:shadow-elegant"
     >
       <div className="aspect-square overflow-hidden w-full relative h-45">
-        <Image
-          className="object-cover transition-transform rounded-sm cursor-pointer"
-          src={imageSrc}
-          alt={name}
-          fill
-          onClick={() => router.push(`/${slug}`)}
-        />
+        <Link href={`/${slug}`}>
+          <Image
+            className="object-cover transition-transform rounded-sm cursor-pointer"
+            src={imageSrc}
+            alt={name}
+            fill
+          />
+        </Link>
       </div>
       <div className="flex flex-col items-center w-full px-5">
         <Tooltip>
@@ -101,7 +103,7 @@ export function ProductCard({
       </div>
       {allowsOrders && (
         <div className="flex items-center gap-x-2">
-          <div className="hidden items-center border border-border rounded-lg overflow-hidden sm:flex">
+          {/* <div className="hidden items-center border border-border rounded-lg overflow-hidden sm:flex">
             <Button
               variant="ghost"
               size="icon"
@@ -123,13 +125,13 @@ export function ProductCard({
             >
               <Plus className="size-4" />
             </Button>
-          </div>
+          </div> */}
           <Button
             variant="default"
             onClick={handleAddToCart}
             disabled={isDisabled}
           >
-            {showAsInCart ? "Adicionado" : "Adicionar"}
+            {showAsInCart ? "No carrinho" : "Adicionar"}
             {showAsInCart ? (
               <Check className="size-4" />
             ) : (
