@@ -15,6 +15,8 @@ type ProductItem = {
 type AssasOptions = {
   billingTypes: string[];
   chargeTypes: string[];
+  minutesToExpire?: number;
+  externalReference: string;
   callback: {
     successUrl: string;
     cancelUrl: string;
@@ -23,6 +25,16 @@ type AssasOptions = {
   items: ProductItem[];
   installment: {
     maxInstallmentCount: number;
+  };
+  customerData: {
+    name: string;
+    cpfCnpj: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    addressNumber: string;
+    postalCode: string;
+    province: string;
   };
 };
 
@@ -59,6 +71,21 @@ export const purchaseAssas = base
     if (!organization) {
       throw errors.NOT_FOUND({
         message: "Oganização não encontrada!",
+      });
+    }
+
+    const customer = await prisma.catalogUser.findUnique({
+      where: {
+        id: input.customerId,
+      },
+      include: {
+        customer: true,
+      },
+    });
+
+    if (!customer) {
+      throw errors.NOT_FOUND({
+        message: "Cliente não encontrado!",
       });
     }
 
@@ -117,6 +144,8 @@ export const purchaseAssas = base
     const body = {
       billingTypes: ["CREDIT_CARD", "PIX"],
       chargeTypes: ["INSTALLMENT", "DETACHED"],
+      minutesToExpire: 30, // Tempo em minutos
+      externalReference: `${customer.customer?.id}-${organization.id}`,
       callback: {
         successUrl: `${baseUrl}/checkout?success=true`,
         cancelUrl: `${baseUrl}/checkout?cancel=true`,

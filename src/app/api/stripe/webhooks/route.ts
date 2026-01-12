@@ -47,9 +47,11 @@ export async function POST(req: Request) {
             throw new Error("User ID is required in metadata");
           }
 
-          const customer = await prisma.customer.findUnique({
+          const customer = await prisma.customer.findFirst({
             where: {
-              clientId: data.metadata.customerId,
+              userCatalog: {
+                id: data.metadata.customerId,
+              },
             },
           });
 
