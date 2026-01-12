@@ -231,5 +231,6 @@ export function useCheckoutLogic(subdomain: string) {
     onCheckout,
     purchase,
     router,
+    user,
   };
 }

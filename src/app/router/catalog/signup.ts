@@ -13,6 +13,7 @@ export const signupCatalog = base
     z.object({
       name: z.string(),
       email: z.string(),
+      document: z.string(),
       password: z.string().min(8),
       subdomain: z.string(),
     })
@@ -28,17 +29,19 @@ export const signupCatalog = base
       throw errors.NOT_FOUND();
     }
 
-    const user = await prisma.catalogUser.findMany({
+    const user = await prisma.catalogUser.findUnique({
       where: {
-        email: {
-          equals: input.email,
+        organizationId_email: {
+          email: input.email,
+          organizationId: organization.id,
         },
-        organizationId: organization.id,
       },
     });
 
-    if (user.length > 0) {
-      throw errors.BAD_REQUEST();
+    if (user) {
+      throw errors.BAD_REQUEST({
+        message: "Usuário com este email ja está cadastrado",
+      });
     }
 
     const hashedPassword = await hash(input.password, 8);
@@ -53,7 +56,7 @@ export const signupCatalog = base
           create: {
             name: input.name,
             email: input.email,
-            document: "",
+            document: input.document,
             organizationId: organization.id,
           },
         },

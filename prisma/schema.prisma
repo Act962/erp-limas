@@ -260,7 +260,7 @@ model CatalogSettings {
   logo     String?
   bannerImages    String[]    @default([])
   aboutText       String?      @db.Text
-  theme           String? 
+  theme           String? @default("#00bcd4")
   //Payment
   paymentMethodSettings PaymentMethod[]
   //Delivery
@@ -278,6 +278,8 @@ model CatalogSettings {
   pixel_meta      String?
   //Stripe
   stripeKey String? @map("stripe_key")
+  //Asaas
+  walletId String? @map("wallet_id")
   // Redes Sociais
   instagram       String?
   facebook        String?
@@ -453,7 +455,7 @@ model Customer {
   name           String
   personType     PersonType   @default(FISICA)
   document       String? // CPF ou CNPJ
-  email          String?
+  email          String
   phone          String?
   // Endereço
   address        String?
@@ -466,6 +468,8 @@ model Customer {
   // Informações adicionais
   notes          String?      @db.Text
   isActive       Boolean      @default(true)
+  //Assas
+  asaasCustomerId String? @map("asaas_customer_id")
   // Timestamps
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
@@ -476,7 +480,7 @@ model Customer {
   clientId String? @unique
   
 
-  // @@unique([organizationId, document])
+  @@unique([organizationId, email])
   @@index([organizationId])
   @@index([document])
   @@index([email])
@@ -527,7 +531,7 @@ model CatalogUser {
 
   email          String
   passwordHash   String
-  name           String?
+  name           String
 
   // Dados coletados no checkout
   phone          String?

@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Handbag, Minus, Plus, Trash2 } from "lucide-react";
+import { Handbag, Minus, Plus, Trash2, User } from "lucide-react";
 import Link from "next/link";
 import { useShoppingCart } from "../../../hooks/use-product";
 import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
@@ -47,11 +47,10 @@ export function Header({ settings }: HeaderProps) {
 
   return (
     <header
-      className="w-full flex fixed top-0 z-50 items-center justify-center py-3 px-5 transition-colors duration-300 sm:py-5"
+      className="w-full flex fixed top-0 z-50 items-center justify-center py-3 px-5 duration-300 sm:py-5"
       style={{
         backgroundColor,
         color: contrastColor,
-        borderBottom: `1px solid ${contrastColor}33`,
       }}
     >
       <div className="max-w-6xl flex flex-row w-full justify-between">
@@ -88,6 +87,7 @@ export function Header({ settings }: HeaderProps) {
               Sobre Nós
             </Button>
           </Link>
+
           {/* Carrinho */}
           <Popover open={modalIsOpen} onOpenChange={setModalIsOpen}>
             <PopoverTrigger asChild>
@@ -158,6 +158,11 @@ export function Header({ settings }: HeaderProps) {
               )}
             </PopoverContent>
           </Popover>
+          <Link href="/account">
+            <Button variant="secondary" size="icon-sm" className="rounded-full">
+              <User />
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
