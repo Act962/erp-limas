@@ -65,18 +65,23 @@ export const listProducts = base
         },
         where: {
           organizationId: context.org.id,
-          category: {
-            slug: {
-              in: input.category,
+          ...(input.category && {
+            category: {
+              slug: {
+                in: input.category,
+              },
             },
-          },
+          }),
           sku: {
             contains: input.sku,
           },
-          salePrice: {
-            gte: input.minValue ? Number(input.minValue) / 100 : undefined,
-            lte: input.maxValue ? Number(input.maxValue) / 100 : undefined,
-          },
+          ...(input.minValue &&
+            input.maxValue && {
+              salePrice: {
+                gte: Number(input.minValue) / 100,
+                lte: Number(input.maxValue) / 100,
+              },
+            }),
           ...(input.date_init &&
             input.date_end && {
               createdAt: {
