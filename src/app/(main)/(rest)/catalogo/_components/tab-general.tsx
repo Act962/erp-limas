@@ -9,6 +9,7 @@ import { formatCNPJ, unformatCNPJ } from "@/utils/format-cnpj";
 import { Field, FieldDescription } from "@/components/ui/field";
 import { Uploader } from "@/components/file-uploader/uploader";
 import { useEffect, useState } from "react";
+import { LogoUploader } from "@/components/logo-uploader/uploader";
 
 interface GeneralTabProps {
   settings: CatalogSettingsProps;
@@ -36,6 +37,9 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
 
       <Card className="p-6">
         <div className="space-y-6">
+          <div className="space-y-2">
+            <LogoUploader value={bannerImage} onChange={handlerUpload} />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="metaTitle">Título da Página</Label>
             <Input
@@ -66,7 +70,7 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
               Recomendado: 150-160 caracteres
             </p>
           </div>
-          <div>
+          {/* <div>
             <div className="space-y-2">
               <Label htmlFor="carouselImage">Imagem do banner</Label>
               <Field className="text-center">
@@ -78,7 +82,7 @@ export function GeneralTab({ settings, setSettings }: GeneralTabProps) {
                 </FieldDescription>
               </Field>
             </div>
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <Label htmlFor="cnpj">CNPJ</Label>
