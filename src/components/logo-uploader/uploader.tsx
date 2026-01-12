@@ -1,17 +1,20 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { FileRejection, useDropzone } from "react-dropzone";
-import { Card, CardContent } from "../ui/card";
+
 import { cn } from "@/lib/utils";
-import {
-  RenderEmptyState,
-  RenderErrorState,
-  RenderUploadedState,
-  RenderUploadingState,
-} from "./render-state";
-import { toast } from "sonner";
+import { useCallback, useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
+
+import {
+  RenderLogoEmptyState,
+  RenderLogoUploadedState,
+  RenderLogoUploadingState,
+} from "./render-state";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import { RenderUploadedState } from "../file-uploader/render-state";
+import { toast } from "sonner";
+
+const MAX_SIZE = 1024 * 1024 * 2;
 
 interface UploaderState {
   id: string | null;
@@ -25,19 +28,13 @@ interface UploaderState {
   fileType: "image" | "video";
 }
 
-const MAX_SIZE = 1024 * 1024 * 5;
-
-interface UploaderProps {
+interface LogoUploaderProps {
   value?: string;
   onChange?: (value: string) => void;
-  fileTypeAccepted?: "image" | "video";
+  // fileTypeAccepted?: "image" | "video";
 }
 
-export function Uploader({
-  value,
-  onChange,
-  fileTypeAccepted = "image",
-}: UploaderProps) {
+export function LogoUploader({ value, onChange }: LogoUploaderProps) {
   const fileUrl = useConstructUrl(value || "");
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
@@ -46,7 +43,7 @@ export function Uploader({
     uploading: false,
     progress: 0,
     isDeleting: false,
-    fileType: fileTypeAccepted,
+    fileType: "image",
     key: value,
     objectUrl: value ? fileUrl : undefined,
   });
@@ -68,7 +65,7 @@ export function Uploader({
             fileName: file.name,
             contentType: file.type,
             size: file.size,
-            isImage: fileTypeAccepted === "image" ? true : false,
+            isImage: true,
           }),
         });
 
@@ -138,7 +135,7 @@ export function Uploader({
         }));
       }
     },
-    [fileTypeAccepted, onChange]
+    [onChange]
   );
 
   async function removeFile() {
@@ -184,7 +181,7 @@ export function Uploader({
         progress: 0,
         objectUrl: undefined,
         error: false,
-        fileType: fileTypeAccepted,
+        fileType: "image",
         id: null,
         isDeleting: false,
       }));
@@ -218,52 +215,28 @@ export function Uploader({
           error: false,
           id: uuidv4(),
           isDeleting: false,
-          fileType: fileTypeAccepted,
+          fileType: "image",
         });
 
         uploadFile(file);
       }
     },
-    [fileState.objectUrl, uploadFile, fileTypeAccepted]
+    [fileState.objectUrl]
   );
-
-  function rejectedFiles(fileRejection: FileRejection[]) {
-    if (fileRejection.length) {
-      const tooManyFiles = fileRejection.find(
-        (rejection) => rejection.errors[0].code === "too-many-files"
-      );
-
-      const fileSizeToBig = fileRejection.find(
-        (rejection) => rejection.errors[0].code === "file-too-large"
-      );
-
-      if (fileSizeToBig) {
-        toast.error("Arquivo muito grande, máximo de 5MB.");
-      }
-
-      if (tooManyFiles) {
-        toast.error("Muitos arquivos selecionados, máximo de 1 arquivo.");
-      }
-    }
-  }
 
   function renderContent() {
     if (fileState.uploading) {
       return (
-        <RenderUploadingState
+        <RenderLogoUploadingState
           progress={fileState.progress}
           file={fileState.file as File}
         />
       );
     }
 
-    if (fileState.error) {
-      return <RenderErrorState />;
-    }
-
     if (fileState.objectUrl) {
       return (
-        <RenderUploadedState
+        <RenderLogoUploadedState
           previewUrl={fileState.objectUrl}
           isDeleting={fileState.isDeleting}
           handleDelete={removeFile}
@@ -272,8 +245,16 @@ export function Uploader({
       );
     }
 
-    return <RenderEmptyState isDragActive={isDragActive} />;
+    return <RenderLogoEmptyState isDragActive={isDragActive} />;
   }
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    maxFiles: 1,
+    multiple: false,
+    maxSize: MAX_SIZE,
+  });
 
   useEffect(() => {
     return () => {
@@ -283,31 +264,30 @@ export function Uploader({
     };
   }, [fileState.objectUrl]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept:
-      fileTypeAccepted === "image" ? { "image/*": [] } : { "video/*": [] },
-    maxFiles: 1,
-    multiple: false,
-    maxSize: MAX_SIZE,
-    onDropRejected: rejectedFiles,
-    disabled: fileState.uploading || !!fileState.objectUrl,
-  });
   return (
-    <Card
-      {...getRootProps()}
-      className={cn(
-        "relative border-2 border-dashed transition-colors duration-200 ease-in-out w-full h-40",
-        isDragActive
-          ? "border-primary bg-primary/10 border-solid"
-          : "border-border hover:border-primary"
-      )}
-    >
-      <CardContent className="flex items-center justify-center h-full w-full p-4">
-        <input {...getInputProps()} />
+    <div className="flex flex-col items-center gap-4 ">
+      <div {...getRootProps()} className="relative">
+        <div
+          className={cn(
+            "group/avatar relative h-24 w-24 cursor-pointer overflow-hidden rounded-full border border-dashed transition-colors",
+            isDragActive
+              ? "border-primary bg-primary/5"
+              : "border-muted-foreground/25 hover:border-muted-foreground/20"
+          )}
+        >
+          <input type="file" {...getInputProps()} />
+          {renderContent()}
+        </div>
+      </div>
 
-        {renderContent()}
-      </CardContent>
-    </Card>
+      <div className="text-center space-y-0.5">
+        <p className="text-sm font-medium">
+          {fileState.objectUrl ? "Logotipo enviado" : "Carregar logotipo"}
+        </p>
+        <p className="text-xs text-muted-foreground">PNG, JPG até 2 MB</p>
+      </div>
+
+      {fileState.error && <p>Erro ao realizar upload</p>}
+    </div>
   );
 }
