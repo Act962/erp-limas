@@ -19,8 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -29,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/app/(storefront)/context/use-cart-session";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
+import { formatCPForCNPJ } from "@/utils/format-cnpj";
 
 const signUpSchema = z
   .object({
@@ -38,6 +38,9 @@ const signUpSchema = z
     confirmPassword: z
       .string()
       .min(6, "Senha deve ter pelo menos 6 caracteres"),
+    document: z
+      .string()
+      .min(11, "CPF ou CNPJ deve ter pelo menos 11 caracteres"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
@@ -64,41 +67,38 @@ export function RegisterFormCatalog({
   const signUpMutation = useMutation(
     orpc.catalogSettings.signupCatalog.mutationOptions({
       onSuccess: (data) => {
-        // Login de catálogo
+        toast.success("Conta criada com sucesso");
         signIn({
           user: {
             id: data.userWithoutPassword.id,
             email: data.userWithoutPassword.email,
-            name: data.userWithoutPassword.name ?? "",
+            name: data.userWithoutPassword.name,
             type: "customer",
           },
         });
-
         router.push("/");
-        return;
       },
       onError: (error) => {
-        console.error("Erro ao logar:", error);
         toast.error(error.message || "Erro ao realizar login");
       },
     })
   );
 
   const onSignUp = async (data: SignUpSchema) => {
-    console.log(subdomain);
     if (!subdomain) {
       toast.error("Erro de servidor");
       return;
     }
-    await signUpMutation.mutateAsync({
+    signUpMutation.mutate({
       email: data.email,
       password: data.password,
+      document: data.document,
       name: data.name,
       subdomain,
     });
   };
 
-  const isSubmitting = form.formState.isSubmitting;
+  const isSubmitting = signUpMutation.isPending;
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
@@ -124,6 +124,24 @@ export function RegisterFormCatalog({
                   />
                   <FieldError>{form.formState.errors.name?.message}</FieldError>
                 </Field>
+                <Controller
+                  name="document"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Field>
+                      <FieldLabel>CPF/CNPJ</FieldLabel>
+                      <Input
+                        disabled={isSubmitting}
+                        placeholder="000.000.000-00"
+                        value={formatCPForCNPJ(field.value ?? "")}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      />
+                      <FieldError>
+                        {form.formState.errors.document?.message}
+                      </FieldError>
+                    </Field>
+                  )}
+                />
                 <Field>
                   <FieldLabel htmlFor="email">E-mail</FieldLabel>
                   <Input

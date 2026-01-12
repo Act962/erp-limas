@@ -33,7 +33,12 @@ export function CheckoutPage({ subdomain }: CheckoutProps) {
     onCheckout,
     purchase,
     router,
+    user,
   } = useCheckoutLogic(subdomain);
+
+  if (!user) {
+    router.push("/login");
+  }
 
   return (
     <div className="mx-auto w-full px-5 max-w-6xl py-4">

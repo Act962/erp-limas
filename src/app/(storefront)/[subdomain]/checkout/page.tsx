@@ -1,7 +1,7 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
 
 import { orpc } from "@/lib/orpc";
-import { CheckoutPage } from "../../_components/checkout/index";
+import { CheckoutPage } from "../../_components/checkout";
 
 interface CheckoutProps {
   params: Promise<{ subdomain: string }>;
