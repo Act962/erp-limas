@@ -27,6 +27,7 @@ import {
   PaymentMethod,
 } from "@/generated/prisma/enums";
 import { TabDomain } from "./tab-domain";
+import { updateFieldCatalog } from "@/fealtures/storefront/hooks/use-catalogSettings";
 
 export interface CatalogSettingsProps {
   id: string;
@@ -42,6 +43,7 @@ export interface CatalogSettingsProps {
   metaTitle: string;
   metaDescription: string;
   logo: string;
+  bannerImages: string[];
   aboutText: string;
   theme: string;
   instagram: string;
@@ -72,6 +74,7 @@ export interface CatalogSettingsProps {
 export function CatalogSettings() {
   const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
   const { catalogSettings } = data;
+  const useUpdateFieldsCatalogSettings = updateFieldCatalog();
 
   const [settings, setSettings] = useState<CatalogSettingsProps>({
     id: catalogSettings.id,
@@ -87,6 +90,7 @@ export function CatalogSettings() {
     metaTitle: catalogSettings.metaTitle ?? "",
     metaDescription: catalogSettings.metaDescription ?? "",
     logo: catalogSettings.logo ?? "",
+    bannerImages: catalogSettings.bannerImages ?? [],
     aboutText: catalogSettings.aboutText ?? "",
     theme: catalogSettings.theme ?? "",
     instagram: catalogSettings.instagram ?? "",
@@ -115,19 +119,8 @@ export function CatalogSettings() {
   });
   const debounceUpdate = useDebouncedValue(settings, 500);
 
-  const updateFieldCatalog = useMutation(
-    orpc.catalogSettings.update.mutationOptions({
-      onSuccess: () => {
-        toast("Catálogo atualizado!");
-      },
-      onError: () => {
-        toast("Erro ao atualizar catálogo!");
-      },
-    })
-  );
-
   function onSubmit() {
-    updateFieldCatalog.mutate({
+    useUpdateFieldsCatalogSettings.mutate({
       id: catalogSettings.id,
       isActive: debounceUpdate.isActive,
       showPrices: debounceUpdate.showPrices,
@@ -139,6 +132,7 @@ export function CatalogSettings() {
       metaTitle: debounceUpdate.metaTitle,
       metaDescription: debounceUpdate.metaDescription,
       logo: debounceUpdate.logo,
+      bannerImages: debounceUpdate.bannerImages,
       aboutText: debounceUpdate.aboutText,
       theme: debounceUpdate.theme,
       instagram: debounceUpdate.instagram,

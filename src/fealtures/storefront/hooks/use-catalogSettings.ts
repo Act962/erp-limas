@@ -1,5 +1,6 @@
 import { orpc } from "@/lib/orpc";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface UseCatalogSettingsProps {
   subdomain: string;
@@ -20,3 +21,16 @@ export function useCatalogSettings({ subdomain }: UseCatalogSettingsProps) {
     isLoading,
   };
 }
+
+export const updateFieldCatalog = () => {
+  return useMutation(
+    orpc.catalogSettings.update.mutationOptions({
+      onSuccess: () => {
+        toast("Catálogo atualizado!");
+      },
+      onError: () => {
+        toast("Erro ao atualizar catálogo!");
+      },
+    })
+  );
+};

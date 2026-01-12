@@ -1,6 +1,7 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { Checkout } from "../../_components/checkout";
+
 import { orpc } from "@/lib/orpc";
+import { CheckoutPage } from "../../_components/checkout/index";
 
 interface CheckoutProps {
   params: Promise<{ subdomain: string }>;
@@ -20,7 +21,7 @@ export default async function Page({ params }: CheckoutProps) {
 
   return (
     <HydrateClient client={queryClient}>
-      <Checkout subdomain={subdomain} />
+      <CheckoutPage subdomain={subdomain} />
     </HydrateClient>
   );
 }

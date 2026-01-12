@@ -15,6 +15,7 @@ import {
 import { paymentMethodsConfig } from "../types/payments";
 import Link from "next/link";
 import { formatCNPJ } from "@/utils/format-cnpj";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface AboutUsProps {
   subdomain: string;
@@ -62,13 +63,12 @@ export function AboutUs({ subdomain }: AboutUsProps) {
       {/* CARD SOBRE NÓS */}
       <div className="bg-white shadow rounded-xl p-8 text-center space-y-6">
         <div className="flex justify-center">
-          <img
-            src={`https://github.com/ElFabrica.png`}
-            alt="Logo"
-            width={130}
-            height={130}
-            className="rounded-full"
-          />
+          <Avatar className="w-24 h-24">
+            <AvatarImage src={catalogSettings.logo ?? undefined} />
+            <AvatarFallback className="text-3xl font-semibold">
+              {catalogSettings.metaTitle?.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
         </div>
 
         <p className="text-gray-600 text-2xl font-medium">

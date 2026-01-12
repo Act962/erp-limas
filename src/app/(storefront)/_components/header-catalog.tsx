@@ -43,7 +43,6 @@ export function Header({ settings }: HeaderProps) {
 
   function handleGoToCart() {
     setModalIsOpen(false);
-    router.push("/cart");
   }
 
   return (
@@ -57,24 +56,23 @@ export function Header({ settings }: HeaderProps) {
     >
       <div className="max-w-6xl flex flex-row w-full justify-between">
         {/* Logo + Título */}
-        <div
-          onClick={() => router.push("/")}
-          className="flex flex-row gap-x-3 items-center cursor-pointer"
-        >
-          <Avatar>
-            <AvatarImage
-              src={
-                settings.bannerImage
-                  ? useConstructUrl(settings.bannerImage)
-                  : ""
-              }
-            />
-            <AvatarFallback>{settings.metaTitle?.slice(0, 2)}</AvatarFallback>
-          </Avatar>
-          <h1 className="text-xl font-bold" style={{ color: contrastColor }}>
-            {settings.metaTitle ?? "Minha loja"}
-          </h1>
-        </div>
+        <Link href="/">
+          <div className="flex flex-row gap-x-3 items-center cursor-pointer">
+            <Avatar>
+              <AvatarImage
+                src={
+                  settings.bannerImage
+                    ? useConstructUrl(settings.bannerImage)
+                    : ""
+                }
+              />
+              <AvatarFallback>{settings.metaTitle?.slice(0, 2)}</AvatarFallback>
+            </Avatar>
+            <h1 className="text-xl font-bold" style={{ color: contrastColor }}>
+              {settings.metaTitle ?? "Minha loja"}
+            </h1>
+          </div>
+        </Link>
 
         <div className="flex flex-row gap-x-3 items-center">
           {/* Botão Início */}
@@ -147,13 +145,15 @@ export function Header({ settings }: HeaderProps) {
                     </ScrollArea>
                   </div>
 
-                  <Button
-                    className="w-full mt-3"
-                    variant={"secondary"}
-                    onClick={handleGoToCart}
-                  >
-                    Finalizar Pedido
-                  </Button>
+                  <Link href="/cart">
+                    <Button
+                      className="w-full mt-3"
+                      variant={"secondary"}
+                      onClick={handleGoToCart}
+                    >
+                      Finalizar Pedido
+                    </Button>
+                  </Link>
                 </div>
               )}
             </PopoverContent>
