@@ -128,13 +128,15 @@ export const purchaseAssas = base
       },
     } as AssasOptions;
 
+    const ACCESS_TOKEN = `$${process.env.ASSAS_ACCESS_TOKEN as string}` || "";
+    console.log("Access Token:", ACCESS_TOKEN);
+
     const response = await fetch(`${url}/checkouts`, {
       method: "POST",
       headers: {
         accept: "application/json",
         "content-type": "application/json",
-        access_token:
-          "$aact_hmlg_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmE2MTlmYjU1LThlMmQtNDViZS1hNDZhLTUxMWQ0ZmQ1ZWEyMTo6JGFhY2hfMjdkZTg4ODEtZTA3Yi00MzhhLThlZWQtODU5NDlhYTM3OTg5",
+        access_token: ACCESS_TOKEN,
       },
       body: JSON.stringify(body),
     });

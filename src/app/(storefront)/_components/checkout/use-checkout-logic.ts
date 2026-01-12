@@ -25,7 +25,7 @@ export function useCheckoutLogic(subdomain: string) {
   const { data: catalogSettings } = useCatalogSettings({ subdomain });
 
   const purchase = useMutation(
-    orpc.checkout.purchase.mutationOptions({
+    orpc.checkout.purchaseAssas.mutationOptions({
       onSuccess: (data) => {
         window.location.href = data.url;
       },
