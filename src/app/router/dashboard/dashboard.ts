@@ -77,13 +77,18 @@ export const listDashboard = base
     };
 
     // 1. Total de vendas no período
-    const salesTotal = await prisma.sale.count({
+    const salesTotalQuery = await prisma.sale.findMany({
       where: {
         organizationId,
         status: SaleStatus.CONFIRMED,
         ...(dateInit || dateEnd ? { createdAt: dateFilter } : {}),
       },
     });
+
+    const salesTotalSum = salesTotalQuery.reduce(
+      (acc, sale) => acc + sale.total.toNumber(),
+      0
+    );
 
     // 2. Produtos ativos
     const productsActive = await prisma.product.count({
@@ -216,7 +221,7 @@ export const listDashboard = base
     }));
 
     return {
-      salesTotal,
+      salesTotal: salesTotalSum,
       productsActive,
       productsLowStock,
       salesToday,

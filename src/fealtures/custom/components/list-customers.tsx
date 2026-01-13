@@ -157,7 +157,7 @@ export function ListCustomers() {
 
                       <TableCell>
                         <DropdownMenu>
-                          <DropdownMenuTrigger>
+                          <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                               <MoreVerticalIcon className="size-4" />
                             </Button>

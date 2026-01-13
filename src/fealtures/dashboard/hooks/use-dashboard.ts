@@ -6,7 +6,7 @@ interface UseDashboardProps {
   dateEnd?: Date;
 }
 
-export function useDashboard({ dateInit, dateEnd }: UseDashboardProps) {
+export function useQueryDashboard({ dateInit, dateEnd }: UseDashboardProps) {
   const { data, isLoading } = useQuery(
     orpc.dashboard.list.queryOptions({
       input: {

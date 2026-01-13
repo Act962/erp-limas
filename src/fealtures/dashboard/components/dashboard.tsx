@@ -28,8 +28,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/page-header";
-import { useDashboard } from "@/fealtures/dashboard/hooks/use-dashboars";
-import { formatCurrencyInput } from "@/utils/currency-formatter";
+import { useQueryDashboard } from "@/fealtures/dashboard/hooks/use-dashboard";
+import {
+  currencyFormatter,
+  formatCurrencyInput,
+} from "@/utils/currency-formatter";
 import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ptBR } from "date-fns/locale";
@@ -39,7 +42,7 @@ import {
 } from "@/utils/convert-sale-status";
 
 export default function DashboardPage() {
-  const { data, isDashboardLoading } = useDashboard({});
+  const { data, isDashboardLoading } = useQueryDashboard({});
 
   return (
     <div className="space-y-6">
@@ -59,7 +62,7 @@ export default function DashboardPage() {
               {isDashboardLoading ? (
                 <Skeleton className="h-6 w-20" />
               ) : (
-                <>{data?.salesTotal}</>
+                <>{currencyFormatter(data?.salesTotal ?? 0)}</>
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
