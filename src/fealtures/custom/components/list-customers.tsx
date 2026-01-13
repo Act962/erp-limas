@@ -7,22 +7,14 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   EyeIcon,
-  FilterIcon,
   MoreVerticalIcon,
   SearchIcon,
   ShoppingBagIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useState } from "react";
 import { useCustomer } from "../hooks/use-customer";
 import {
   Table,
@@ -41,10 +33,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { CalendarFilter } from "@/app/(main)/(rest)/produtos/_components/filter-calendar";
+import { FilterClients } from "./filter";
+import { useQueryState } from "nuqs";
+import dayjs from "dayjs";
+import { PersonType } from "@/generated/prisma/enums";
 
 export function ListCustomers() {
-  const { customers, isLoading } = useCustomer();
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [personType] = useQueryState("person_type");
+  const [minPurchase] = useQueryState("min_purchase");
+  const [maxPurchase] = useQueryState("max_purchase");
+  const [dateInit] = useQueryState("date_init");
+  const [dateEnd] = useQueryState("date_end");
+
+  const { customers, isLoading } = useCustomer({
+    personType: personType ? (personType as PersonType) : undefined,
+    minPurchase: minPurchase ? Number(minPurchase) / 100 : undefined,
+    maxPurchase: maxPurchase ? Number(maxPurchase) / 100 : undefined,
+    dateIni: dateInit ? dayjs(dateInit).startOf("day").toDate() : undefined,
+    dateEnd: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
+  });
 
   return (
     <Card>
@@ -56,20 +64,8 @@ export function ListCustomers() {
             </InputGroupAddon>
             <InputGroupInput placeholder="Buscar cliente..." />
           </InputGroup>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os tipos</SelectItem>
-              <SelectItem value="PF">Pessoa Física</SelectItem>
-              <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline">
-            <FilterIcon className="h-4 w-4 mr-2" />
-            Filtros
-          </Button>
+          <CalendarFilter />
+          <FilterClients />
         </div>
       </CardHeader>
       <CardContent>

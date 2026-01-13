@@ -170,6 +170,7 @@ export function FormCustomer({
                     <Skeleton className="h-10 w-full" />
                   ) : (
                     <Input
+                      placeholder="(00) 00000-0000"
                       value={phoneMask(field.value ?? "")}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -187,6 +188,7 @@ export function FormCustomer({
                     <Skeleton className="h-10 w-full" />
                   ) : (
                     <Input
+                      placeholder="00.000.000/0000-00"
                       value={formatCPForCNPJ(field.value ?? "")}
                       onChange={(e) => field.onChange(e.target.value)}
                     />
@@ -234,7 +236,7 @@ export function FormCustomer({
                   ) : (
                     <FieldLabel>Cidade</FieldLabel>
                   )}
-                  <Input {...field} />
+                  <Input placeholder="Cidade" {...field} />
                 </Field>
               )}
             />
@@ -250,7 +252,7 @@ export function FormCustomer({
                   ) : (
                     <FieldLabel>Número</FieldLabel>
                   )}
-                  <Input {...field} />
+                  <Input placeholder="Número" {...field} />
                 </Field>
               )}
             />
@@ -265,7 +267,7 @@ export function FormCustomer({
                   ) : (
                     <FieldLabel>Bairro</FieldLabel>
                   )}
-                  <Input {...field} />
+                  <Input placeholder="Bairro" {...field} />
                 </Field>
               )}
             />
@@ -281,7 +283,7 @@ export function FormCustomer({
                   ) : (
                     <FieldLabel>Complemento</FieldLabel>
                   )}
-                  <Input {...field} />
+                  <Input placeholder="Complemento" {...field} />
                 </Field>
               )}
             />

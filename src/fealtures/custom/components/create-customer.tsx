@@ -104,10 +104,11 @@ const Types = [
 
 type CreateMovimentSchemaType = z.infer<typeof CreateMovimentSchema>;
 
-export function CreateStockMovimentModal() {
+export function CreateCustomerModal() {
   const queryClient = useQueryClient();
   const [openModal, setOpenModal] = useState(false);
   const [openProduct, setOpenProduct] = useState(false);
+
   const form = useForm<CreateMovimentSchemaType>({
     resolver: zodResolver(CreateMovimentSchema),
     defaultValues: {
@@ -180,15 +181,13 @@ export function CreateStockMovimentModal() {
     <Dialog open={openModal} onOpenChange={setOpenModal}>
       <DialogTrigger asChild>
         <Button size="sm">
-          <Plus className="size-4" /> Nova Movimentação
+          <Plus className="size-4" /> Novo Cliente
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nova Movimentação</DialogTitle>
-          <DialogDescription>
-            Crie uma nova movimentação de estoque
-          </DialogDescription>
+          <DialogTitle>Novo Cliente</DialogTitle>
+          <DialogDescription>Crie um novo cliente</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

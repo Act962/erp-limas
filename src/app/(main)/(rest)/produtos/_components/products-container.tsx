@@ -9,7 +9,6 @@ import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
-import { useMemo, useEffect } from "react";
 import { useProducts } from "@/fealtures/products/hooks/use-products";
 
 export function ProductsContainer() {
@@ -17,24 +16,17 @@ export function ProductsContainer() {
   const [sku] = useQueryState("sku");
   const [minValue] = useQueryState("min_value");
   const [maxValue] = useQueryState("max_value");
-  const [date_init] = useQueryState("date_init");
-  const [date_end] = useQueryState("date_end");
+  const [dateInit] = useQueryState("date_init");
+  const [dateEnd] = useQueryState("date_end");
 
-  const queryInput = useMemo(
-    () => ({
-      category: category?.split(",").map((c) => c.trim()),
-      sku: sku ?? undefined,
-      minValue: minValue ?? undefined,
-      maxValue: maxValue ?? undefined,
-      date_init: date_init
-        ? dayjs(date_init).startOf("day").toDate()
-        : undefined,
-      date_end: date_end ? dayjs(date_end).endOf("day").toDate() : undefined,
-    }),
-    [category, sku, minValue, maxValue]
-  );
-
-  const { data: products } = useProducts(queryInput);
+  const { data: products } = useProducts({
+    category: category?.split(",").map((c) => c.trim()),
+    sku: sku ?? undefined,
+    minValue: minValue ?? undefined,
+    maxValue: maxValue ?? undefined,
+    dateInit: dateInit ? dayjs(dateInit).startOf("day").toDate() : undefined,
+    dateEnd: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
+  });
 
   const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());
   const { categories } = data;

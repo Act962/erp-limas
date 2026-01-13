@@ -18,8 +18,8 @@ export const listProducts = base
       sku: z.string().optional(),
       minValue: z.string().optional(),
       maxValue: z.string().optional(),
-      date_init: z.date().optional(),
-      date_end: z.date().optional(),
+      dateInit: z.date().optional(),
+      dateEnd: z.date().optional(),
     })
   )
   .output(
@@ -65,23 +65,33 @@ export const listProducts = base
         },
         where: {
           organizationId: context.org.id,
-          category: {
-            slug: {
-              in: input.category,
+          ...(input.category && {
+            category: {
+              slug: {
+                in: input.category,
+              },
             },
-          },
-          sku: {
-            contains: input.sku,
-          },
-          salePrice: {
-            gte: input.minValue ? Number(input.minValue) / 100 : undefined,
-            lte: input.maxValue ? Number(input.maxValue) / 100 : undefined,
-          },
-          ...(input.date_init &&
-            input.date_end && {
+          }),
+          ...(input.sku && {
+            sku: {
+              contains: input.sku,
+            },
+          }),
+          ...(input.minValue && {
+            salePrice: {
+              gte: Number(input.minValue) / 100,
+            },
+          }),
+          ...(input.maxValue && {
+            salePrice: {
+              lte: Number(input.maxValue) / 100,
+            },
+          }),
+          ...(input.dateInit &&
+            input.dateEnd && {
               createdAt: {
-                gte: input.date_init,
-                lte: input.date_end,
+                gte: input.dateInit,
+                lte: input.dateEnd,
               },
             }),
         },

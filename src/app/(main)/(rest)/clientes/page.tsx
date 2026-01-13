@@ -1,5 +1,5 @@
-import { CreateStockMovimentModal } from "@/components/modals/stock/create-stock-moviment-modal";
 import { PageHeader } from "@/components/page-header";
+import { CreateCustomerModal } from "@/fealtures/custom/components/create-customer";
 import { ListCustomers } from "@/fealtures/custom/components/list-customers";
 
 export default function Page() {
@@ -9,9 +9,8 @@ export default function Page() {
         title="Clientes"
         description="Gerencie seus clientes e acompanhe o histórico de compras"
       >
-        <CreateStockMovimentModal />
+        <CreateCustomerModal />
       </PageHeader>
-
       <ListCustomers />
     </div>
   );
