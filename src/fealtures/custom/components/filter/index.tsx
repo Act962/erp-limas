@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ChevronsUpDown, Filter, X } from "lucide-react";
+import { Filter } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
@@ -24,20 +24,13 @@ import z from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field, FieldLabel } from "@/components/ui/field";
+
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { formatCurrencyInput } from "@/utils/currency-formatter";
+  formatCurrencyInput,
+  parseCurrencyPenny,
+} from "@/utils/currency-formatter";
+import { PersonType } from "@/schemas/customer";
+import { PersonTypeSelect } from "./person-type-select";
 
 const formFilterSchema = z
   .object({
@@ -57,7 +50,6 @@ export function FilterClients() {
   const [minPurchase, setMinPurchase] = useQueryState("min_purchase");
   const [maxPurchase, setMaxPurchase] = useQueryState("max_purchase");
 
-  const [openProduct, setOpenProduct] = useState(false);
   const [modalOpen, setModalIsOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formFilterSchema>>({
@@ -72,8 +64,8 @@ export function FilterClients() {
   const handleApplyFilters = () => {
     // Aplica outros filtros
     setPersonType(form.getValues("personType") || null);
-    setMinPurchase(form.getValues("minPurchase") || null);
-    setMaxPurchase(form.getValues("maxPurchase") || null);
+    setMinPurchase(parseCurrencyPenny(form.getValues("minPurchase")) || null);
+    setMaxPurchase(parseCurrencyPenny(form.getValues("maxPurchase")) || null);
 
     setModalIsOpen(false);
   };
@@ -84,6 +76,9 @@ export function FilterClients() {
       minPurchase: undefined,
       maxPurchase: undefined,
     });
+    setPersonType(null);
+    setMinPurchase(null);
+    setMaxPurchase(null);
 
     setModalIsOpen(false);
   };
@@ -108,47 +103,10 @@ export function FilterClients() {
             render={({ field }) => (
               <Field>
                 <FieldLabel>Tipo de Pessoa</FieldLabel>
-                <Popover open={openProduct} onOpenChange={setOpenProduct}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className="w-full justify-between"
-                    >
-                      <span className="text-muted-foreground text-sm">
-                        {field.value || "Selecione um tipo de pessoa"}
-                      </span>
-
-                      <ChevronsUpDown className="size-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0  w-full" align="start">
-                    <Command>
-                      <CommandInput placeholder="Buscar produto..." />
-                      <CommandList>
-                        <CommandEmpty>Nenhum produto</CommandEmpty>
-                        <CommandGroup>
-                          <CommandItem
-                            onClick={() => [
-                              field.onChange("Pessoa Física"),
-                              setOpenProduct(false),
-                            ]}
-                          >
-                            Pessoa Física
-                          </CommandItem>
-                          <CommandItem
-                            onClick={() => [
-                              field.onChange("Pessoa Jurídica"),
-                              setOpenProduct(false),
-                            ]}
-                          >
-                            Pessoa Jurídica
-                          </CommandItem>
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                <PersonTypeSelect
+                  value={PersonType[field.value as PersonType]}
+                  onChange={field.onChange}
+                />
               </Field>
             )}
           />
@@ -161,7 +119,7 @@ export function FilterClients() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <Label htmlFor="minPurchase">Valor mínimo</Label>
+                  <Label htmlFor="minPurchase">Valor mínimo Total</Label>
                   <InputGroup>
                     <InputGroupInput
                       id="minPurchase"
@@ -185,7 +143,7 @@ export function FilterClients() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <Label htmlFor="maxPurchase">Valor máximo</Label>
+                  <Label htmlFor="maxPurchase">Valor máximo Total</Label>
                   <InputGroup>
                     <InputGroupInput
                       id="maxPurchase"

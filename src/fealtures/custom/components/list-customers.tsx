@@ -10,7 +10,6 @@ import {
 
 import {
   EyeIcon,
-  FilterIcon,
   MoreVerticalIcon,
   SearchIcon,
   ShoppingBagIcon,
@@ -37,8 +36,8 @@ import {
 import { CalendarFilter } from "@/app/(main)/(rest)/produtos/_components/filter-calendar";
 import { FilterClients } from "./filter";
 import { useQueryState } from "nuqs";
-import { PERSON_TYPE_VALUES } from "@/schemas/customer";
 import dayjs from "dayjs";
+import { PersonType } from "@/generated/prisma/enums";
 
 export function ListCustomers() {
   const [personType] = useQueryState("person_type");
@@ -48,9 +47,9 @@ export function ListCustomers() {
   const [dateEnd] = useQueryState("date_end");
 
   const { customers, isLoading } = useCustomer({
-    personType: PERSON_TYPE_VALUES[personType ?? ""],
-    minPurchase: Number(minPurchase),
-    maxPurchase: Number(maxPurchase),
+    personType: personType ? (personType as PersonType) : undefined,
+    minPurchase: minPurchase ? Number(minPurchase) / 100 : undefined,
+    maxPurchase: maxPurchase ? Number(maxPurchase) / 100 : undefined,
     dateIni: dateInit ? dayjs(dateInit).startOf("day").toDate() : undefined,
     dateEnd: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
   });

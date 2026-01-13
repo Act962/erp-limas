@@ -16,3 +16,8 @@ export const PERSON_TYPE_VALUES: Record<string, PersonType> = {
   "Pessoa Física": PersonType.FISICA,
   "Pessoa Jurídica": PersonType.JURIDICA,
 };
+
+export const PERSON_TYPE_OPTIONS = Object.values(PersonType).map((value) => ({
+  value,
+  label: PERSON_TYPE_LABELS[value],
+}));

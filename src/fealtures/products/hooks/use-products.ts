@@ -2,12 +2,12 @@ import { orpc } from "@/lib/orpc";
 import { useQuery } from "@tanstack/react-query";
 
 interface UseProductsProps {
-  category: string[] | undefined;
-  sku: string | undefined;
-  minValue: string | undefined;
-  maxValue: string | undefined;
-  date_init: Date | undefined;
-  date_end: Date | undefined;
+  category?: string[];
+  sku?: string;
+  minValue?: string;
+  maxValue?: string;
+  dateInit?: Date;
+  dateEnd?: Date;
 }
 
 export function useProducts({
@@ -15,22 +15,23 @@ export function useProducts({
   sku,
   minValue,
   maxValue,
-  date_init,
-  date_end,
+  dateInit,
+  dateEnd,
 }: UseProductsProps) {
-  const { data } = useQuery(
+  const { data, isLoading } = useQuery(
     orpc.products.list.queryOptions({
       input: {
         category,
         sku,
         minValue,
         maxValue,
-        date_init,
-        date_end,
+        dateInit,
+        dateEnd,
       },
     })
   );
   return {
     data: data?.products || [],
+    isLoading,
   };
 }

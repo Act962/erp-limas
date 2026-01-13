@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useProducts } from "@/fealtures/products/hooks/use-products";
 import { MovementType } from "@/generated/prisma/enums";
 
 import { orpc } from "@/lib/orpc";
@@ -116,11 +117,7 @@ export function CreateStockMovimentModal() {
     },
   });
 
-  const { data, isPending } = useSuspenseQuery(
-    orpc.products.list.queryOptions({
-      input: {},
-    })
-  );
+  const { data, isLoading } = useProducts({});
 
   const onSucessFinish = () => {
     queryClient.invalidateQueries({
@@ -240,9 +237,8 @@ export function CreateStockMovimentModal() {
                         disabled={isRegisterLoading}
                       >
                         {field.value ? (
-                          data.products.find(
-                            (product) => product.id === field.value
-                          )?.name
+                          data.find((product) => product.id === field.value)
+                            ?.name
                         ) : (
                           <span className="text-muted-foreground text-sm">
                             Selecione um produto
@@ -259,11 +255,11 @@ export function CreateStockMovimentModal() {
                         <CommandInput placeholder="Buscar produto..." />
                         <CommandList>
                           <CommandEmpty>
-                            {isPending ? "Carregando..." : "Nenhum produto"}
+                            {isLoading ? "Carregando..." : "Nenhum produto"}
                           </CommandEmpty>
                           <CommandGroup>
-                            {!isPending &&
-                              data.products.map((product) => (
+                            {!isLoading &&
+                              data.map((product) => (
                                 <CommandItem
                                   key={product.id}
                                   value={`${product.name}-${product.id}`}

@@ -33,14 +33,24 @@ export const listCustomer = base
         personType: {
           equals: input.personType,
         },
-        sales: {
-          some: {
-            total: {
-              gte: input.minPurchase,
-              lte: input.maxPurchase,
+        ...(input.minPurchase && {
+          sales: {
+            some: {
+              total: {
+                gte: input.minPurchase,
+              },
             },
           },
-        },
+        }),
+        ...(input.maxPurchase && {
+          sales: {
+            some: {
+              total: {
+                lte: input.maxPurchase,
+              },
+            },
+          },
+        }),
         ...(input.dateIni &&
           input.dateEnd && {
             createdAt: {
