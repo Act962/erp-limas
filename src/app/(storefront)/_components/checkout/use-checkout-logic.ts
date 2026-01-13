@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
-import { useShoppingCart } from "@/hooks/use-product";
 import { useUserStore } from "../../../../context/catalog/use-cart-session";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 import {

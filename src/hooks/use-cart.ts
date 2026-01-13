@@ -1,6 +1,6 @@
 import { useCartSessionStore } from "@/context/catalog/use-cart-session-store";
 
-export function useCart(organizationSlug: string) {
+export function useCart(organizationSubdomain: string) {
   const {
     getCardByOrganization,
     addToCart,
@@ -10,13 +10,13 @@ export function useCart(organizationSlug: string) {
     organizationCards,
   } = useCartSessionStore();
 
-  const products = getCardByOrganization(organizationSlug) ?? [];
+  const products = getCardByOrganization(organizationSubdomain) ?? [];
 
   const toggleProduct = (productId: string, quantity: string) => {
     if (products.some((product) => product.productId === productId)) {
-      removeFromCart(productId, organizationSlug);
+      removeFromCart(productId, organizationSubdomain);
     } else {
-      addToCart(productId, organizationSlug, quantity);
+      addToCart(productId, organizationSubdomain, quantity);
     }
   };
   const isProductInCart = (productId: string) => {
@@ -24,7 +24,7 @@ export function useCart(organizationSlug: string) {
   };
 
   const clearOrganizationCart = () => {
-    clearCart(organizationSlug);
+    clearCart(organizationSubdomain);
   };
 
   return {

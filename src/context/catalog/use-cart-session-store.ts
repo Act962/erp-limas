@@ -10,17 +10,17 @@ interface CartState {
   organizationCards: Record<string, CartSession[]>;
   addToCart: (
     productId: string,
-    organizationSlug: string,
+    organizationSubdomain: string,
     quantity: string
   ) => void;
-  removeFromCart: (productId: string, organizationSlug: string) => void;
+  removeFromCart: (productId: string, organizationSubdomain: string) => void;
   updateQuantity: (
     productId: string,
-    organizationSlug: string,
+    organizationSubdomain: string,
     quantity: string
   ) => void;
-  clearCart: (organizationSlug: string) => void;
-  getCardByOrganization: (organizationSlug: string) => CartSession[];
+  clearCart: (organizationSubdomain: string) => void;
+  getCardByOrganization: (organizationSubdomain: string) => CartSession[];
 }
 
 export const useCartSessionStore = create<CartState>()(
@@ -28,12 +28,12 @@ export const useCartSessionStore = create<CartState>()(
     (set, get) => ({
       organizationCards: {},
 
-      addToCart: (productId, organizationSlug, quantity) => {
+      addToCart: (productId, organizationSubdomain, quantity) => {
         set((state) => ({
           organizationCards: {
             ...state.organizationCards,
-            [organizationSlug]: [
-              ...(state.organizationCards[organizationSlug] ?? []),
+            [organizationSubdomain]: [
+              ...(state.organizationCards[organizationSubdomain] ?? []),
               {
                 productId: productId,
                 quantity,
@@ -42,39 +42,39 @@ export const useCartSessionStore = create<CartState>()(
           },
         }));
       },
-      removeFromCart: (productId, organizationSlug) => {
+      removeFromCart: (productId, organizationSubdomain) => {
         set((state) => ({
           organizationCards: {
             ...state.organizationCards,
-            [organizationSlug]: (
-              state.organizationCards[organizationSlug] ?? []
+            [organizationSubdomain]: (
+              state.organizationCards[organizationSubdomain] ?? []
             ).filter((item) => item.productId !== productId),
           },
         }));
       },
 
-      updateQuantity: (productId, organizationSlug, quantity) => {
+      updateQuantity: (productId, organizationSubdomain, quantity) => {
         set((state) => ({
           organizationCards: {
             ...state.organizationCards,
-            [organizationSlug]: (
-              state.organizationCards[organizationSlug] ?? []
+            [organizationSubdomain]: (
+              state.organizationCards[organizationSubdomain] ?? []
             ).map((item) =>
               item.productId === productId ? { ...item, quantity } : item
             ),
           },
         }));
       },
-      clearCart: (organizationSlug) => {
+      clearCart: (organizationSubdomain) => {
         set(() => ({
           organizationCards: {
             ...get().organizationCards,
-            [organizationSlug]: [],
+            [organizationSubdomain]: [],
           },
         }));
       },
-      getCardByOrganization: (organizationSlug) => {
-        return get().organizationCards[organizationSlug] ?? [];
+      getCardByOrganization: (organizationSubdomain) => {
+        return get().organizationCards[organizationSubdomain] ?? [];
       },
     }),
     {
