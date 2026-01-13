@@ -2,29 +2,27 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Handbag, Minus, Plus, Trash2, User } from "lucide-react";
+import { Handbag, User } from "lucide-react";
 import Link from "next/link";
-import { useShoppingCart } from "../../../hooks/use-product";
-import { Item, ItemContent, ItemDescription } from "@/components/ui/item";
-import { CartItem } from "../types/product";
 import { useState } from "react";
-import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRouter } from "next/navigation";
 import { getContrastColor } from "@/utils/get-contrast-color";
 import { useConstructUrl } from "@/hooks/use-construct-url";
-import Image from "next/image";
+import { useCart } from "@/hooks/use-cart";
+import { useQueryProductsOfCart } from "@/fealtures/products/hooks/use-products";
+import { ItemRequested } from "./item-requested";
 
 interface Settings {
   metaTitle: string | null;
   theme: string | null;
   organizationId: string;
   bannerImage: string | null;
+  subdomain: string;
 }
 
 interface HeaderProps {
@@ -32,9 +30,28 @@ interface HeaderProps {
 }
 
 export function Header({ settings }: HeaderProps) {
-  const router = useRouter();
-  const { cartItems, updateQuantity } = useShoppingCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const { products, updateQuantity } = useCart(settings.subdomain);
+
+  const { data: productsOfCart } = useQueryProductsOfCart({
+    subdomain: settings.subdomain,
+    productIds: products.map((product) => product.productId) || [],
+  });
+
+  const findAndConvertQuantity = (productId: string) => {
+    const product = products.find((product) => product.productId === productId);
+    return Number(product?.quantity || 0);
+  };
+
+  const cartItems = productsOfCart?.map((item) => ({
+    id: item.id,
+    name: item.name,
+    salePrice: item.salePrice,
+    thumbnail: item.thumbnail,
+    slug: item.slug,
+    organizationId: item.organizationId,
+    quantity: findAndConvertQuantity(item.id),
+  }));
 
   const isEmpty = cartItems.length === 0;
 
@@ -44,6 +61,10 @@ export function Header({ settings }: HeaderProps) {
   function handleGoToCart() {
     setModalIsOpen(false);
   }
+
+  const updateQuantityCart = (productId: string, quantity: string) => {
+    updateQuantity(productId, settings.subdomain, quantity);
+  };
 
   return (
     <header
@@ -136,7 +157,7 @@ export function Header({ settings }: HeaderProps) {
                           }
                           name={item.name}
                           quantityInit={item.quantity}
-                          updateQuantity={updateQuantity}
+                          updateQuantity={updateQuantityCart}
                           contrastColor={contrastColor}
                           salePrice={item.salePrice}
                           quantity={item.quantity}
@@ -166,84 +187,5 @@ export function Header({ settings }: HeaderProps) {
         </div>
       </div>
     </header>
-  );
-}
-
-interface ItemRequestedProps extends CartItem {
-  quantityInit: number;
-  updateQuantity: (id: string, quantity: number) => void;
-  contrastColor: string;
-}
-
-function ItemRequested({
-  id,
-  name,
-  thumbnail,
-  quantityInit,
-  updateQuantity,
-}: ItemRequestedProps) {
-  const [quantity, setQuantity] = useState(quantityInit);
-
-  const isDisabled = quantity <= 1;
-
-  function onSubmit(qtd: number) {
-    setQuantity(qtd);
-    updateQuantity(id, qtd);
-  }
-  console.log(thumbnail);
-
-  return (
-    <Item>
-      <ItemContent className="flex flex-row items-center gap-x-2">
-        <div className="relative h-15 w-15">
-          <Image
-            src={thumbnail}
-            alt={name}
-            fill
-            className="object-cover rounded-sm "
-          />
-        </div>
-
-        <div className="space-y-2">
-          <ItemDescription>{name}</ItemDescription>
-
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="h-9 w-9 rounded-none"
-              onClick={() => onSubmit(0)}
-            >
-              <Trash2 className="size-4" />
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="icon-sm"
-              className="h-9 w-9 rounded-none"
-              onClick={() => onSubmit(quantity - 1)}
-              disabled={isDisabled}
-            >
-              <Minus className="size-4" />
-            </Button>
-
-            <span className="px-4 font-medium min-w-12 text-center">
-              {quantity}
-            </span>
-
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="h-9 w-9 rounded-none"
-              onClick={() => onSubmit(quantity + 1)}
-            >
-              <Plus className="size-4" />
-            </Button>
-          </div>
-        </div>
-      </ItemContent>
-
-      <Separator orientation="horizontal" className="w-full" />
-    </Item>
   );
 }

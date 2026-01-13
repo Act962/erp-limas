@@ -24,7 +24,6 @@ export function CheckoutPage({ subdomain }: CheckoutProps) {
     setObservations,
     availablePaymentMethods,
     availableDeliveryMethods,
-    cartItems,
     subtotal,
     freightValue,
     total,
@@ -33,6 +32,7 @@ export function CheckoutPage({ subdomain }: CheckoutProps) {
     onCheckout,
     purchase,
     router,
+    cartItems,
     user,
   } = useCheckoutLogic(subdomain);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCustomer } from "@/fealtures/storefront/hooks/use-catalog-customer";
-import { useUserStore } from "../../context/use-cart-session";
+import { useUserStore } from "../../../../context/catalog/use-cart-session";
 import { FormCustomer, FormEmpty, FormSkeleton } from "./form-user";
 
 interface AccountPageProps {

@@ -4,12 +4,14 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useShoppingCart } from "@/hooks/use-product";
-import { useUserStore } from "../../context/use-cart-session";
+import { useUserStore } from "../../../../context/catalog/use-cart-session";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 import {
   deliveryMethodsConfig,
   paymentMethodsConfig,
 } from "../../types/payments";
+import { useCart } from "@/hooks/use-cart";
+import { useQueryProductsOfCart } from "@/fealtures/products/hooks/use-products";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
@@ -19,10 +21,26 @@ export function useCheckoutLogic(subdomain: string) {
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [address, setAddress] = useState("");
   const [observations, setObservations] = useState("");
-  const { cartItems } = useShoppingCart();
+  const { products } = useCart(subdomain);
   const { user } = useUserStore();
-
   const { data: catalogSettings } = useCatalogSettings({ subdomain });
+
+  const { data: productsOfCart } = useQueryProductsOfCart({
+    subdomain,
+    productIds: products.map((product) => product.productId),
+  });
+
+  const findAndConvertQuantity = (productId: string) => {
+    const product = products.find((product) => product.productId === productId);
+    return Number(product?.quantity || 0);
+  };
+
+  const cartItems = productsOfCart?.map((item) => ({
+    id: item.id,
+    name: item.name,
+    salePrice: item.salePrice,
+    quantity: findAndConvertQuantity(item.id),
+  }));
 
   const purchase = useMutation(
     orpc.checkout.purchaseAssas.mutationOptions({
@@ -47,13 +65,18 @@ export function useCheckoutLogic(subdomain: string) {
     );
   }, [catalogSettings?.deliveryMethods]);
 
-  const subtotal = cartItems.reduce(
-    (sum: number, item) => sum + item.salePrice * item.quantity,
+  const subtotal = productsOfCart?.reduce(
+    (sum: number, item) =>
+      sum +
+      item.salePrice *
+        Number(
+          products.find((product) => product.productId === item.id)?.quantity
+        ),
     0
   );
 
-  const totalWeight = cartItems.reduce(
-    (sum: number, item) => sum + 2 * item.quantity,
+  const totalWeight = products.reduce(
+    (sum: number, item) => sum + 2 * Number(item.quantity),
     0
   );
 
@@ -179,11 +202,16 @@ export function useCheckoutLogic(subdomain: string) {
 
     message += "\n*Produtos:*\n";
 
-    cartItems.forEach((item, index) => {
-      const itemTotal = (item.salePrice * item.quantity).toFixed(2);
-      message += `${index + 1}. ${item.name} ${
-        item.quantity
-      }x - R$ ${itemTotal}\n`;
+    productsOfCart?.forEach((item, index) => {
+      const itemTotal = (
+        item.salePrice *
+        Number(
+          products.find((product) => product.productId === item.id)?.quantity
+        )
+      ).toFixed(2);
+      message += `${index + 1}. ${item.name} ${findAndConvertQuantity(
+        item.id
+      )}x - R$ ${itemTotal}\n`;
     });
 
     message += `\n*Subtotal:* R$ ${subtotal.toFixed(2)}`;
@@ -202,9 +230,9 @@ export function useCheckoutLogic(subdomain: string) {
   const onCheckout = () =>
     purchase.mutate({
       domain: subdomain,
-      products: cartItems.map((item) => ({
+      products: productsOfCart?.map((item) => ({
         id: item.id.toString(),
-        quantity: item.quantity,
+        quantity: findAndConvertQuantity(item.id),
       })),
       customerId: user?.id || "",
       email: user?.email || "",
