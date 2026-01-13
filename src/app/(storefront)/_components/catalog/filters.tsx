@@ -24,7 +24,7 @@ import {
 import { Check, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQueryState } from "nuqs";
-import type { CategoryCatalog } from "../types/category";
+import type { CategoryCatalog } from "../../types/category";
 
 interface FiltersCatalogProps {
   categories: CategoryCatalog[];

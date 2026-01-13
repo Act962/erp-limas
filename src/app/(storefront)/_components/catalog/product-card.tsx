@@ -1,24 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ProductCatalog } from "../types/product";
-import { useShoppingCart } from "../../../hooks/use-product";
+import type { ProductCatalog } from "../../types/product";
+import { useShoppingCart } from "@/hooks/use-product";
 import { useRouter } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { currencyFormatter } from "../../../utils/currency-formatter";
+import { currencyFormatter } from "@/utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import { Check, CirclePlus, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import placeholder from "@/assets/background-default-image.svg";
 import Link from "next/link";
+import { useCart } from "@/hooks/use-cart";
 
 interface ProductCardProps extends ProductCatalog {
   allowsOrders?: boolean;
+  subdomain: string;
 }
 
 export function ProductCard({
@@ -29,32 +31,18 @@ export function ProductCard({
   thumbnail,
   allowsOrders,
   slug,
-  organizationId,
+  subdomain,
 }: ProductCardProps) {
-  const [quantity, setQuantity] = useState(1);
   const { addToCart, cartItems } = useShoppingCart();
-  const router = useRouter();
+  const { toggleProduct, isProductInCart } = useCart(subdomain);
   const [isMounted, setIsMounted] = useState(false);
-  const productInCart = !!cartItems.find((item) => item.id === id);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleAddToCart = () => {
-    addToCart({
-      id,
-      name,
-      salePrice,
-      thumbnail,
-      quantity,
-      slug,
-      organizationId,
-    });
-  };
-
-  const showAsInCart = isMounted && productInCart;
-  const isDisabled = isMounted && productInCart;
+  const showAsInCart = isMounted && isProductInCart(id);
+  const isDisabled = isMounted && isProductInCart(id);
 
   const imageSrc =
     thumbnail && thumbnail.trim() !== ""
@@ -103,32 +91,9 @@ export function ProductCard({
       </div>
       {allowsOrders && (
         <div className="flex items-center gap-x-2">
-          {/* <div className="hidden items-center border border-border rounded-lg overflow-hidden sm:flex">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-none"
-              onClick={() => setQuantity(quantity - 1)}
-              disabled={isDisabled || quantity <= 1}
-            >
-              <Minus className="size-4" />
-            </Button>
-            <span className="px-4 font-medium min-w-12 text-center">
-              {quantity}
-            </span>
-            <Button
-              disabled={isDisabled}
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 rounded-none"
-              onClick={() => setQuantity(quantity + 1)}
-            >
-              <Plus className="size-4" />
-            </Button>
-          </div> */}
           <Button
             variant="default"
-            onClick={handleAddToCart}
+            onClick={() => toggleProduct(id, "1")}
             disabled={isDisabled}
           >
             {showAsInCart ? "No carrinho" : "Adicionar"}

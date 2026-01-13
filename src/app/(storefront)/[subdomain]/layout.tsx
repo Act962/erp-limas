@@ -1,5 +1,5 @@
 import prisma from "@/lib/db";
-import { Header } from "../_components/header-catalog";
+import { Header } from "../_components/header";
 import { notFound } from "next/navigation";
 import { Footer } from "../_components/footer";
 import type { Metadata } from "next";
@@ -70,6 +70,7 @@ export default async function SubdomainLayout({
     <div className="bg-accent-foreground/5 h-full">
       <Header
         settings={{
+          subdomain,
           metaTitle: settings.metaTitle,
           theme: settings.theme,
           organizationId: org.id,

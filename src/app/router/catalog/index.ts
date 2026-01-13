@@ -1,6 +1,7 @@
 import { createSettingsCatalog } from "./create";
 import { getUserCatalog } from "./get-user";
 import { listSettingsCatalog } from "./list";
+import { listProductsOfCart } from "./list-my-products";
 import { listProducts } from "./list-products";
 import { loginCatalog } from "./login";
 import { getProductAndProductsByCategory } from "./product_with_category";
@@ -20,4 +21,5 @@ export const catalogSettingsRouter = {
   signupCatalog: signupCatalog,
   getUser: getUserCatalog,
   updateCustomer: updateCustomer,
+  listProductsOfCart: listProductsOfCart,
 };

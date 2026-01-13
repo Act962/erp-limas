@@ -1,5 +1,5 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { DetailsPoduct } from "../../_components/delails-product";
+import { DetailsPoduct } from "../../_components/details-product";
 import { orpc } from "@/lib/orpc";
 
 interface ProductProps {
@@ -25,7 +25,7 @@ export default async function Page({ params }: ProductProps) {
 
   return (
     <HydrateClient client={queryClient}>
-      <DetailsPoduct subdomain={subdomain} slug={productSlug} />;
+      <DetailsPoduct subdomain={subdomain} slug={productSlug} />
     </HydrateClient>
   );
 }

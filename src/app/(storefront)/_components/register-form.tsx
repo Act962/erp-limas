@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/app/(storefront)/context/use-cart-session";
+import { useUserStore } from "@/context/catalog/use-cart-session";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { formatCPForCNPJ } from "@/utils/format-cnpj";

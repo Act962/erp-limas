@@ -3,12 +3,7 @@ const CART_KEY = "@cart_products";
 
 interface UseShoppingCartProps {
   id: string;
-  name: string;
   quantity: number;
-  organizationId: string;
-  salePrice: number;
-  slug: string;
-  thumbnail?: string;
 }
 
 export function useShoppingCart() {
@@ -57,10 +52,6 @@ export function useShoppingCart() {
 
   const itemsCount = cartItems.length;
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + (item.salePrice || 0) * item.quantity,
-    0
-  );
 
   return {
     cartItems,
@@ -70,6 +61,5 @@ export function useShoppingCart() {
     clearCart,
     itemsCount,
     totalQuantity,
-    subtotal,
   };
 }

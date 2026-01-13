@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { currencyFormatter } from "../../../utils/currency-formatter";
+import { useEffect, useState } from "react";
+import { currencyFormatter } from "@/utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import {
   Check,
@@ -11,15 +11,15 @@ import {
   PlusCircle,
   ShoppingBag,
 } from "lucide-react";
-import { useShoppingCart } from "../../../hooks/use-product";
 import useEmblaCarousel from "embla-carousel-react";
-import type { EmblaCarouselType } from "embla-carousel";
 import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import Image from "next/image";
 import placeholder from "@/assets/background-default-image.svg";
+import { useDotButton } from "./useDotButton";
+import { useCart } from "@/hooks/use-cart";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -35,37 +35,28 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
       },
     })
   );
+  const { products, updateQuantity, isProductInCart, toggleProduct } =
+    useCart(subdomain);
 
   const { product, productsWithThisCategory } = data;
 
-  const [imageSelected, setImageSelected] = useState(product.thumbnail);
-  const [quantity, setQuantity] = useState(1);
+  const currentProductInCart = products.find(
+    (thisProduct) => thisProduct.productId === product.id
+  );
 
-  const { cartItems, updateQuantity, addToCart, removeFromCart } =
-    useShoppingCart();
+  const [imageSelected, setImageSelected] = useState(product.thumbnail);
+  const [quantity, setQuantity] = useState<number>(
+    Number(currentProductInCart?.quantity) || 1
+  );
+
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({});
   const { selectedIndex, scrollSnaps, onDotButtonClick } =
     useDotButton(emblaApi);
-  const [isMounted, setIsMounted] = useState(false);
 
-  const productInCart = !!cartItems.find((item) => item.id === product.id);
-
-  function handleQuantity(quantity: number) {
-    setQuantity(quantity);
-    updateQuantity(product.id, quantity);
-  }
-
-  const showAsInCart = productInCart && isMounted;
-
-  const handleAddAndRemoveToCart = () => {
-    if (productInCart) {
-      removeFromCart(product.id);
-      return;
-    }
-    addToCart({ ...product, quantity });
-  };
+  const showAsInCart = isProductInCart(product.id) && isMounted;
 
   useEffect(() => {
     setIsMounted(true);
@@ -151,13 +142,13 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   src={imageSrc}
                   alt={product.name}
                   fill
-                  className="rounded-2xl object-contain size-full"
+                  className="rounded-xl object-contain size-full"
                 />
               </div>
             </div>
           </div>
           <div className="h-full px-4">
-            <h3 className="font-bold text-xl">{product.name}</h3>
+            <h3 className="font-medium text-xl">{product.name}</h3>
             <h1 className="text-3xl font-semibold opacity-80">
               R${currencyFormatter(product.salePrice)}
             </h1>
@@ -173,24 +164,40 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   disabled={quantity <= 1}
                   variant="ghost"
                   size="icon-sm"
-                  className="h-9 w-9 rounded-none"
-                  onClick={() => handleQuantity(quantity - 1)}
+                  className="h-9 w-9 "
+                  onClick={() => {
+                    updateQuantity(
+                      product.id,
+                      subdomain,
+                      (quantity - 1).toString()
+                    );
+                    setQuantity(quantity - 1);
+                  }}
                 >
                   <Minus className="size-4" />
                 </Button>
                 <span className="px-4 font-medium min-w-12 text-center">
-                  {quantity}
+                  {quantity + 0}
                 </span>
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="h-9 w-9 rounded-none"
-                  onClick={() => handleQuantity(quantity + 1)}
+                  className="h-9 w-9 "
+                  onClick={() => {
+                    updateQuantity(
+                      product.id,
+                      subdomain,
+                      (quantity + 1).toString()
+                    );
+                    setQuantity(quantity + 1);
+                  }}
                 >
                   <Plus className="size-4" />
                 </Button>
               </div>
-              <Button onClick={() => handleAddAndRemoveToCart()}>
+              <Button
+                onClick={() => toggleProduct(product.id, quantity.toString())}
+              >
                 {showAsInCart ? "Adicionado" : "Adicionar"}
                 {showAsInCart ? (
                   <Check className="size-4" />
@@ -246,48 +253,3 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
 }
 
 // use DotButton
-type UseDotButtonType = {
-  selectedIndex: number;
-  scrollSnaps: number[];
-  onDotButtonClick: (index: number) => void;
-};
-
-export const useDotButton = (
-  emblaApi: EmblaCarouselType | undefined,
-  onButtonClick?: (emblaApi: EmblaCarouselType) => void
-): UseDotButtonType => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-
-  const onDotButtonClick = useCallback(
-    (index: number) => {
-      if (!emblaApi) return;
-      emblaApi.scrollTo(index);
-      if (onButtonClick) onButtonClick(emblaApi);
-    },
-    [emblaApi, onButtonClick]
-  );
-
-  const onInit = useCallback((emblaApi: EmblaCarouselType) => {
-    setScrollSnaps(emblaApi.scrollSnapList());
-  }, []);
-
-  const onSelect = useCallback((emblaApi: EmblaCarouselType) => {
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, []);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    onInit(emblaApi);
-    onSelect(emblaApi);
-
-    emblaApi.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect);
-  }, [emblaApi, onInit, onSelect]);
-
-  return {
-    selectedIndex,
-    scrollSnaps,
-    onDotButtonClick,
-  };
-};

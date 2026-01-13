@@ -110,7 +110,7 @@ export function Catalog({ subdomain }: CatalogProps) {
           {products.map((product, index) => (
             <ProductCard
               key={`product-${product.id}-${index}`}
-              description={product.description ?? ""}
+              subdomain={subdomain}
               id={product.id}
               organizationId={product.organizationId}
               name={product.name}

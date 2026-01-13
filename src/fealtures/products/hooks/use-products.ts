@@ -35,3 +35,26 @@ export function useProducts({
     isLoading,
   };
 }
+
+interface useQueryProductsOfCartProps {
+  subdomain: string;
+  productIds: string[];
+}
+
+export function useQueryProductsOfCart({
+  subdomain,
+  productIds,
+}: useQueryProductsOfCartProps) {
+  const { data, isLoading } = useQuery(
+    orpc.catalogSettings.listProductsOfCart.queryOptions({
+      input: {
+        subdomain,
+        productIds,
+      },
+    })
+  );
+  return {
+    data: data?.products || [],
+    isLoading,
+  };
+}
