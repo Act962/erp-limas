@@ -3,20 +3,27 @@ import { useQuery } from "@tanstack/react-query";
 
 interface UseCatalogProductsProps {
   subdomain: string;
-  categorySlugs?: string[];
+  categories?: string[];
+  minValue?: number;
+  maxValue?: number;
 }
 
-export function useCatalogProducts({
+export function useQueryCatalogProducts({
   subdomain,
-  categorySlugs,
+  categories,
+  minValue,
+  maxValue,
 }: UseCatalogProductsProps) {
   const { data, isLoading } = useQuery(
     orpc.catalogSettings.listProducts.queryOptions({
       input: {
         subdomain,
-        categorySlugs,
+        categorySlugs: categories ?? undefined,
+        maxValue: maxValue ?? undefined,
+        minValue: minValue ?? undefined,
       },
       enabled: !!subdomain,
+      placeholderData: (previousData) => previousData,
     })
   );
 

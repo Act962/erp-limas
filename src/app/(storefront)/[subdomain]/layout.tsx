@@ -67,7 +67,7 @@ export default async function SubdomainLayout({
   const settings = org.catalogSettings;
 
   return (
-    <div className="bg-accent-foreground/5 h-full">
+    <div className="bg-accent-foreground/5 min-h-screen flex flex-col">
       <Header
         settings={{
           subdomain,
@@ -77,7 +77,7 @@ export default async function SubdomainLayout({
           bannerImage: settings.logo,
         }}
       />
-      <main className="mt-15 sm:mt-19 h-full">{children}</main>
+      <main className="mt-15 sm:mt-19 flex-1">{children}</main>
       <Footer
         settings={{
           theme: settings.theme,

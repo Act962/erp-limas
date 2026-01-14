@@ -1,8 +1,7 @@
 "use client";
 
 import { FiltersCatalog } from "./filters";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useQueryState } from "nuqs";
+import { useCallback, useEffect, useState } from "react";
 import { ProductCard } from "./product-card";
 import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
@@ -10,23 +9,29 @@ import Autoplay from "embla-carousel-autoplay";
 import { notFound } from "next/navigation";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCatalogProducts } from "@/fealtures/storefront/hooks/use-catalog-products";
+import { useQueryCatalogProducts } from "@/fealtures/storefront/hooks/use-catalog-products";
 import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
+import { useQueryState } from "nuqs";
+import { parseCurrencyInput } from "@/utils/currency-formatter";
 interface CatalogProps {
   subdomain: string;
 }
 export function Catalog({ subdomain }: CatalogProps) {
   const options: EmblaOptionsType = { loop: true };
-  const [categoryParam] = useQueryState("category");
+  const [categoriesSlugs] = useQueryState("categories");
+  const [minValue] = useQueryState("min_value");
+  const [maxValue] = useQueryState("max_value");
 
   const { data: catalogSettings, isLoading } = useCatalogSettings({
     subdomain,
   });
 
-  const { data, isLoadingProducts } = useCatalogProducts({
+  const { data, isLoadingProducts } = useQueryCatalogProducts({
     subdomain,
-    categorySlugs: categoryParam?.split(",").map((category) => category.trim()),
+    categories: categoriesSlugs?.trim().split(","),
+    minValue: minValue ? parseCurrencyInput(minValue) : undefined,
+    maxValue: maxValue ? parseCurrencyInput(maxValue) : undefined,
   });
 
   const [emblaRef, emblaApi] = useEmblaCarousel(options, [
@@ -41,7 +46,7 @@ export function Catalog({ subdomain }: CatalogProps) {
           <div className="overflow-hidden size-full mt-7">
             <div className="flex gap-2 size-full">
               <div className="flex w-full justify-center translate-0 shrink-0 grow-0 min-w-full size-full">
-                <Skeleton className="h-64 w-full bg-accent-foreground/10" />
+                <Skeleton className="h-64 w-full bg-accent-foreground/10 rounded-sm" />
               </div>
             </div>
           </div>
@@ -63,16 +68,17 @@ export function Catalog({ subdomain }: CatalogProps) {
   }
 
   if (catalogSettings === undefined) {
-    console.log("Catalog settings not found", catalogSettings);
+    console.log("Espera 01");
     return notFound();
   }
 
   if (data === undefined) {
-    console.log("Produtos não encontrados", data);
+    console.log("Espera 02");
     return notFound();
   }
 
   if (catalogSettings.isActive === false) {
+    console.log("Espera 03");
     return notFound();
   }
 
@@ -93,7 +99,7 @@ export function Catalog({ subdomain }: CatalogProps) {
                   <Image
                     src={useConstructUrl(image)}
                     alt="Imagem do catalogo"
-                    className="object-cover w-full"
+                    className="object-cover w-full rounded-sm"
                     fill
                   />
                 </div>

@@ -25,17 +25,68 @@ import { Check, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useQueryState } from "nuqs";
 import type { CategoryCatalog } from "../../types/category";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Field, FieldLabel } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+import {
+  formatCurrencyInput,
+  parseCurrencyPenny,
+} from "@/utils/currency-formatter";
 
 interface FiltersCatalogProps {
   categories: CategoryCatalog[];
 }
+
+const formFilterSchema = z
+  .object({
+    categoryIds: z.array(z.string()),
+    sku: z.string().optional(),
+    minValue: z.string().optional(),
+    maxValue: z.string().optional(),
+  })
+  .refine((data) => {
+    if (data.minValue && data.maxValue) {
+      return data.minValue <= data.maxValue;
+    }
+    return true;
+  }, "O valor minimo deve ser menor que o valor maximo");
 
 export function FiltersCatalog({
   categories: mockedCategories,
 }: FiltersCatalogProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [modalOpen, setModalIsOpen] = useState(false);
-  const [category, setCategory] = useQueryState("category");
+  const [categorySlugs, setCategorySlugs] = useQueryState("categories");
+  const [minValue, setMinValue] = useQueryState("min_value");
+  const [maxValue, setMaxValue] = useQueryState("max_value");
+
+  const form = useForm<z.infer<typeof formFilterSchema>>({
+    resolver: zodResolver(formFilterSchema),
+    defaultValues: {
+      categoryIds: selectedIds,
+      minValue: minValue ?? undefined,
+      maxValue: maxValue ?? undefined,
+    },
+  });
+
+  useEffect(() => {
+    form.setValue(
+      "minValue",
+      minValue ? formatCurrencyInput(minValue.toString()) : undefined
+    );
+    form.setValue(
+      "maxValue",
+      maxValue ? formatCurrencyInput(maxValue.toString()) : undefined
+    );
+    form.setValue("categoryIds", selectedIds);
+  }, [minValue, maxValue, selectedIds, form]);
 
   const handleRemove = (id: string) => {
     if (!selectedIds.includes(id)) {
@@ -61,26 +112,36 @@ export function FiltersCatalog({
 
   const handleApplyFilters = () => {
     if (getSelectedCategories().length >= 1) {
-      setCategory(
+      setCategorySlugs(
         getSelectedCategories()
           .map((cat) => cat.slug.toLowerCase())
           .join(",")
       );
     } else {
-      setCategory(null);
+      setCategorySlugs(null);
     }
+    setMinValue(parseCurrencyPenny(form.getValues("minValue")) ?? null);
+    setMaxValue(parseCurrencyPenny(form.getValues("maxValue")) ?? null);
     setModalIsOpen(false);
+    form.reset({
+      categoryIds: [],
+      minValue: undefined,
+      maxValue: undefined,
+    });
   };
 
   const handleClearFilters = () => {
     setSelectedIds([]);
     setModalIsOpen(false);
-    setCategory(null);
+    setCategorySlugs(null);
+    setMinValue(null);
+    setMaxValue(null);
+    form.reset();
   };
 
   useEffect(() => {
-    if (category) {
-      const slugsFromUrl = category
+    if (categorySlugs) {
+      const slugsFromUrl = categorySlugs
         .split(",")
         .map((s) => s.trim().toLowerCase());
 
@@ -92,7 +153,7 @@ export function FiltersCatalog({
     } else {
       setSelectedIds([]);
     }
-  }, [category, mockedCategories]);
+  }, [categorySlugs, mockedCategories]);
 
   return (
     <Sheet open={modalOpen} onOpenChange={setModalIsOpen}>
@@ -138,6 +199,58 @@ export function FiltersCatalog({
             </TagsList>
           </TagsContent>
         </Tags>
+
+        <div className="flex flex-row gap-2">
+          <div className="flex flex-col gap-2">
+            <Controller
+              name="minValue"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="minValue">Valor mínimo</FieldLabel>
+                  <InputGroup>
+                    <InputGroupInput
+                      id="minValue"
+                      min={0}
+                      value={formatCurrencyInput(field.value)}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      placeholder="0,00"
+                      className="w-full"
+                    />
+                    <InputGroupAddon>
+                      <InputGroupText>R$</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Field>
+              )}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Controller
+              name="maxValue"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="maxValue">Valor máximo</FieldLabel>
+                  <InputGroup>
+                    <InputGroupInput
+                      id="maxValue"
+                      min={0}
+                      value={formatCurrencyInput(field.value)}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      placeholder="0,00"
+                      className="w-full"
+                    />
+                    <InputGroupAddon>
+                      <InputGroupText>R$</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Field>
+              )}
+            />
+          </div>
+        </div>
+
         <SheetFooter>
           <Button type="submit" onClick={handleApplyFilters}>
             Aplicar

@@ -13,6 +13,8 @@ export const listProducts = base
     z.object({
       subdomain: z.string(),
       categorySlugs: z.array(z.string()).optional(),
+      maxValue: z.number().optional(),
+      minValue: z.number().optional(),
     })
   )
   .output(
@@ -75,6 +77,10 @@ export const listProducts = base
             slug: {
               in: input.categorySlugs,
             },
+          },
+          salePrice: {
+            gte: input.minValue,
+            lte: input.maxValue,
           },
         },
       });
