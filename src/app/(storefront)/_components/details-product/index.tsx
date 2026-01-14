@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ButtonHTMLAttributes, ReactNode, useEffect, useState } from "react";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
   Plus,
   PlusCircle,
   ShoppingBag,
+  X,
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ import Image from "next/image";
 import placeholder from "@/assets/background-default-image.svg";
 import { useDotButton } from "./useDotButton";
 import { useCart } from "@/hooks/use-cart";
+import { FieldError } from "@/components/ui/field";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -68,7 +70,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
       : placeholder;
 
   return (
-    <div className="mx-auto w-full max-w-5xl py-8 ">
+    <div className="mx-auto w-full max-w-6xl py-8 ">
       <div
         className="bg-accent-foreground/10 rounded-sm py-5 px-4  
           sm:px-10"
@@ -195,16 +197,15 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   <Plus className="size-4" />
                 </Button>
               </div>
-              <Button
-                onClick={() => toggleProduct(product.id, quantity.toString())}
-              >
-                {showAsInCart ? "Adicionado" : "Adicionar"}
-                {showAsInCart ? (
-                  <Check className="size-4" />
-                ) : (
-                  <ShoppingBag className="size-4" />
-                )}
-              </Button>
+              <div className="flex flex-col items-center gap-2">
+                <HelperButtonSale
+                  data={{
+                    productIsDisponile: data.productIsDisponile,
+                    showAsInCart: showAsInCart,
+                  }}
+                  onClick={() => toggleProduct(product.id, quantity.toString())}
+                />
+              </div>
             </div>
             <span className="mt-5 block text-sm">{product.description}</span>
           </div>
@@ -253,3 +254,36 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
 }
 
 // use DotButton
+
+interface helperButtonSaleProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  data: {
+    productIsDisponile: boolean;
+    showAsInCart: boolean;
+  };
+}
+
+const HelperButtonSale = ({
+  data,
+  ...props
+}: helperButtonSaleProps): ReactNode => {
+  if (!data.productIsDisponile) {
+    return (
+      <Button variant="destructive" disabled {...props}>
+        <X className="size-4" />
+        Indisponível
+      </Button>
+    );
+  }
+
+  return (
+    <Button {...props}>
+      {data.showAsInCart ? "Adicionado" : "Adicionar"}
+      {data.showAsInCart ? (
+        <Check className="size-4" />
+      ) : (
+        <ShoppingBag className="size-4" />
+      )}
+    </Button>
+  );
+};

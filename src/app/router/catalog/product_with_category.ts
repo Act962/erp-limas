@@ -35,6 +35,7 @@ export const getProductAndProductsByCategory = base
           slug: z.string(),
         }),
       }),
+      productIsDisponile: z.boolean(),
       productsWithThisCategory: z.array(
         z.object({
           id: z.string(),
@@ -110,6 +111,8 @@ export const getProductAndProductsByCategory = base
         images: product.images,
       }));
 
+      const productIsDisponile = Number(product.currentStock) > 0;
+
       return {
         product: {
           ...product,
@@ -120,6 +123,7 @@ export const getProductAndProductsByCategory = base
           category: product.category as { name: string; slug: string },
         },
         productsWithThisCategory: productsList,
+        productIsDisponile,
       };
     } catch (error) {
       throw errors.INTERNAL_SERVER_ERROR();
