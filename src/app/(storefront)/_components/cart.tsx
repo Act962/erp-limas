@@ -181,6 +181,7 @@ export function Cart({ subdomain }: CartProps) {
 
                         <div className="flex items-center gap-2">
                           <Button
+                            disabled={item.quantity === 1}
                             variant="outline"
                             size="icon"
                             className="h-6 w-6 sm:h-8 sm:w-8"
