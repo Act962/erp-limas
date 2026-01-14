@@ -38,6 +38,7 @@ import { FilterClients } from "./filter";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
 import { PersonType } from "@/generated/prisma/enums";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function ListCustomers() {
   const [personType] = useQueryState("person_type");
@@ -85,10 +86,14 @@ export function ListCustomers() {
             </TableHeader>
             <TableBody>
               {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center">
-                    Carregando...
-                  </TableCell>
+                <TableRow className="h-24">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <TableCell key={index}>
+                      {Array.from({ length: 8 }).map((_, index) => (
+                        <Skeleton key={index} className="h-4 w-full mt-2" />
+                      ))}
+                    </TableCell>
+                  ))}
                 </TableRow>
               )}
 
