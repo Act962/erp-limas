@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/input-group";
 
 import {
+  EditIcon,
   EyeIcon,
   MoreVerticalIcon,
   SearchIcon,
@@ -29,7 +30,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -39,6 +39,9 @@ import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
 import { PersonType } from "@/generated/prisma/enums";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import { ViewCustomer } from "./view-customer";
+import { EditCustomer } from "./edit-customer";
 
 export function ListCustomers() {
   const [personType] = useQueryState("person_type");
@@ -46,6 +49,9 @@ export function ListCustomers() {
   const [maxPurchase] = useQueryState("max_purchase");
   const [dateInit] = useQueryState("date_init");
   const [dateEnd] = useQueryState("date_end");
+  const [customerId, setCustomerId] = useState("");
+  const [openCustomerModal, setOpenCustomerModal] = useState(false);
+  const [openEditCustomerModal, setOpenEditCustomerModal] = useState(false);
 
   const { customers, isLoading } = useCustomer({
     personType: personType ? (personType as PersonType) : undefined,
@@ -56,138 +62,171 @@ export function ListCustomers() {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-4">
-          <InputGroup>
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-            <InputGroupInput placeholder="Buscar cliente..." />
-          </InputGroup>
-          <CalendarFilter />
-          <FilterClients />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Cliente</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Contato</TableHead>
-                <TableHead>Cidade/UF</TableHead>
-                <TableHead className="text-right">Total de Compras</TableHead>
-                <TableHead className="text-right">Total Gasto</TableHead>
-                <TableHead className="text-right">Última Compra</TableHead>
-                <TableHead className="w-12"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading && (
-                <TableRow className="h-24">
-                  {Array.from({ length: 8 }).map((_, index) => (
-                    <TableCell key={index}>
-                      {Array.from({ length: 8 }).map((_, index) => (
-                        <Skeleton key={index} className="h-4 w-full mt-2" />
-                      ))}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              )}
-
-              {!isLoading && customers.length === 0 && (
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <InputGroup>
+              <InputGroupAddon>
+                <SearchIcon />
+              </InputGroupAddon>
+              <InputGroupInput placeholder="Buscar cliente..." />
+            </InputGroup>
+            <CalendarFilter />
+            <FilterClients />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center">
-                    Nenhum cliente encontrado.
-                  </TableCell>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Contato</TableHead>
+                  <TableHead>Cidade/UF</TableHead>
+                  <TableHead className="text-right">Total de Compras</TableHead>
+                  <TableHead className="text-right">Total Gasto</TableHead>
+                  <TableHead className="text-right">Última Compra</TableHead>
+                  <TableHead className="w-12"></TableHead>
                 </TableRow>
-              )}
+              </TableHeader>
+              <TableBody>
+                {isLoading && (
+                  <TableRow className="h-24">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <TableCell key={index}>
+                        {Array.from({ length: 8 }).map((_, index) => (
+                          <Skeleton key={index} className="h-4 w-full mt-2" />
+                        ))}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )}
 
-              {!isLoading &&
-                customers.length > 0 &&
-                customers.map((customer) => {
-                  const totalPurchases = customer.sales?.length || 0;
-                  const totalSpent = customer.sales?.reduce(
-                    (acc, sale) => acc + (Number(sale.total) || 0),
-                    0
-                  );
-                  const lastPurchase = customer.sales?.[0]?.createdAt
-                    ? new Date(
-                        customer.sales?.[0]?.createdAt
-                      ).toLocaleDateString()
-                    : "N/A";
+                {!isLoading && customers.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center">
+                      Nenhum cliente encontrado.
+                    </TableCell>
+                  </TableRow>
+                )}
 
-                  return (
-                    <TableRow key={customer.id}>
-                      <TableCell>
-                        <div>
-                          <span className="font-medium">{customer.name}</span>
-                          <span className="text-xs text-muted-foreground font-mono">
-                            {customer.document ? customer.document : ""}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {customer.personType === "FISICA"
-                            ? "Pessoa Física"
-                            : "Pessoa Jurídica"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="space-y-1">
-                          <span className="text-sm">{customer.phone}</span>
-                          <span className="">{customer.email}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {customer.city && customer.state
-                          ? `${customer.city}/${customer.state}`
-                          : "N/A"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <ShoppingBagIcon className="size-4 text-muted-foreground" />
-                          <span className="font-medium">{totalPurchases}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">
-                        {totalSpent}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {lastPurchase}
-                      </TableCell>
+                {!isLoading &&
+                  customers.length > 0 &&
+                  customers.map((customer) => {
+                    const totalPurchases = customer.sales?.length || 0;
+                    const totalSpent = customer.sales?.reduce(
+                      (acc, sale) => acc + (Number(sale.total) || 0),
+                      0
+                    );
+                    const lastPurchase = customer.sales?.[0]?.createdAt
+                      ? new Date(
+                          customer.sales?.[0]?.createdAt
+                        ).toLocaleDateString()
+                      : "N/A";
 
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreVerticalIcon className="size-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                            <DropdownMenuItem>
-                              <EyeIcon className="size-4 mr-2" />
-                              Visualizar
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive">
-                              <Trash2Icon className="size-4 mr-2" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+                    return (
+                      <TableRow key={customer.id}>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{customer.name}</span>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {customer.document ? customer.document : "..."}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {customer.personType === "FISICA"
+                              ? "Pessoa Física"
+                              : "Pessoa Jurídica"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="text-sm">{customer.phone}</span>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {customer.email}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {customer.city && customer.state
+                            ? `${customer.city}/${customer.state}`
+                            : "N/A"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <ShoppingBagIcon className="size-4 text-muted-foreground" />
+                            <span className="font-medium">
+                              {totalPurchases}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {new Intl.NumberFormat("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          }).format(totalSpent)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {lastPurchase}
+                        </TableCell>
+
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon">
+                                <MoreVerticalIcon className="size-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setCustomerId(customer.id);
+                                  setOpenCustomerModal(true);
+                                }}
+                              >
+                                <EyeIcon className="size-4 mr-2" />
+                                Ver detalhes
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setCustomerId(customer.id);
+                                  setOpenEditCustomerModal(true);
+                                }}
+                              >
+                                <EditIcon className="size-4 mr-2" />
+                                Editar
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem variant="destructive">
+                                <Trash2Icon className="size-4 mr-2" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <ViewCustomer
+        id={customerId}
+        open={openCustomerModal}
+        onOpenChange={setOpenCustomerModal}
+      />
+      <EditCustomer
+        id={customerId}
+        open={openEditCustomerModal}
+        onOpenChange={setOpenEditCustomerModal}
+      />
+    </>
   );
 }
