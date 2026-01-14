@@ -82,6 +82,9 @@ export const listProducts = base
             gte: input.minValue,
             lte: input.maxValue,
           },
+          ...(catalogSettings?.showProductWithoutStock
+            ? {}
+            : { currentStock: { gte: 1 } }),
         },
       });
 

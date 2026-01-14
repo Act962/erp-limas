@@ -22,6 +22,7 @@ import placeholder from "@/assets/background-default-image.svg";
 import { useDotButton } from "./useDotButton";
 import { useCart } from "@/hooks/use-cart";
 import { FieldError } from "@/components/ui/field";
+import { ButtonSale } from "./button-sale";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -73,16 +74,16 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     <div className="mx-auto w-full max-w-6xl py-8 ">
       <div
         className="bg-accent-foreground/10 rounded-sm py-5 px-4  
-          sm:px-10"
+          sm:px-10 flex flex-col justify-center"
       >
-        <div className="flex items-center text-sm font-semibold mb-3 gap-1">
+        <div className="flex items-center text-sm font-semibold mb-3 gap-2 ">
           <span className="hover:underline cursor-pointer">
             {product.category.name}
           </span>
           <ChevronRight className="size-3" />
           <span>{product.name}</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
+        <div className="flex w-full sm:flex-row flex-col gap-10 items-center">
           <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
             <div className="overflow-hidden size-full" ref={emblaRef}>
               <div className="flex gap-2">
@@ -118,7 +119,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               </div>
             )}
           </div>
-          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
+          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center w-3/5">
             <div className="flex flex-col gap-4 max-w-10">
               {product.images &&
                 product.images.map((image, index) => (
@@ -139,7 +140,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 ))}
             </div>
             <div className="items-center w-full">
-              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1 relative">
+              <div className="items-center sm:block w-full h-120 bg-accent/30 rounded-sm py-1 relative">
                 <Image
                   src={imageSrc}
                   alt={product.name}
@@ -149,13 +150,13 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               </div>
             </div>
           </div>
-          <div className="h-full px-4">
+          <div className="h-full px-4 flex flex-col justify-center items-center w-">
             <h3 className="font-medium text-xl">{product.name}</h3>
             <h1 className="text-3xl font-semibold opacity-80">
               R${currencyFormatter(product.salePrice)}
             </h1>
             <div className="flex flex-col mt-2">
-              <span className="text-md font-medium">Categoria</span>
+              <span className="text-md font-medium ">Categoria</span>
               <span className="text-md font-medium text-muted-foreground">
                 {product.category.name}
               </span>
@@ -198,7 +199,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 </Button>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <HelperButtonSale
+                <ButtonSale
                   data={{
                     productIsDisponile: data.productIsDisponile,
                     showAsInCart: showAsInCart,
@@ -207,7 +208,9 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 />
               </div>
             </div>
-            <span className="mt-5 block text-sm">{product.description}</span>
+            <span className="mt-5 block text-sm max-w-2/5">
+              {product.description}
+            </span>
           </div>
         </div>
       </div>
@@ -254,36 +257,3 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
 }
 
 // use DotButton
-
-interface helperButtonSaleProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
-  data: {
-    productIsDisponile: boolean;
-    showAsInCart: boolean;
-  };
-}
-
-const HelperButtonSale = ({
-  data,
-  ...props
-}: helperButtonSaleProps): ReactNode => {
-  if (!data.productIsDisponile) {
-    return (
-      <Button variant="destructive" disabled {...props}>
-        <X className="size-4" />
-        Indisponível
-      </Button>
-    );
-  }
-
-  return (
-    <Button {...props}>
-      {data.showAsInCart ? "Adicionado" : "Adicionar"}
-      {data.showAsInCart ? (
-        <Check className="size-4" />
-      ) : (
-        <ShoppingBag className="size-4" />
-      )}
-    </Button>
-  );
-};
