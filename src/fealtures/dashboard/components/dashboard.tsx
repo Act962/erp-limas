@@ -40,9 +40,21 @@ import {
   getSaleStatusBadgeClass,
   getSaleStatusLabel,
 } from "@/utils/convert-sale-status";
+import { ReactNode } from "react";
+import {
+  FormatMessageSalesToday,
+  FormatMessageTotalSales,
+} from "./format-values";
 
 export default function DashboardPage() {
   const { data, isDashboardLoading } = useQueryDashboard({});
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
 
   return (
     <div className="space-y-6">
@@ -62,13 +74,12 @@ export default function DashboardPage() {
               {isDashboardLoading ? (
                 <Skeleton className="h-6 w-20" />
               ) : (
-                <>{currencyFormatter(data?.salesTotal ?? 0)}</>
+                <>
+                  {formatCurrency(data?.salesTotal ?? 0)}
+                  <FormatMessageTotalSales value={data?.salesTotal || 0} />
+                </>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <ArrowUpRight className="h-3 w-3 text-green-500" />
-              <span className="text-green-500">+12.5%</span> desde o mês passado
-            </p>
           </CardContent>
         </Card>
 
@@ -84,13 +95,18 @@ export default function DashboardPage() {
               {isDashboardLoading ? (
                 <Skeleton className="h-6 w-20" />
               ) : (
-                <>{data?.productsActive}</>
+                <>
+                  {data?.productsActive}
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                    <Plus className="h-3 w-3 text-green-500" />
+                    <span className="text-green-500">
+                      {data?.productAddedToday}
+                    </span>{" "}
+                    novos hoje
+                  </p>
+                </>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <Plus className="h-3 w-3 text-green-500" />
-              <span className="text-green-500">+5</span> novos hoje
-            </p>
           </CardContent>
         </Card>
 
@@ -106,13 +122,16 @@ export default function DashboardPage() {
               {isDashboardLoading ? (
                 <Skeleton className="h-6 w-20" />
               ) : (
-                <>{data?.productsLowStock}</>
+                <>
+                  {data?.productsLowStock}
+
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                    <ArrowDownRight className="h-3 w-3 text-red-500" />
+                    <span className="text-red-500">-3</span> desde ontem
+                  </p>
+                </>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <ArrowDownRight className="h-3 w-3 text-red-500" />
-              <span className="text-red-500">-3</span> desde ontem
-            </p>
           </CardContent>
         </Card>
 
@@ -128,13 +147,14 @@ export default function DashboardPage() {
               {isDashboardLoading ? (
                 <Skeleton className="h-6 w-20" />
               ) : (
-                <>{data?.salesToday}</>
+                <>
+                  {data?.salesToday}
+                  <FormatMessageSalesToday
+                    value={data?.salesFromYesterdayToToday || 0}
+                  />
+                </>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <ArrowUpRight className="h-3 w-3 text-green-500" />
-              <span className="text-green-500">+8</span> em relação a ontem
-            </p>
           </CardContent>
         </Card>
       </div>

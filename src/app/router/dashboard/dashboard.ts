@@ -14,19 +14,18 @@ export const listDashboard = base
     summary: "list dashboard",
   })
 
-  .input(
-    z.object({
-      dateInit: z.date().optional(),
-      dateEnd: z.date().optional(),
-    })
-  )
+  .input(z.object({}))
 
   .output(
     z.object({
       salesTotal: z.number(),
+      totalSinceLastMonth: z.number(),
       productsActive: z.number(),
+      productAddedToday: z.number(),
       productsLowStock: z.number(),
+      lowStockFromYesterdayToToday: z.number(),
       salesToday: z.number(),
+      salesFromYesterdayToToday: z.number(),
       latestSales: z.array(
         z.object({
           id: z.string(),
@@ -62,7 +61,6 @@ export const listDashboard = base
   )
   .handler(async ({ errors, context, input }) => {
     const organizationId = context.org.id;
-    const { dateInit, dateEnd } = input;
 
     // Define o intervalo de datas
     const startOfToday = new Date();
@@ -71,21 +69,47 @@ export const listDashboard = base
     const endOfToday = new Date();
     endOfToday.setHours(23, 59, 59, 999);
 
-    const dateFilter = {
-      ...(dateInit && { gte: dateInit }),
-      ...(dateEnd && { lte: dateEnd }),
-    };
+    const startOfYesterday = new Date();
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    startOfYesterday.setHours(0, 0, 0, 0);
+
+    const endOfYesterday = new Date();
+    endOfYesterday.setDate(endOfYesterday.getDate() - 1);
+    endOfYesterday.setHours(23, 59, 59, 999);
+
+    const startOfMonthAgo = new Date();
+    startOfMonthAgo.setMonth(startOfMonthAgo.getMonth() - 1);
+    startOfMonthAgo.setHours(0, 0, 0, 0);
+
+    const endOfMonthAgo = new Date();
+    endOfMonthAgo.setMonth(endOfMonthAgo.getMonth() - 1);
+    endOfMonthAgo.setHours(23, 59, 59, 999);
 
     // 1. Total de vendas no período
     const salesTotalQuery = await prisma.sale.findMany({
       where: {
         organizationId,
         status: SaleStatus.CONFIRMED,
-        ...(dateInit || dateEnd ? { createdAt: dateFilter } : {}),
       },
     });
 
     const salesTotalSum = salesTotalQuery.reduce(
+      (acc, sale) => acc + sale.total.toNumber(),
+      0
+    );
+
+    const totalSinceLastMonth = await prisma.sale.findMany({
+      where: {
+        organizationId,
+        status: SaleStatus.CONFIRMED,
+        createdAt: {
+          gte: startOfMonthAgo,
+          lte: endOfMonthAgo,
+        },
+      },
+    });
+
+    const salesTotalSinceLastMonthSum = totalSinceLastMonth.reduce(
       (acc, sale) => acc + sale.total.toNumber(),
       0
     );
@@ -95,6 +119,16 @@ export const listDashboard = base
       where: {
         organizationId,
         isActive: true,
+      },
+    });
+
+    const productAddedToday = await prisma.product.count({
+      where: {
+        organizationId,
+        createdAt: {
+          gte: startOfToday,
+          lte: endOfToday,
+        },
       },
     });
 
@@ -110,6 +144,24 @@ export const listDashboard = base
       },
     });
 
+    const StockFromYesterdayToToday = await prisma.product.count({
+      where: {
+        organizationId,
+        isActive: true,
+        trackStock: true,
+        currentStock: {
+          lte: prisma.product.fields.minStock,
+        },
+        createdAt: {
+          gte: startOfYesterday,
+          lte: endOfYesterday,
+        },
+      },
+    });
+
+    const lowStockFromYesterdayToToday =
+      StockFromYesterdayToToday - productsLowStock;
+
     // 4. Vendas de hoje
     const salesToday = await prisma.sale.count({
       where: {
@@ -122,6 +174,19 @@ export const listDashboard = base
       },
     });
 
+    const salesFromYesterday = await prisma.sale.count({
+      where: {
+        organizationId,
+        status: SaleStatus.CONFIRMED,
+        createdAt: {
+          gte: startOfYesterday,
+          lte: endOfYesterday,
+        },
+      },
+    });
+
+    const salesFromYesterdayToToday = salesToday - salesFromYesterday;
+
     // 5. Últimas vendas (movimentações de estoque do tipo VENDA)
     const latestSalesData = await prisma.stockMovement.findMany({
       where: {
@@ -133,7 +198,6 @@ export const listDashboard = base
             not: null,
           },
         },
-        ...(dateInit || dateEnd ? { createdAt: dateFilter } : {}),
       },
       include: {
         product: {
@@ -222,9 +286,13 @@ export const listDashboard = base
 
     return {
       salesTotal: salesTotalSum,
+      totalSinceLastMonth: salesTotalSinceLastMonthSum,
       productsActive,
+      productAddedToday,
       productsLowStock,
+      lowStockFromYesterdayToToday,
       salesToday,
+      salesFromYesterdayToToday,
       latestSales,
       productWithLowStock,
     };
