@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useUserStore } from "../../../../context/catalog/use-cart-session";
-import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
+import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
 import {
   deliveryMethodsConfig,
   paymentMethodsConfig,

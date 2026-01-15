@@ -23,18 +23,21 @@ export const getProductAndProductsByCategory = base
         name: z.string(),
         description: z.string().nullable(),
         slug: z.string(),
+        sku: z.string().nullable(),
         minStock: z.number(),
         categoryId: z.string().nullable(),
         weight: z.number().nullable(),
         thumbnail: z.string(),
         currentStock: z.number(),
         salePrice: z.number(),
+        promotionalPrice: z.number().nullable(),
         images: z.array(string()).nullable(),
         category: z.object({
           name: z.string(),
           slug: z.string(),
         }),
       }),
+      productIsDisponile: z.boolean(),
       productsWithThisCategory: z.array(
         z.object({
           id: z.string(),
@@ -101,14 +104,18 @@ export const getProductAndProductsByCategory = base
         name: product.name,
         description: product.description,
         slug: product.slug,
+        sku: product.sku,
         minStock: Number(product.minStock),
         categoryId: product.categoryId,
         weight: Number(product.weight),
         thumbnail: product.thumbnail,
         currentStock: Number(product.currentStock),
         salePrice: Number(product.salePrice),
+        promotionalPrice: Number(product.promotionalPrice),
         images: product.images,
       }));
+
+      const productIsDisponile = Number(product.currentStock) > 0;
 
       return {
         product: {
@@ -118,8 +125,10 @@ export const getProductAndProductsByCategory = base
           minStock: Number(product.minStock),
           weight: Number(product.weight),
           category: product.category as { name: string; slug: string },
+          promotionalPrice: Number(product.promotionalPrice),
         },
         productsWithThisCategory: productsList,
+        productIsDisponile,
       };
     } catch (error) {
       throw errors.INTERNAL_SERVER_ERROR();

@@ -7,7 +7,7 @@ import type { EmblaCarouselType, EmblaOptionsType } from "embla-carousel";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { notFound } from "next/navigation";
-import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalogSettings";
+import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryCatalogProducts } from "@/fealtures/storefront/hooks/use-catalog-products";
 import Image from "next/image";
@@ -118,6 +118,7 @@ export function Catalog({ subdomain }: CatalogProps) {
               key={`product-${product.id}-${index}`}
               subdomain={subdomain}
               id={product.id}
+              isDisponile={product.productIsDisponile}
               organizationId={product.organizationId}
               name={product.name}
               slug={product.slug}

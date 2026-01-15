@@ -17,10 +17,12 @@ import { useConstructUrl } from "@/hooks/use-construct-url";
 import placeholder from "@/assets/background-default-image.svg";
 import Link from "next/link";
 import { useCart } from "@/hooks/use-cart";
+import { ButtonSale } from "../button-sale";
 
 interface ProductCardProps extends ProductCatalog {
   allowsOrders?: boolean;
   subdomain: string;
+  isDisponile: boolean;
 }
 
 export function ProductCard({
@@ -32,6 +34,7 @@ export function ProductCard({
   allowsOrders,
   slug,
   subdomain,
+  isDisponile,
 }: ProductCardProps) {
   const { addToCart, cartItems } = useShoppingCart();
   const { toggleProduct, isProductInCart } = useCart(subdomain);
@@ -90,19 +93,15 @@ export function ProductCard({
         <p className="text-2xl font-bold">R${currencyFormatter(salePrice)}</p>
       </div>
       {allowsOrders && (
-        <div className="flex items-center gap-x-2">
-          <Button
-            variant="default"
+        <div className="flex items-center gap-x-2 w-full px-5">
+          <ButtonSale
+            className="w-full"
+            data={{
+              productIsDisponile: isDisponile,
+              showAsInCart: showAsInCart,
+            }}
             onClick={() => toggleProduct(id, "1")}
-            disabled={isDisabled}
-          >
-            {showAsInCart ? "No carrinho" : "Adicionar"}
-            {showAsInCart ? (
-              <Check className="size-4" />
-            ) : (
-              <CirclePlus className="size-4" />
-            )}
-          </Button>
+          />
         </div>
       )}
     </div>

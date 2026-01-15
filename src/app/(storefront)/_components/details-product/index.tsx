@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ButtonHTMLAttributes, ReactNode, useEffect, useState } from "react";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import {
+  BoxIcon,
   Check,
   ChevronRight,
+  MessageCircleIcon,
   Minus,
   Plus,
   PlusCircle,
   ShoppingBag,
+  X,
 } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useRouter } from "next/navigation";
@@ -20,6 +23,12 @@ import Image from "next/image";
 import placeholder from "@/assets/background-default-image.svg";
 import { useDotButton } from "./useDotButton";
 import { useCart } from "@/hooks/use-cart";
+import { FieldError } from "@/components/ui/field";
+import { ButtonSale } from "../button-sale";
+import { Separator } from "@/components/ui/separator";
+import { PriceSaleDetails } from "./price-sale-details";
+import { Label } from "@/components/ui/label";
+import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -35,6 +44,11 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
       },
     })
   );
+
+  const { data: catalogSettings, isLoading } = useCatalogSettings({
+    subdomain,
+  });
+
   const { products, updateQuantity, isProductInCart, toggleProduct } =
     useCart(subdomain);
 
@@ -68,56 +82,31 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
       : placeholder;
 
   return (
-    <div className="mx-auto w-full max-w-5xl py-8 ">
+    <div className="mx-auto w-full max-w-6xl py-8 ">
       <div
         className="bg-accent-foreground/10 rounded-sm py-5 px-4  
-          sm:px-10"
+          sm:px-10 flex flex-col justify-center"
       >
-        <div className="flex items-center text-sm font-semibold mb-3 gap-1">
+        <div className="flex items-center text-sm font-semibold mb-3 gap-2 ">
           <span className="hover:underline cursor-pointer">
             {product.category.name}
           </span>
           <ChevronRight className="size-3" />
           <span>{product.name}</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 w-full">
-          <div className="flex justify-center items-center flex-col gap-y-5 sm:justify-start sm:hidden">
-            <div className="overflow-hidden size-full" ref={emblaRef}>
-              <div className="flex gap-2">
-                {product.images &&
-                  product.images.map((image, index) => (
-                    <div
-                      className="flex justify-center translate-0 shrink-0 grow-0 w-full"
-                      key={`image-carousel-${index}`}
-                    >
-                      <img
-                        src={imageSrc}
-                        alt={`imagem do ${product.name}`}
-                        className="object-cover rounded-2xl size-full"
-                      />
-                    </div>
-                  ))}
+        <div className="grid sm:grid-cols-2 grid-cols-1 w-full gap-10 items-center">
+          <div className="flex flex-col gap-y-5 w-full justify-center ">
+            <div className="items-center w-full">
+              <div className="items-center sm:block w-full h-120 bg-accent/30 rounded-sm py-1 relative">
+                <Image
+                  src={imageSrc}
+                  alt={product.name}
+                  fill
+                  className="rounded-xl object-contain size-full"
+                />
               </div>
             </div>
-            {/* DotsButton */}
-            {product.images && product.images.length > 0 && (
-              <div className="flex flex-row gap-1">
-                {scrollSnaps.map((_, index) => (
-                  <button
-                    key={`dot-${index}`}
-                    onClick={() => onDotButtonClick(index)}
-                    className="flex items-center justify-center cursor-pointer size-4 rounded-full "
-                  >
-                    {index === selectedIndex ? (
-                      <div className="size-2 rounded-full bg-gray-800" />
-                    ) : null}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="hidden flex-1 flex-row gap-x-5 sm:justify-start sm:flex justify-center ">
-            <div className="flex flex-col gap-4 max-w-10">
+            <div className="flex gap-4 max-w-full overflow-x-auto w-full">
               {product.images &&
                 product.images.map((image, index) => (
                   <div
@@ -136,30 +125,36 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   </div>
                 ))}
             </div>
-            <div className="items-center w-full">
-              <div className="items-center sm:block min-w-55 max-w-90 h-65 bg-accent/30 rounded-sm py-1 relative">
-                <Image
-                  src={imageSrc}
-                  alt={product.name}
-                  fill
-                  className="rounded-xl object-contain size-full"
-                />
-              </div>
-            </div>
           </div>
-          <div className="h-full px-4">
-            <h3 className="font-medium text-xl">{product.name}</h3>
-            <h1 className="text-3xl font-semibold opacity-80">
-              R${currencyFormatter(product.salePrice)}
-            </h1>
-            <div className="flex flex-col mt-2">
-              <span className="text-md font-medium">Categoria</span>
+          <div className="h-full px-4 flex flex-col justify-center ">
+            <h3 className="font-medium text-3xl mb-2">{product.name}</h3>
+            <div className="flex items-center gap-2">
+              <span className="text-md font-medium">Categoria:</span>
               <span className="text-md font-medium text-muted-foreground">
                 {product.category.name}
               </span>
             </div>
-            <div className="flex flex-wrap items-center mt-4 gap-4">
-              <div className="flex items-center">
+            <span className="text-sm font-medium text-muted-foreground mb-4">
+              {product.sku && "SKU: " + product.sku}
+            </span>
+            <PriceSaleDetails
+              salePrice={product.salePrice}
+              promotionalPrice={product.promotionalPrice}
+            />
+            <div className="flex flex-col mt-2">
+              {catalogSettings?.showStock && (
+                <div className="flex items-center gap-2 mt-2">
+                  <BoxIcon className="size-4 text-green-700" />
+                  <span className="text-md font-medium text-green-700">
+                    {product.currentStock} unidades em estoque
+                  </span>
+                </div>
+              )}
+            </div>
+            <Separator className="w-full my-2 bg-gray-300" />
+            <div className="flex flex-col mt-2 mb-4 gap-2">
+              <Label className="text-sm text-gray-500">Quantidade</Label>
+              <div className="flex items-center gap-2">
                 <Button
                   disabled={quantity <= 1}
                   variant="ghost"
@@ -176,9 +171,9 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 >
                   <Minus className="size-4" />
                 </Button>
-                <span className="px-4 font-medium min-w-12 text-center">
-                  {quantity + 0}
-                </span>
+                <div className="flex justify-center items-center px-4 font-medium text-center border border-gray-300 rounded-sm h-10 ">
+                  <span>{quantity + 0}</span>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon-sm"
@@ -195,20 +190,34 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   <Plus className="size-4" />
                 </Button>
               </div>
-              <Button
-                onClick={() => toggleProduct(product.id, quantity.toString())}
-              >
-                {showAsInCart ? "Adicionado" : "Adicionar"}
-                {showAsInCart ? (
-                  <Check className="size-4" />
-                ) : (
-                  <ShoppingBag className="size-4" />
-                )}
-              </Button>
             </div>
-            <span className="mt-5 block text-sm">{product.description}</span>
+            <div className="flex gap-2 overflow-auto  ">
+              <div className="flex-1">
+                <ButtonSale
+                  className="w-full h-14 text-lg  "
+                  data={{
+                    productIsDisponile: data.productIsDisponile,
+                    showAsInCart: showAsInCart,
+                  }}
+                  onClick={() => toggleProduct(product.id, quantity.toString())}
+                />
+              </div>
+              {catalogSettings?.whatsappNumber &&
+                catalogSettings?.whatsappNumber !== "" && (
+                  <div className="flex-1">
+                    <Button className="w-full h-14 text-lg">
+                      <MessageCircleIcon className="size-4" />
+                      Comprar pelo whatsapp
+                    </Button>
+                  </div>
+                )}
+            </div>
           </div>
         </div>
+        <Separator className="w-full my-2" />
+        <span className="mt-5 block text-sm max-w-full">
+          {product.description}
+        </span>
       </div>
       <div className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5">
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
