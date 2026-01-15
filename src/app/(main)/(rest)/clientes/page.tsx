@@ -1,6 +1,8 @@
 import { PageHeader } from "@/components/page-header";
-import { CreateCustomerModal } from "@/fealtures/custom/components/create-customer";
+import { Button } from "@/components/ui/button";
+import { AddCustomerModal } from "@/fealtures/custom/components/add-customer";
 import { ListCustomers } from "@/fealtures/custom/components/list-customers";
+import { PlusIcon } from "lucide-react";
 
 export default function Page() {
   return (
@@ -9,7 +11,12 @@ export default function Page() {
         title="Clientes"
         description="Gerencie seus clientes e acompanhe o histórico de compras"
       >
-        <CreateCustomerModal />
+        <AddCustomerModal>
+          <Button>
+            <PlusIcon className="size-4" />
+            Novo Cliente
+          </Button>
+        </AddCustomerModal>
       </PageHeader>
       <ListCustomers />
     </div>

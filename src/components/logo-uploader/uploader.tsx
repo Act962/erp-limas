@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -221,8 +221,28 @@ export function LogoUploader({ value, onChange }: LogoUploaderProps) {
         uploadFile(file);
       }
     },
-    [fileState.objectUrl]
+    [fileState.objectUrl, uploadFile]
   );
+
+  function rejectedFiles(fileRejection: FileRejection[]) {
+    if (fileRejection.length) {
+      const tooManyFiles = fileRejection.find(
+        (rejection) => rejection.errors[0].code === "too-many-files"
+      );
+
+      const fileSizeToBig = fileRejection.find(
+        (rejection) => rejection.errors[0].code === "file-too-large"
+      );
+
+      if (fileSizeToBig) {
+        toast.error("Arquivo muito grande, máximo de 2MB.");
+      }
+
+      if (tooManyFiles) {
+        toast.error("Muitos arquivos selecionados, máximo de 1 arquivo.");
+      }
+    }
+  }
 
   function renderContent() {
     if (fileState.uploading) {
@@ -254,6 +274,7 @@ export function LogoUploader({ value, onChange }: LogoUploaderProps) {
     maxFiles: 1,
     multiple: false,
     maxSize: MAX_SIZE,
+    onDropRejected: rejectedFiles,
   });
 
   useEffect(() => {
@@ -291,3 +312,51 @@ export function LogoUploader({ value, onChange }: LogoUploaderProps) {
     </div>
   );
 }
+
+// async function makeRoundedImage(file: File): Promise<File> {
+//   const img = new Image();
+//   img.src = URL.createObjectURL(file);
+
+//   await new Promise((resolve) => (img.onload = resolve));
+
+//   const size = Math.min(img.width, img.height);
+//   const canvas = document.createElement("canvas");
+//   canvas.width = size;
+//   canvas.height = size;
+
+//   const ctx = canvas.getContext("2d")!;
+//   ctx.clearRect(0, 0, size, size);
+
+//   // máscara circular
+//   ctx.beginPath();
+//   ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+//   ctx.closePath();
+//   ctx.clip();
+
+//   // centraliza o crop
+//   ctx.drawImage(
+//     img,
+//     (img.width - size) / 2,
+//     (img.height - size) / 2,
+//     size,
+//     size,
+//     0,
+//     0,
+//     size,
+//     size
+//   );
+
+//   return new Promise((resolve) => {
+//     canvas.toBlob(
+//       (blob) => {
+//         resolve(
+//           new File([blob!], file.name.replace(/\.\w+$/, ".png"), {
+//             type: "image/png",
+//           })
+//         );
+//       },
+//       "image/png",
+//       1
+//     );
+//   });
+// }
