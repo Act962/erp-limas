@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { PriceSaleDetails } from "./price-sale-details";
 import { Label } from "@/components/ui/label";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
+import { SafeContent } from "@/components/rich-text/safe-content";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -80,6 +81,16 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     product.thumbnail && product.thumbnail.trim() !== ""
       ? useConstructUrl(product.thumbnail)
       : placeholder;
+
+  function descriptionParse() {
+    if (!product.description) return null;
+    try {
+      return JSON.parse(product.description);
+    } catch (error) {
+      console.error(error);
+      return product.description;
+    }
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl py-8 ">
@@ -205,7 +216,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
               {catalogSettings?.whatsappNumber &&
                 catalogSettings?.whatsappNumber !== "" && (
                   <div className="flex-1">
-                    <Button className="w-full h-14 text-lg">
+                    <Button variant="outline" className="w-full h-14 text-lg">
                       <MessageCircleIcon className="size-4" />
                       Comprar pelo whatsapp
                     </Button>
@@ -215,9 +226,12 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           </div>
         </div>
         <Separator className="w-full my-2" />
-        <span className="mt-5 block text-sm max-w-full">
-          {product.description}
-        </span>
+        {product.description && (
+          <SafeContent
+            content={JSON.parse(product.description)}
+            className="mt-5 block text-sm max-w-full"
+          />
+        )}
       </div>
       <div className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5">
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
