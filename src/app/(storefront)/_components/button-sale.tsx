@@ -1,19 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Check, ShoppingBag, X } from "lucide-react";
+import { Check, ShoppingCartIcon, X } from "lucide-react";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface helperButtonSaleProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonSaleProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   data: {
     productIsDisponile: boolean;
     showAsInCart: boolean;
   };
 }
 
-export function ButtonSale({
-  data,
-  ...props
-}: helperButtonSaleProps): ReactNode {
+export function ButtonSale({ data, ...props }: ButtonSaleProps): ReactNode {
   if (!data.productIsDisponile) {
     return (
       <Button variant="destructive" disabled {...props}>
@@ -25,12 +21,12 @@ export function ButtonSale({
 
   return (
     <Button {...props}>
-      {data.showAsInCart ? "Adicionado" : "Adicionar"}
       {data.showAsInCart ? (
         <Check className="size-4" />
       ) : (
-        <ShoppingBag className="size-4" />
+        <ShoppingCartIcon className="size-4" />
       )}
+      {data.showAsInCart ? "Adicionado" : "Adicionar"}
     </Button>
   );
 }

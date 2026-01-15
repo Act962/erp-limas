@@ -27,7 +27,7 @@ import {
   PaymentMethod,
 } from "@/generated/prisma/enums";
 import { TabDomain } from "./tab-domain";
-import { updateFieldCatalog } from "@/fealtures/storefront/hooks/use-catalogSettings";
+import { updateFieldCatalog } from "@/fealtures/storefront/hooks/use-catalog-settings";
 
 export interface CatalogSettingsProps {
   id: string;

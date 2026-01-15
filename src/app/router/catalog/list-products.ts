@@ -45,6 +45,7 @@ export const listProducts = base
           currentStock: z.number(),
           salePrice: z.number(),
           images: z.array(string()).nullable(),
+          productIsDisponile: z.boolean(),
         })
       ),
     })
@@ -102,6 +103,7 @@ export const listProducts = base
         currentStock: Number(product.currentStock),
         salePrice: Number(product.salePrice),
         images: product.images,
+        productIsDisponile: Number(product.currentStock) > 0,
       }));
 
       if (catalogSettings?.sortOrder) {
