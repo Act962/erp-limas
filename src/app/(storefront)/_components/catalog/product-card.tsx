@@ -2,16 +2,12 @@
 
 import { useEffect, useState } from "react";
 import type { ProductCatalog } from "../../types/product";
-import { useShoppingCart } from "@/hooks/use-product";
-import { useRouter } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { currencyFormatter } from "@/utils/currency-formatter";
-import { Button } from "@/components/ui/button";
-import { Check, CirclePlus, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import placeholder from "@/assets/background-default-image.svg";
@@ -23,20 +19,20 @@ interface ProductCardProps extends ProductCatalog {
   allowsOrders?: boolean;
   subdomain: string;
   isDisponile: boolean;
+  promotionalPrice: number | null;
 }
 
 export function ProductCard({
   id,
   name,
-  description,
   salePrice,
+  promotionalPrice,
   thumbnail,
   allowsOrders,
   slug,
   subdomain,
   isDisponile,
 }: ProductCardProps) {
-  const { addToCart, cartItems } = useShoppingCart();
   const { toggleProduct, isProductInCart } = useCart(subdomain);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -56,9 +52,9 @@ export function ProductCard({
     <div
       id={id}
       className="flex flex-col items-center 
-      gap-y-3 pb-5 rounded-lg bg-accent-foreground/5 shadow-md 
+      gap-y-3 pb-5 rounded-sm bg-accent-foreground/5 shadow-sm 
       transition-shadow overflow-hidden animate-fade-in
-      hover:shadow-lg hover:shadow-elegant"
+      hover:shadow-md hover:shadow-elegant"
     >
       <div className="aspect-square overflow-hidden w-full relative h-45">
         <Link href={`/${slug}`}>
@@ -70,10 +66,10 @@ export function ProductCard({
           />
         </Link>
       </div>
-      <div className="flex flex-col items-center w-full px-5">
+      <div className="flex flex-col w-full px-5">
         <Tooltip>
           <TooltipTrigger asChild>
-            <h2 className="text-medium font-semibold line-clamp-2 min-h-[50px]">
+            <h2 className="text-sm font-semibold line-clamp-1 min-h-[30px]">
               {name}
             </h2>
           </TooltipTrigger>
@@ -81,16 +77,18 @@ export function ProductCard({
             <p>{name}</p>
           </TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <h2 className="text-xs line-clamp-2 min-h-[35px]">{description}</h2>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{description}</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <p className="text-2xl font-bold">R${currencyFormatter(salePrice)}</p>
+        {promotionalPrice ? (
+          <div className="flex items-center gap-x-2">
+            <p className="text-lg font-bold">
+              R${currencyFormatter(promotionalPrice)}
+            </p>
+            <p className="text-sm font-semibold line-through">
+              R${currencyFormatter(salePrice)}
+            </p>
+          </div>
+        ) : (
+          <p className="text-lg font-bold">R${currencyFormatter(salePrice)}</p>
+        )}
       </div>
       {allowsOrders && (
         <div className="flex items-center gap-x-2 w-full px-5">
