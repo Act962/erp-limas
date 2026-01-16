@@ -7,6 +7,11 @@ import { PaymentMethodCard } from "./payment-method-card";
 import { ObservationsCard } from "./observations-card";
 import { OrderSummaryCard } from "./order-summary-card";
 import { useCheckoutLogic } from "./use-checkout-logic";
+import { redirect } from "next/navigation";
+import { useCheckoutStates } from "@/fealtures/checkout/hooks/use-checkout-states";
+import { useEffect } from "react";
+import { useCart } from "@/hooks/use-cart";
+import { toast } from "sonner";
 
 interface CheckoutProps {
   subdomain: string;
@@ -34,11 +39,29 @@ export function CheckoutPage({ subdomain }: CheckoutProps) {
     router,
     cartItems,
     user,
+    userHasHydrated,
   } = useCheckoutLogic(subdomain);
 
-  if (!user) {
-    router.push("/login");
+  if (!user && userHasHydrated) {
+    redirect("/sign-up");
   }
+
+  const [checkoutStates, setCheckoutStates] = useCheckoutStates();
+
+  const { clearOrganizationCart } = useCart(subdomain);
+
+  useEffect(() => {
+    if (checkoutStates.success) {
+      clearOrganizationCart();
+      router.push("/");
+    }
+  }, [checkoutStates.success]);
+
+  useEffect(() => {
+    if (checkoutStates.cancel) {
+      toast.error("Pedido cancelado");
+    }
+  }, [checkoutStates.cancel]);
 
   return (
     <div className="mx-auto w-full px-5 max-w-6xl py-4">

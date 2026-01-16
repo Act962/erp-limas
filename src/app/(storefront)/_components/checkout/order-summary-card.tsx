@@ -3,6 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/utils/currency-formatter";
+import { useCheckoutStates } from "@/fealtures/checkout/hooks/use-checkout-states";
+import { FieldError } from "@/components/ui/field";
+import { CircleXIcon } from "lucide-react";
 
 interface CartItem {
   id: string;
@@ -43,6 +46,8 @@ export function OrderSummaryCard({
     subtotal < Number(freeShippingMinValue)
       ? Number(freeShippingMinValue) - subtotal
       : 0;
+
+  const [checkoutStates, setCheckoutStates] = useCheckoutStates();
 
   return (
     <Card className="sticky top-8">
@@ -110,6 +115,12 @@ export function OrderSummaryCard({
         >
           Confirmar Pedido
         </Button>
+        {checkoutStates.cancel && (
+          <div className="flex items-center justify-center gap-2 bg-red-200 rounded-sm p-2 text-red-600">
+            <CircleXIcon className="size-4" />
+            <FieldError>O pedido foi cancelado</FieldError>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

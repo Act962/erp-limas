@@ -3,7 +3,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
-import { useUserStore } from "../../../../context/catalog/use-cart-session";
+import {
+  useUserHasHydrated,
+  useUserStore,
+} from "../../../../context/catalog/use-cart-session";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
 import {
   deliveryMethodsConfig,
@@ -11,6 +14,7 @@ import {
 } from "../../types/payments";
 import { useCart } from "@/hooks/use-cart";
 import { useQueryProductsOfCart } from "@/fealtures/products/hooks/use-products";
+import { useCheckoutStates } from "@/fealtures/checkout/hooks/use-checkout-states";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 
@@ -20,9 +24,10 @@ export function useCheckoutLogic(subdomain: string) {
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [address, setAddress] = useState("");
   const [observations, setObservations] = useState("");
-  const { products } = useCart(subdomain);
+  const { products, clearOrganizationCart } = useCart(subdomain);
   const { user } = useUserStore();
   const { data: catalogSettings } = useCatalogSettings({ subdomain });
+  const userHasHydrated = useUserHasHydrated();
 
   const { data: productsOfCart } = useQueryProductsOfCart({
     subdomain,
@@ -258,6 +263,7 @@ export function useCheckoutLogic(subdomain: string) {
     onCheckout,
     purchase,
     router,
+    userHasHydrated,
     user,
   };
 }

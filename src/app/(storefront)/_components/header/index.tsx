@@ -32,7 +32,9 @@ interface HeaderProps {
 
 export function Header({ settings }: HeaderProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { products, updateQuantity } = useCart(settings.subdomain);
+  const { products, updateQuantity, toggleProduct } = useCart(
+    settings.subdomain
+  );
 
   const { data: productsOfCart } = useQueryProductsOfCart({
     subdomain: settings.subdomain,
@@ -151,6 +153,7 @@ export function Header({ settings }: HeaderProps) {
                       <ScrollArea className="w-full rounded-md">
                         {cartItems.map((item) => (
                           <ItemRequested
+                            toggleRemove={toggleProduct}
                             slug={item.slug}
                             key={item.id}
                             id={item.id}

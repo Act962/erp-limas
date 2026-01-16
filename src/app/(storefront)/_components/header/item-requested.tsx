@@ -10,6 +10,7 @@ interface ItemRequestedProps extends CartItem {
   quantityInit: number;
   updateQuantity: (productId: string, quantity: string) => void;
   contrastColor: string;
+  toggleRemove: (productId: string, quantity: string) => void;
 }
 
 export function ItemRequested({
@@ -18,6 +19,7 @@ export function ItemRequested({
   thumbnail,
   quantityInit,
   updateQuantity,
+  toggleRemove,
 }: ItemRequestedProps) {
   const [quantity, setQuantity] = useState(quantityInit);
 
@@ -48,7 +50,7 @@ export function ItemRequested({
               variant="ghost"
               size="icon-sm"
               className="h-9 w-9 rounded-none"
-              onClick={() => onSubmit(0)}
+              onClick={() => toggleRemove(id, quantity.toString())}
             >
               <Trash2 className="size-4" />
             </Button>
