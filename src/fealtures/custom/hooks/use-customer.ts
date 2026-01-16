@@ -99,3 +99,23 @@ export const useUpdateCustomer = () => {
     })
   );
 };
+
+export const useDeleteCustomer = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    orpc.customer.delete.mutationOptions({
+      onSuccess: () => {
+        toast.success("Cliente deletado com sucesso");
+        queryClient.invalidateQueries(
+          orpc.customer.list.queryOptions({
+            input: {},
+          })
+        );
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
+  );
+};
