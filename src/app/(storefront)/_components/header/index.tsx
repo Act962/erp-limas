@@ -23,6 +23,7 @@ interface Settings {
   organizationId: string;
   bannerImage: string | null;
   subdomain: string;
+  allowOrders: boolean;
 }
 
 interface HeaderProps {
@@ -110,75 +111,80 @@ export function Header({ settings }: HeaderProps) {
           </Link>
 
           {/* Carrinho */}
-          <Popover open={modalIsOpen} onOpenChange={setModalIsOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="secondary" className="rounded-full relative">
-                <Handbag className="size-4" />
-                {cartItems.length > 0 && (
-                  <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 text-center text-xs flex items-center justify-center rounded-full">
-                    {cartItems.length}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent align="end" className="w-80 mt-2 mr-2 rounded-2xl">
-              {isEmpty ? (
-                <div className="flex flex-col items-center gap-4 p-4 rounded-2xl">
-                  <h1 className="text-center text-lg font-bold">
-                    Seu pedido ainda não possui produtos
-                  </h1>
-                  <p className="text-center text-sm opacity-80">
-                    Navegue para adicionar produtos ao seu pedido
-                  </p>
-                </div>
-              ) : (
-                <div className="p-4">
-                  <div className="flex items-center gap-x-2">
-                    <h1 className="font-bold text-lg">Seu pedido</h1>
-
-                    <span className="text-sm opacity-80">
-                      {cartItems.length} itens
+          {settings.allowOrders && (
+            <Popover open={modalIsOpen} onOpenChange={setModalIsOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="secondary" className="rounded-full relative">
+                  <Handbag className="size-4" />
+                  {cartItems.length > 0 && (
+                    <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 text-center text-xs flex items-center justify-center rounded-full">
+                      {cartItems.length}
                     </span>
-                  </div>
+                  )}
+                </Button>
+              </PopoverTrigger>
 
-                  <div className="flex flex-1 max-h-72">
-                    <ScrollArea className="w-full rounded-md">
-                      {cartItems.map((item) => (
-                        <ItemRequested
-                          slug={item.slug}
-                          key={item.id}
-                          id={item.id}
-                          organizationId={item.organizationId}
-                          thumbnail={
-                            item.thumbnail
-                              ? useConstructUrl(item.thumbnail)
-                              : ""
-                          }
-                          name={item.name}
-                          quantityInit={item.quantity}
-                          updateQuantity={updateQuantityCart}
-                          contrastColor={contrastColor}
-                          salePrice={item.salePrice}
-                          quantity={item.quantity}
-                        />
-                      ))}
-                    </ScrollArea>
+              <PopoverContent
+                align="end"
+                className="w-80 mt-2 mr-2 rounded-2xl"
+              >
+                {isEmpty ? (
+                  <div className="flex flex-col items-center gap-4 p-4 rounded-2xl">
+                    <h1 className="text-center text-lg font-bold">
+                      Seu pedido ainda não possui produtos
+                    </h1>
+                    <p className="text-center text-sm opacity-80">
+                      Navegue para adicionar produtos ao seu pedido
+                    </p>
                   </div>
+                ) : (
+                  <div className="p-4">
+                    <div className="flex items-center gap-x-2">
+                      <h1 className="font-bold text-lg">Seu pedido</h1>
 
-                  <Link href="/cart">
-                    <Button
-                      className="w-full mt-3"
-                      variant={"secondary"}
-                      onClick={handleGoToCart}
-                    >
-                      Finalizar Pedido
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </PopoverContent>
-          </Popover>
+                      <span className="text-sm opacity-80">
+                        {cartItems.length} itens
+                      </span>
+                    </div>
+
+                    <div className="flex flex-1 max-h-72">
+                      <ScrollArea className="w-full rounded-md">
+                        {cartItems.map((item) => (
+                          <ItemRequested
+                            slug={item.slug}
+                            key={item.id}
+                            id={item.id}
+                            organizationId={item.organizationId}
+                            thumbnail={
+                              item.thumbnail
+                                ? useConstructUrl(item.thumbnail)
+                                : ""
+                            }
+                            name={item.name}
+                            quantityInit={item.quantity}
+                            updateQuantity={updateQuantityCart}
+                            contrastColor={contrastColor}
+                            salePrice={item.salePrice}
+                            quantity={item.quantity}
+                          />
+                        ))}
+                      </ScrollArea>
+                    </div>
+
+                    <Link href="/cart">
+                      <Button
+                        className="w-full mt-3"
+                        variant={"secondary"}
+                        onClick={handleGoToCart}
+                      >
+                        Finalizar Pedido
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
+          )}
           <Link href="/account">
             <Button variant="secondary" size="icon-sm" className="rounded-full">
               <User />

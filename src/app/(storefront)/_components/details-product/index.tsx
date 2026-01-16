@@ -1,29 +1,23 @@
 "use client";
 
-import { ButtonHTMLAttributes, ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { Button } from "@/components/ui/button";
 import {
   BoxIcon,
-  Check,
   ChevronRight,
   MessageCircleIcon,
   Minus,
   Plus,
   PlusCircle,
-  ShoppingBag,
-  X,
 } from "lucide-react";
-import useEmblaCarousel from "embla-carousel-react";
 import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import Image from "next/image";
 import placeholder from "@/assets/background-default-image.svg";
-import { useDotButton } from "./useDotButton";
 import { useCart } from "@/hooks/use-cart";
-import { FieldError } from "@/components/ui/field";
 import { ButtonSale } from "../button-sale";
 import { Separator } from "@/components/ui/separator";
 import { PriceSaleDetails } from "./price-sale-details";
@@ -69,10 +63,6 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({});
-  const { selectedIndex, scrollSnaps, onDotButtonClick } =
-    useDotButton(emblaApi);
-
   const showAsInCart = isProductInCart(product.id) && isMounted;
 
   useEffect(() => {
@@ -91,6 +81,13 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     } catch (error) {
       return product.description;
     }
+  }
+
+  function openWhatsapp() {
+    window.open(
+      `https://wa.me/${catalogSettings?.whatsappNumber}?text=Olá, gostaria de comprar o produto ${product.name}`,
+      "_blank"
+    );
   }
 
   return (
@@ -211,27 +208,32 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 </div>
               ) : (
                 <div className="flex flex-wrap w-full items-center gap-2">
-                  <div className="flex-1">
-                    <ButtonSale
-                      className="w-full h-14 text-lg"
-                      data={{
-                        productIsDisponile: data.productIsDisponile,
-                        showAsInCart: showAsInCart,
-                      }}
-                      onClick={() =>
-                        toggleProduct(product.id, quantity.toString())
-                      }
-                    />
-                  </div>
+                  {catalogSettings?.allowOrders && (
+                    <div className="flex-1">
+                      <ButtonSale
+                        className="w-full h-14 text-lg"
+                        data={{
+                          productIsDisponile: data.productIsDisponile,
+                          showAsInCart: showAsInCart,
+                        }}
+                        onClick={() =>
+                          toggleProduct(product.id, quantity.toString())
+                        }
+                      />
+                    </div>
+                  )}
                   {catalogSettings?.whatsappNumber &&
                     catalogSettings?.whatsappNumber !== "" && (
                       <div className="flex-1">
                         <Button
                           variant="outline"
                           className="w-full h-14 text-lg"
+                          onClick={openWhatsapp}
                         >
                           <MessageCircleIcon className="size-4" />
-                          Comprar pelo whatsapp
+                          {catalogSettings?.allowOrders
+                            ? "Comprar pelo whatsapp"
+                            : "Conversar pelo whatsapp"}
                         </Button>
                       </div>
                     )}
