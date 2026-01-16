@@ -90,8 +90,8 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
               Este é o endereço que seus clientes verão em seu catálogo. Se
               estiver correto, um mapa será exibido ao lado do endereço.
             </p>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 space-x-4">
+            <div className="space-y-4 md:space-y-2">
+              <div className="grid grid-cols-1 space-y-4 md:space-y-0 md:grid-cols-3 space-x-4 ">
                 <div className="space-y-1">
                   <Label htmlFor="cep">CEP</Label>
                   <Input
@@ -117,7 +117,7 @@ export function TabContact({ settings, setSettings }: ContactTabProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 space-x-4">
+              <div className="grid grid-cols-1 space-y-4 md:space-y-0 md:grid-cols-3 space-x-4 ">
                 <div className="md:col-span-2 space-y-1">
                   <Label htmlFor="district">Bairro</Label>
                   <Input
