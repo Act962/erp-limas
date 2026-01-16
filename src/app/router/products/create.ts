@@ -4,6 +4,7 @@ import { base } from "@/app/middlewares/base";
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
 import { ProductUnit } from "@/generated/prisma/enums";
 import { requireOrgMiddleware } from "@/app/middlewares/org";
+import { orpc } from "@/lib/orpc";
 
 export const createProduct = base
   .use(requireAuthMiddleware)
@@ -52,13 +53,13 @@ export const createProduct = base
       showOnCatalog: z.boolean().default(true),
     })
   )
-  .output(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      slug: z.string(),
-    })
-  )
+  // .output(
+  //   z.object({
+  //     id: z.string(),
+  //     name: z.string(),
+  //     slug: z.string(),
+  //   })
+  // )
   .handler(async ({ input, context, errors }) => {
     try {
       // Gerar slug a partir do nome
@@ -118,7 +119,6 @@ export const createProduct = base
           costPrice: input.costPrice,
           salePrice: input.salePrice,
           promotionalPrice: input.promotionalPrice,
-          currentStock: input.currentStock,
           minStock: input.minStock,
           maxStock: input.maxStock,
           images: input.images,
@@ -132,6 +132,15 @@ export const createProduct = base
           trackStock: input.trackStock,
         },
       });
+
+      if (input.currentStock > 0) {
+        orpc.stocks.create.entry.call({
+          productId: product.id,
+          quantity: input.currentStock,
+          type: "ENTRADA",
+          description: "Entrada de estoque",
+        });
+      }
 
       return {
         id: product.id,

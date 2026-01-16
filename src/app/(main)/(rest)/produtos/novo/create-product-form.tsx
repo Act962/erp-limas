@@ -36,6 +36,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { RichTextEditor } from "../../../../../components/rich-text/editor";
+import { useCreateProduct } from "@/fealtures/products/hooks/use-products";
 
 const unitLabels: Record<ProductUnit, string> = {
   UN: "Unidade",
@@ -73,53 +74,43 @@ export function CreateProductForm() {
       trackStock: true,
     },
   });
-  const queryClient = useQueryClient();
   const router = useRouter();
 
-  const { categories, isLoadingCategories } = useCategory();
+  const { categories } = useCategory();
 
-  const mutation = useMutation(
-    orpc.products.create.mutationOptions({
-      onSuccess: () => {
-        router.push("/produtos");
-
-        queryClient.invalidateQueries(
-          orpc.products.list.queryOptions({
-            input: {},
-          })
-        );
-      },
-      onError: (error) => {
-        console.log("Error Cliente: ", error);
-        toast.error(error.message);
-      },
-    })
-  );
+  const mutation = useCreateProduct();
 
   const handleSubmit = async (data: ProductType) => {
-    mutation.mutate({
-      name: data.name,
-      description: data.description,
-      sku: data.sku,
-      unit: data.unit,
-      costPrice: data.costPrice,
-      salePrice: data.salePrice,
-      currentStock: data.currentStock,
-      categoryId: data.categoryId,
-      minStock: data.minStock,
-      maxStock: data.maxStock,
-      location: data.location,
-      images: data.images,
-      thumbnail: data.thumbnail,
-      weight: data.weight,
-      length: data.length,
-      width: data.width,
-      height: data.height,
-      isActive: data.isActive,
-      isFeatured: data.isFeatured,
-      trackStock: data.trackStock,
-      barcode: data.barcode,
-    });
+    mutation.mutate(
+      {
+        name: data.name,
+        description: data.description,
+        sku: data.sku,
+        unit: data.unit,
+        costPrice: data.costPrice,
+        salePrice: data.salePrice,
+        currentStock: data.currentStock,
+        categoryId: data.categoryId,
+        minStock: data.minStock,
+        maxStock: data.maxStock,
+        location: data.location,
+        images: data.images,
+        thumbnail: data.thumbnail,
+        weight: data.weight,
+        length: data.length,
+        width: data.width,
+        height: data.height,
+        isActive: data.isActive,
+        isFeatured: data.isFeatured,
+        trackStock: data.trackStock,
+        barcode: data.barcode,
+      },
+      {
+        onSuccess: () => {
+          router.push("/produtos");
+        },
+      }
+    );
   };
 
   const isCreating = mutation.isPending;
