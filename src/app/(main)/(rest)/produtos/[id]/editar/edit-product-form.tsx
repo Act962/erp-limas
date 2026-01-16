@@ -2,6 +2,7 @@
 
 import { Uploader } from "@/components/file-uploader/uploader";
 import { PageHeader } from "@/components/page-header";
+import { RichTextEditor } from "@/components/rich-text/editor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -249,13 +250,10 @@ export function EditProductForm() {
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor="description">Descrição</FieldLabel>
 
-                      <Textarea
-                        id="description"
-                        aria-invalid={fieldState.invalid}
-                        placeholder="Descreva o produto em detalhes..."
-                        rows={4}
+                      <RichTextEditor
+                        field={field.value}
+                        onChange={field.onChange}
                         disabled={isUpdating}
-                        {...field}
                       />
 
                       {fieldState.invalid && (

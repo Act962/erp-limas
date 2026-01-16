@@ -35,6 +35,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { RichTextEditor } from "../../../../../components/rich-text/editor";
 
 const unitLabels: Record<ProductUnit, string> = {
   UN: "Unidade",
@@ -82,9 +83,11 @@ export function CreateProductForm() {
       onSuccess: () => {
         router.push("/produtos");
 
-        queryClient.invalidateQueries(orpc.products.list.queryOptions({
-          input:{}
-        }));
+        queryClient.invalidateQueries(
+          orpc.products.list.queryOptions({
+            input: {},
+          })
+        );
       },
       onError: (error) => {
         console.log("Error Cliente: ", error);
@@ -192,7 +195,6 @@ export function CreateProductForm() {
                   )}
                 />
               </div>
-
               <Controller
                 name="description"
                 control={form.control}
@@ -200,13 +202,10 @@ export function CreateProductForm() {
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="description">Descrição</FieldLabel>
 
-                    <Textarea
-                      id="description"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Descreva o produto em detalhes..."
-                      rows={4}
+                    <RichTextEditor
+                      field={field.value}
+                      onChange={field.onChange}
                       disabled={isCreating}
-                      {...field}
                     />
 
                     {fieldState.invalid && (

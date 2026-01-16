@@ -29,6 +29,8 @@ import { Separator } from "@/components/ui/separator";
 import { PriceSaleDetails } from "./price-sale-details";
 import { Label } from "@/components/ui/label";
 import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
+import { SafeContent } from "@/components/rich-text/safe-content";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DetailsPoductProps {
   subdomain: string;
@@ -45,9 +47,10 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     })
   );
 
-  const { data: catalogSettings, isLoading } = useCatalogSettings({
-    subdomain,
-  });
+  const { data: catalogSettings, isLoading: isCatalogSettingsLoading } =
+    useCatalogSettings({
+      subdomain,
+    });
 
   const { products, updateQuantity, isProductInCart, toggleProduct } =
     useCart(subdomain);
@@ -80,6 +83,15 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
     product.thumbnail && product.thumbnail.trim() !== ""
       ? useConstructUrl(product.thumbnail)
       : placeholder;
+
+  function descriptionParse() {
+    if (!product.description) return null;
+    try {
+      return JSON.parse(product.description);
+    } catch (error) {
+      return product.description;
+    }
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl py-8 ">
@@ -191,33 +203,53 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                 </Button>
               </div>
             </div>
-            <div className="flex gap-2 overflow-auto  ">
-              <div className="flex-1">
-                <ButtonSale
-                  className="w-full h-14 text-lg  "
-                  data={{
-                    productIsDisponile: data.productIsDisponile,
-                    showAsInCart: showAsInCart,
-                  }}
-                  onClick={() => toggleProduct(product.id, quantity.toString())}
-                />
-              </div>
-              {catalogSettings?.whatsappNumber &&
-                catalogSettings?.whatsappNumber !== "" && (
+            <div className="flex gap-2 overflow-auto">
+              {isCatalogSettingsLoading ? (
+                <div className="flex flex-1 gap-2">
+                  <Skeleton className="w-full h-14" />
+                  <Skeleton className="w-full h-14" />
+                </div>
+              ) : (
+                <div className="flex flex-wrap w-full items-center gap-2">
                   <div className="flex-1">
-                    <Button className="w-full h-14 text-lg">
-                      <MessageCircleIcon className="size-4" />
-                      Comprar pelo whatsapp
-                    </Button>
+                    <ButtonSale
+                      className="w-full h-14 text-lg"
+                      data={{
+                        productIsDisponile: data.productIsDisponile,
+                        showAsInCart: showAsInCart,
+                      }}
+                      onClick={() =>
+                        toggleProduct(product.id, quantity.toString())
+                      }
+                    />
                   </div>
-                )}
+                  {catalogSettings?.whatsappNumber &&
+                    catalogSettings?.whatsappNumber !== "" && (
+                      <div className="flex-1">
+                        <Button
+                          variant="outline"
+                          className="w-full h-14 text-lg"
+                        >
+                          <MessageCircleIcon className="size-4" />
+                          Comprar pelo whatsapp
+                        </Button>
+                      </div>
+                    )}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <Separator className="w-full my-2" />
-        <span className="mt-5 block text-sm max-w-full">
-          {product.description}
-        </span>
+
+        {product.description && (
+          <div>
+            <SafeContent
+              content={descriptionParse()}
+              className="mt-5 block text-sm max-w-none min-h-[125px] focus:outline-none p-4 prose dark:prose-invert marker:text-gray-500 prose-p:my-0 prose-hr:border-gray-400/20"
+            />
+          </div>
+        )}
       </div>
       <div className="flex flex-col bg-accent-foreground/10 rounded-sm px-4 sm:px-10 py-5 mt-7 space-y-5">
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>

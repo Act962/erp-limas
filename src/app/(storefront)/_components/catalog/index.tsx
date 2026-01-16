@@ -123,6 +123,7 @@ export function Catalog({ subdomain }: CatalogProps) {
               name={product.name}
               slug={product.slug}
               salePrice={product.salePrice}
+              promotionalPrice={product.promotionalPrice}
               thumbnail={product.thumbnail}
               allowsOrders={catalogSettings.allowOrders}
             />

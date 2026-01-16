@@ -44,6 +44,7 @@ export const listProducts = base
           thumbnail: z.string(),
           currentStock: z.number(),
           salePrice: z.number(),
+          promotionalPrice: z.number().nullable(),
           images: z.array(string()).nullable(),
           productIsDisponile: z.boolean(),
         })
@@ -102,6 +103,7 @@ export const listProducts = base
         thumbnail: product.thumbnail,
         currentStock: Number(product.currentStock),
         salePrice: Number(product.salePrice),
+        promotionalPrice: Number(product.promotionalPrice),
         images: product.images,
         productIsDisponile: Number(product.currentStock) > 0,
       }));
