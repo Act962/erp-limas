@@ -42,6 +42,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { ViewCustomer } from "./view-customer";
 import { EditCustomer } from "./edit-customer";
+import { DeleteCustomer } from "./delete-customer";
 
 export function ListCustomers() {
   const [personType] = useQueryState("person_type");
@@ -52,6 +53,7 @@ export function ListCustomers() {
   const [customerId, setCustomerId] = useState("");
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
   const [openEditCustomerModal, setOpenEditCustomerModal] = useState(false);
+  const [openDeleteCustomerModal, setOpenDeleteCustomerModal] = useState(false);
 
   const { customers, isLoading } = useCustomer({
     personType: personType ? (personType as PersonType) : undefined,
@@ -201,7 +203,13 @@ export function ListCustomers() {
                                 Editar
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem variant="destructive">
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => {
+                                  setCustomerId(customer.id);
+                                  setOpenDeleteCustomerModal(true);
+                                }}
+                              >
                                 <Trash2Icon className="size-4 mr-2" />
                                 Excluir
                               </DropdownMenuItem>
@@ -226,6 +234,11 @@ export function ListCustomers() {
         id={customerId}
         open={openEditCustomerModal}
         onOpenChange={setOpenEditCustomerModal}
+      />
+      <DeleteCustomer
+        id={customerId}
+        open={openDeleteCustomerModal}
+        onOpenChange={setOpenDeleteCustomerModal}
       />
     </>
   );
