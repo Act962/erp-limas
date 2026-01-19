@@ -1,12 +1,10 @@
 "use client";
 
 import { Uploader } from "@/components/file-uploader/uploader";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
-  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -22,19 +20,13 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useCategory } from "@/context/category/hooks/use-categories";
 import { ProductUnit } from "@/generated/prisma/enums";
-import { orpc } from "@/lib/orpc";
 import { ProductSchema, ProductType } from "@/schemas/product";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { RichTextEditor } from "../../../../../components/rich-text/editor";
 import { useCreateProduct } from "@/fealtures/products/hooks/use-products";
 
@@ -109,7 +101,7 @@ export function CreateProductForm() {
         onSuccess: () => {
           router.push("/produtos");
         },
-      }
+      },
     );
   };
 
@@ -142,6 +134,7 @@ export function CreateProductForm() {
                         aria-invalid={fieldState.invalid}
                         placeholder="Ex: Notebook Dell Inspiron 15"
                         disabled={isCreating}
+                        autoFocus
                         {...field}
                       />
 

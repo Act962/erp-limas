@@ -9,7 +9,15 @@ import {
 import placeholder from "@/assets/background-default-image.svg";
 
 import { Button } from "@/components/ui/button";
-import { Copy, Eye, MoreVertical, Pencil, Search, Trash2 } from "lucide-react";
+import {
+  Copy,
+  Eye,
+  MoreVertical,
+  Pencil,
+  Search,
+  Trash2,
+  XIcon,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Table,
@@ -37,6 +45,7 @@ import { FilterProducts } from "./filters";
 import { currencyFormatter } from "@/utils/currency-formatter";
 import { CalendarFilter } from "./filter-calendar";
 import Image from "next/image";
+import { useBarcodeScan } from "@/hooks/use-barcode-scan";
 
 interface Product {
   id: string;
@@ -89,6 +98,10 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const { onOpen } = useProductModal();
 
+  useBarcodeScan(true, (barcode) => {
+    setSearchTerm(barcode);
+  });
+
   const duplicateProductMutation = useMutation(
     orpc.products.duplicate.mutationOptions({
       onSuccess: () => {
@@ -103,7 +116,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
       onError: () => {
         toast.error(`Erro ao duplicar produto!`);
       },
-    })
+    }),
   );
 
   const onDuplicate = (id: string) => {
@@ -116,7 +129,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.barcode.includes(searchTerm)
+      p.barcode.includes(searchTerm),
   );
 
   const toggleSelectAll = () => {
@@ -129,7 +142,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
 
   const toggleSelect = (id: string) => {
     setSelectedProducts((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
     );
   };
 
@@ -139,7 +152,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
         <div className="flex items-center gap-4">
           <InputGroup>
             <InputGroupAddon>
-              <Search className="h-4 w-4" />
+              <Search className="size-4" />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Buscar por nome, SKU ou código de barras..."
@@ -147,6 +160,11 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            {searchTerm && (
+              <InputGroupAddon align="inline-end" className="cursor-pointer">
+                <XIcon className="size-4" onClick={() => setSearchTerm("")} />
+              </InputGroupAddon>
+            )}
           </InputGroup>
           <CalendarFilter>
             <span className="hidden sm:block">Calendário</span>
@@ -204,7 +222,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
               {filteredProducts.map((product) => {
                 const stockStatus = getStockStatus(
                   product.currentStock,
-                  product.minStock
+                  product.minStock,
                 );
                 return (
                   <TableRow key={product.id}>
