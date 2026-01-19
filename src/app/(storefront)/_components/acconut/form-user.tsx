@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PersonType } from "@/generated/prisma/enums";
-import { updateCustomer } from "@/fealtures/storefront/hooks/use-catalog-customer";
+import { updateCustomer } from "@/features/storefront/hooks/use-catalog-customer";
 import { phoneMask } from "@/utils/format-phone";
 import { formatCPForCNPJ } from "@/utils/format-cnpj";
 import {
