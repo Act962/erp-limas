@@ -13,18 +13,16 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Search, User, Plus, Check } from "lucide-react";
-import {
-  useCustomer,
-  useQueryCustomer,
-} from "@/fealtures/custom/hooks/use-customer";
-import { Customer } from "@/generated/prisma/client";
 import { PersonType } from "@/schemas/customer";
+import { useCustomer } from "@/features/custom/hooks/use-customer";
+import { CustomerSales } from "./create-sale";
+import { AddCustomerModal } from "@/features/custom/components/add-customer";
 
 interface SelectCustomerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedCustomer: Customer | null;
-  onSelect: (customer: Customer | null) => void;
+  selectedCustomer: CustomerSales | null;
+  onSelect: (customer: CustomerSales | null) => void;
 }
 
 export function SelectCustomerDialog({
@@ -42,7 +40,7 @@ export function SelectCustomerDialog({
       c.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSelect = (customer: Customer) => {
+  const handleSelect = (customer: CustomerSales) => {
     onSelect(customer);
     onOpenChange(false);
   };
@@ -134,10 +132,12 @@ export function SelectCustomerDialog({
                 Remover Cliente
               </Button>
             )}
-            <Button className="flex-1">
-              <Plus className="h-4 w-4 mr-2" />
-              Novo Cliente
-            </Button>
+            <AddCustomerModal>
+              <Button className="flex-1">
+                <Plus className="h-4 w-4 mr-2" />
+                Novo Cliente
+              </Button>
+            </AddCustomerModal>
           </div>
         </div>
       </DialogContent>

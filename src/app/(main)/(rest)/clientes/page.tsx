@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { AddCustomerModal } from "@/fealtures/custom/components/add-customer";
-import { ListCustomers } from "@/fealtures/custom/components/list-customers";
+import { AddCustomerModal } from "@/features/custom/components/add-customer";
+import { ListCustomers } from "@/features/custom/components/list-customers";
 import { PlusIcon } from "lucide-react";
 
 export default function Page() {

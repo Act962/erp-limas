@@ -22,7 +22,7 @@ import { ButtonSale } from "../button-sale";
 import { Separator } from "@/components/ui/separator";
 import { PriceSaleDetails } from "./price-sale-details";
 import { Label } from "@/components/ui/label";
-import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
+import { useCatalogSettings } from "@/features/storefront/hooks/use-catalog-settings";
 import { SafeContent } from "@/components/rich-text/safe-content";
 import { Skeleton } from "@/components/ui/skeleton";
 

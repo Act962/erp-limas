@@ -8,11 +8,10 @@ import {
   Trash2,
   User,
   DollarSign,
-  CreditCard,
   X,
   Grid3X3Icon,
   List,
-  Lock,
+  LockIcon,
   ShoppingCartIcon,
   PercentIcon,
 } from "lucide-react";
@@ -24,44 +23,55 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
-
-import { useProducts } from "@/fealtures/products/hooks/use-products";
-import { Product } from "@/generated/prisma/client";
 import { SelectCustomerDialog } from "./select-customer-dialog";
 import { PaymentDialog } from "./payment-dialog";
 import { SaleCompletedDialog } from "./sale-completed-dialog";
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useProducts } from "@/features/products/hooks/use-products";
+import { PersonType } from "@/schemas/customer";
 
-interface Customer {
+export interface CustomerSales {
   id: string;
   name: string;
-  document: string;
-  email: string;
-  phone: string;
-  type: "PF" | "PJ";
+  document: string | null;
+  email: string | null;
+  phone: string | null;
+  personType: PersonType;
 }
 
 type CartItem = {
   id: string;
   name: string;
+  currentStock: number;
   sku: string | null;
   price: number;
   quantity: number;
-  maxStock: number;
 };
+
+interface Product {
+  id: string;
+  name: string;
+  sku: string | null;
+  barcode: string | null;
+  salePrice: number;
+  costPrice: number;
+  currentStock: number;
+  minStock: number;
+  isActive: boolean;
+  maxStock?: number;
+}
 
 type ViewMode = "grid" | "list";
 
-export default function PDVPage() {
+export default function CreateSalePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [discount, setDiscount] = useState(0);
   const [discountType, setDiscountType] = useState<"percent" | "value">(
     "percent"
   );
-  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [customer, setCustomer] = useState<CustomerSales | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [isCashRegisterOpen, setIsCashRegisterOpen] = useState(true);
 
@@ -150,9 +160,9 @@ export default function PDVPage() {
   );
 
   const addToCart = (product: Product) => {
-    const existing = cartItems.find((item) => item.id === product.id);
-    if (existing) {
-      if (existing.quantity < Number(product.currentStock)) {
+    const cartItem = cartItems.find((item) => item.id === product.id);
+    if (cartItem) {
+      if (cartItem.quantity < Number(product.currentStock)) {
         setCartItems(
           cartItems.map((item) =>
             item.id === product.id
@@ -170,7 +180,7 @@ export default function PDVPage() {
           sku: product.sku,
           price: Number(product.salePrice),
           quantity: 1,
-          maxStock: Number(product.maxStock),
+          currentStock: Number(product.currentStock),
         },
       ]);
     }
@@ -181,11 +191,10 @@ export default function PDVPage() {
       cartItems
         .map((item) => {
           if (item.id === id) {
-            const newQuantity = Math.max(
-              0,
-              Math.min(item.maxStock, item.quantity + delta)
-            );
-            return { ...item, quantity: newQuantity };
+            const cartItem = cartItems.find((item) => item.id === id);
+            if (cartItem) {
+              return { ...item, quantity: item.quantity + delta };
+            }
           }
           return item;
         })
@@ -198,8 +207,10 @@ export default function PDVPage() {
       cartItems
         .map((item) => {
           if (item.id === id) {
-            const newQuantity = Math.max(0, Math.min(item.maxStock, quantity));
-            return { ...item, quantity: newQuantity };
+            if (quantity > item.currentStock) {
+              return { ...item, quantity: item.currentStock };
+            }
+            return { ...item, quantity: quantity };
           }
           return item;
         })
@@ -263,7 +274,7 @@ export default function PDVPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted mb-6">
-          <Lock className="h-10 w-10 text-muted-foreground" />
+          <LockIcon className="h-10 w-10 text-muted-foreground" />
         </div>
         <h2 className="text-2xl font-semibold mb-2">Caixa Fechado</h2>
         <p className="text-muted-foreground mb-6 max-w-md">
@@ -278,20 +289,6 @@ export default function PDVPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="PDV - Ponto de Venda"
-        description="Realize vendas de forma rápida e eficiente"
-      >
-        <div className="flex items-center gap-2">
-          <Link href="/vendas/caixa">
-            <Button variant="outline">
-              <DollarSign className="h-4 w-4 mr-2" />
-              Caixa
-            </Button>
-          </Link>
-        </div>
-      </PageHeader>
-
       {/* Barcode indicator */}
       {/* {barcodeBuffer && (
         <Alert>
@@ -343,7 +340,7 @@ export default function PDVPage() {
                         Number(product.currentStock) > 0 && addToCart(product)
                       }
                       disabled={Number(product.currentStock) === 0}
-                      className="group relative flex flex-col items-center gap-2 rounded-lg border p-3 transition-all hover:border-primary hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="group relative flex flex-col items-center gap-2 rounded-lg border p-3 transition-all hover:border-secondary hover:bg-accent/30  disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Avatar className="h-14 w-14 rounded-md">
                         <AvatarImage
@@ -361,14 +358,12 @@ export default function PDVPage() {
                         <div className="text-xs text-muted-foreground">
                           {product.sku}
                         </div>
-                        <div className="mt-1 text-sm font-semibold text-primary">
+                        <div className="mt-1 text-sm font-semibold text-green-600">
                           {formatCurrency(product.salePrice)}
                         </div>
                         <Badge
                           variant={
-                            product.currentStock > 0
-                              ? "secondary"
-                              : "destructive"
+                            product.currentStock > 0 ? "default" : "destructive"
                           }
                           className="mt-1 text-xs"
                         >
@@ -491,15 +486,14 @@ export default function PDVPage() {
                               </Button>
                               <Input
                                 type="number"
-                                min="1"
-                                max={item.maxStock}
+                                max={Number(item.currentStock)}
                                 value={item.quantity}
-                                onChange={(e) =>
+                                onChange={(e) => {
                                   setItemQuantity(
                                     item.id,
-                                    Number.parseInt(e.target.value) || 1
-                                  )
-                                }
+                                    Number(e.target.value)
+                                  );
+                                }}
                                 className="h-7 w-12 text-center p-0"
                               />
                               <Button
@@ -507,7 +501,9 @@ export default function PDVPage() {
                                 variant="outline"
                                 className="h-7 w-7 bg-transparent"
                                 onClick={() => updateQuantity(item.id, 1)}
-                                disabled={item.quantity >= item.maxStock}
+                                disabled={
+                                  item.quantity >= Number(item.currentStock)
+                                }
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>

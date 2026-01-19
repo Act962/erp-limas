@@ -26,7 +26,7 @@ import { useState } from "react";
 import { CalendarFilter } from "../../../produtos/_components/filter-calendar";
 import { FilterMoviments } from "./filters";
 import { useQueryState } from "nuqs";
-import { useStock } from "@/fealtures/stock/hooks/use-stock";
+import { useStock } from "@/features/stock/hooks/use-stock";
 import { Skeleton } from "@/components/ui/skeleton";
 import dayjs from "dayjs";
 

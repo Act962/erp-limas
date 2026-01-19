@@ -35,6 +35,7 @@ export const listProducts = base
           costPrice: z.number(),
           currentStock: z.number(),
           minStock: z.number(),
+          maxStock: z.number().optional(),
 
           image: z.string(),
           isActive: z.boolean(),
@@ -59,6 +60,7 @@ export const listProducts = base
           costPrice: true,
           currentStock: true,
           minStock: true,
+          maxStock: true,
           images: true,
           isActive: true,
           thumbnail: true,
@@ -107,6 +109,7 @@ export const listProducts = base
         costPrice: product.costPrice.toNumber(),
         currentStock: product.currentStock.toNumber(),
         minStock: product.minStock.toNumber(),
+        maxStock: product.maxStock?.toNumber(),
         image: product.thumbnail ?? "",
         isActive: product.isActive,
       }));

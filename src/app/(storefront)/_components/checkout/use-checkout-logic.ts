@@ -7,14 +7,13 @@ import {
   useUserHasHydrated,
   useUserStore,
 } from "../../../../context/catalog/use-cart-session";
-import { useCatalogSettings } from "@/fealtures/storefront/hooks/use-catalog-settings";
+import { useCatalogSettings } from "@/features/storefront/hooks/use-catalog-settings";
 import {
   deliveryMethodsConfig,
   paymentMethodsConfig,
 } from "../../types/payments";
 import { useCart } from "@/hooks/use-cart";
-import { useQueryProductsOfCart } from "@/fealtures/products/hooks/use-products";
-import { useCheckoutStates } from "@/fealtures/checkout/hooks/use-checkout-states";
+import { useQueryProductsOfCart } from "@/features/products/hooks/use-products";
 
 const WHATSAPP_NUMBER = process.env.WHATSAPP_NUMBER || "558688923098";
 

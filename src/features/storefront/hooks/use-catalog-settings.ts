@@ -1,5 +1,10 @@
 import { orpc } from "@/lib/orpc";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  usePrefetchQuery,
+  useQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface UseCatalogSettingsProps {
@@ -34,3 +39,11 @@ export const updateFieldCatalog = () => {
     })
   );
 };
+
+export function useSuspenseCatalogSettings() {
+  const { data } = useSuspenseQuery(orpc.catalogSettings.list.queryOptions());
+
+  return {
+    data: data.catalogSettings,
+  };
+}
