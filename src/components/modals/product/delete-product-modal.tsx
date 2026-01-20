@@ -29,17 +29,17 @@ export function DeleteProductModal() {
         onSucess?.();
         queryClient.invalidateQueries(
           orpc.products.list.queryOptions({
-            input: {},
-          })
+            input: { page: 1, pageSize: 10 },
+          }),
         );
         return toast.success(
-          `Produto ${data.productName} excluído com sucesso`
+          `Produto ${data.productName} excluído com sucesso`,
         );
       },
       onError: (error) => {
         return toast.error(error.message);
       },
-    })
+    }),
   );
 
   const onDelete = () => {

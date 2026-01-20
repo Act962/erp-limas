@@ -1,33 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Search,
-  Plus,
-  Minus,
-  Trash2,
-  User,
-  DollarSign,
-  X,
-  Grid3X3Icon,
-  List,
-  LockIcon,
-  ShoppingCartIcon,
-  PercentIcon,
-} from "lucide-react";
+import { LockIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Label } from "@/components/ui/label";
 import { SelectCustomerDialog } from "../select-customer-dialog";
 import { PaymentDialog } from "../payment-dialog";
 import { SaleCompletedDialog } from "../sale-completed-dialog";
 import Link from "next/link";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProducts } from "@/features/products/hooks/use-products";
 import { PersonType } from "@/schemas/customer";
 import { ProductSection } from "./product-section";

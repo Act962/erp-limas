@@ -107,7 +107,7 @@ export function ProductsTable({ products, categories }: ProductTableProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: orpc.products.list.queryKey({
-            input: {},
+            input: { page: 1, pageSize: 10 },
           }),
         });
 
