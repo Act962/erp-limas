@@ -1,12 +1,10 @@
 "use client";
 
 import { Uploader } from "@/components/file-uploader/uploader";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
-  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -22,20 +20,15 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useCategory } from "@/context/category/hooks/use-categories";
 import { ProductUnit } from "@/generated/prisma/enums";
-import { orpc } from "@/lib/orpc";
 import { ProductSchema, ProductType } from "@/schemas/product";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { RichTextEditor } from "../../../../../components/rich-text/editor";
+import { useCreateProduct } from "@/fealtures/products/hooks/use-products";
 
 const unitLabels: Record<ProductUnit, string> = {
   UN: "Unidade",
@@ -73,53 +66,43 @@ export function CreateProductForm() {
       trackStock: true,
     },
   });
-  const queryClient = useQueryClient();
   const router = useRouter();
 
-  const { categories, isLoadingCategories } = useCategory();
+  const { categories } = useCategory();
 
-  const mutation = useMutation(
-    orpc.products.create.mutationOptions({
-      onSuccess: () => {
-        router.push("/produtos");
-
-        queryClient.invalidateQueries(
-          orpc.products.list.queryOptions({
-            input: {},
-          })
-        );
-      },
-      onError: (error) => {
-        console.log("Error Cliente: ", error);
-        toast.error(error.message);
-      },
-    })
-  );
+  const mutation = useCreateProduct();
 
   const handleSubmit = async (data: ProductType) => {
-    mutation.mutate({
-      name: data.name,
-      description: data.description,
-      sku: data.sku,
-      unit: data.unit,
-      costPrice: data.costPrice,
-      salePrice: data.salePrice,
-      currentStock: data.currentStock,
-      categoryId: data.categoryId,
-      minStock: data.minStock,
-      maxStock: data.maxStock,
-      location: data.location,
-      images: data.images,
-      thumbnail: data.thumbnail,
-      weight: data.weight,
-      length: data.length,
-      width: data.width,
-      height: data.height,
-      isActive: data.isActive,
-      isFeatured: data.isFeatured,
-      trackStock: data.trackStock,
-      barcode: data.barcode,
-    });
+    mutation.mutate(
+      {
+        name: data.name,
+        description: data.description,
+        sku: data.sku,
+        unit: data.unit,
+        costPrice: data.costPrice,
+        salePrice: data.salePrice,
+        currentStock: data.currentStock,
+        categoryId: data.categoryId,
+        minStock: data.minStock,
+        maxStock: data.maxStock,
+        location: data.location,
+        images: data.images,
+        thumbnail: data.thumbnail,
+        weight: data.weight,
+        length: data.length,
+        width: data.width,
+        height: data.height,
+        isActive: data.isActive,
+        isFeatured: data.isFeatured,
+        trackStock: data.trackStock,
+        barcode: data.barcode,
+      },
+      {
+        onSuccess: () => {
+          router.push("/produtos");
+        },
+      },
+    );
   };
 
   const isCreating = mutation.isPending;
@@ -151,6 +134,7 @@ export function CreateProductForm() {
                         aria-invalid={fieldState.invalid}
                         placeholder="Ex: Notebook Dell Inspiron 15"
                         disabled={isCreating}
+                        autoFocus
                         {...field}
                       />
 

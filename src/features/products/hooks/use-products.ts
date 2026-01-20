@@ -1,5 +1,6 @@
 import { orpc } from "@/lib/orpc";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface UseProductsProps {
   category?: string[];
@@ -58,3 +59,24 @@ export function useQueryProductsOfCart({
     isLoading,
   };
 }
+
+export const useCreateProduct = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    orpc.products.create.mutationOptions({
+      onSuccess: () => {
+        // router.push("/produtos");
+
+        queryClient.invalidateQueries(
+          orpc.products.list.queryOptions({
+            input: {},
+          })
+        );
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
+  );
+};
