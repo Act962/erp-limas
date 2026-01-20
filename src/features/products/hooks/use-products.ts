@@ -9,9 +9,13 @@ interface UseProductsProps {
   maxValue?: string;
   dateInit?: Date;
   dateEnd?: Date;
+  page?: number;
+  pageSize?: number;
 }
 
 export function useProducts({
+  page = 1,
+  pageSize = 2,
   category,
   sku,
   minValue,
@@ -28,11 +32,19 @@ export function useProducts({
         maxValue,
         dateInit,
         dateEnd,
+        page,
+        pageSize,
       },
-    })
+    }),
   );
   return {
     data: data?.products || [],
+    page: data?.page,
+    pageSize: data?.pageSize,
+    totalCount: data?.totalCount,
+    totalPages: data?.totalPages,
+    hasNextPage: data?.hasNextPage,
+    hasPreviousPage: data?.hasPreviousPage,
     isLoading,
   };
 }
@@ -52,7 +64,7 @@ export function useQueryProductsOfCart({
         subdomain,
         productIds,
       },
-    })
+    }),
   );
   return {
     data: data?.products || [],
@@ -70,13 +82,13 @@ export const useCreateProduct = () => {
 
         queryClient.invalidateQueries(
           orpc.products.list.queryOptions({
-            input: {},
-          })
+            input: { page: 1, pageSize: 10 },
+          }),
         );
       },
       onError: (error) => {
         toast.error(error.message);
       },
-    })
+    }),
   );
 };
