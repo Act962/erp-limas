@@ -69,7 +69,7 @@ export default function CreateSalePage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [discount, setDiscount] = useState(0);
   const [discountType, setDiscountType] = useState<"percent" | "value">(
-    "percent"
+    "percent",
   );
   const [customer, setCustomer] = useState<CustomerSales | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -115,7 +115,7 @@ export default function CreateSalePage() {
           // Process barcode if we have enough characters
           if (barcodeBuffer.length >= 8) {
             const product = products?.find(
-              (p) => p.barcode === barcodeBuffer || p.sku === barcodeBuffer
+              (p) => p.barcode === barcodeBuffer || p.sku === barcodeBuffer,
             );
             if (product && product.currentStock > 0) {
               addToCart(product);
@@ -131,7 +131,7 @@ export default function CreateSalePage() {
           clearTimeout(barcodeTimeout.current);
         }
         const product = products?.find(
-          (p) => p.barcode === barcodeBuffer || p.sku === barcodeBuffer
+          (p) => p.barcode === barcodeBuffer || p.sku === barcodeBuffer,
         );
         if (product && product.currentStock > 0) {
           addToCart(product);
@@ -139,7 +139,7 @@ export default function CreateSalePage() {
         setBarcodeBuffer("");
       }
     },
-    [barcodeBuffer]
+    [barcodeBuffer],
   );
 
   useEffect(() => {
@@ -156,7 +156,7 @@ export default function CreateSalePage() {
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.barcode.includes(searchTerm)
+      p.barcode.includes(searchTerm),
   );
 
   const addToCart = (product: Product) => {
@@ -167,8 +167,8 @@ export default function CreateSalePage() {
           cartItems.map((item) =>
             item.id === product.id
               ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
+              : item,
+          ),
         );
       }
     } else {
@@ -198,7 +198,7 @@ export default function CreateSalePage() {
           }
           return item;
         })
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
@@ -214,7 +214,7 @@ export default function CreateSalePage() {
           }
           return item;
         })
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
@@ -230,7 +230,7 @@ export default function CreateSalePage() {
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
   const discountAmount =
     discountType === "percent" ? (subtotal * discount) / 100 : discount;
@@ -491,7 +491,7 @@ export default function CreateSalePage() {
                                 onChange={(e) => {
                                   setItemQuantity(
                                     item.id,
-                                    Number(e.target.value)
+                                    Number(e.target.value),
                                   );
                                 }}
                                 className="h-7 w-12 text-center p-0"
@@ -562,7 +562,7 @@ export default function CreateSalePage() {
                           className="rounded-l-none border-l-0 bg-transparent"
                           onClick={() =>
                             setDiscountType(
-                              discountType === "percent" ? "value" : "percent"
+                              discountType === "percent" ? "value" : "percent",
                             )
                           }
                         >
