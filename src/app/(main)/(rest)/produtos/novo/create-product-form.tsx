@@ -28,7 +28,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { RichTextEditor } from "../../../../../components/rich-text/editor";
-import { useCreateProduct } from "@/fealtures/products/hooks/use-products";
+import { useCreateProduct } from "@/features/products/hooks/use-products";
 
 const unitLabels: Record<ProductUnit, string> = {
   UN: "Unidade",
