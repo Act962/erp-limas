@@ -10,7 +10,7 @@ import { useUserStore } from "../../../context/catalog/use-cart-session";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import placeholder from "@/assets/background-default-image.svg";
 import { useCart } from "@/hooks/use-cart";
-import { useQueryProductsOfCart } from "@/fealtures/products/hooks/use-products";
+import { useQueryProductsOfCart } from "@/features/products/hooks/use-products";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CartProps {

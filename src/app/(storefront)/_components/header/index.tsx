@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getContrastColor } from "@/utils/get-contrast-color";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useCart } from "@/hooks/use-cart";
-import { useQueryProductsOfCart } from "@/fealtures/products/hooks/use-products";
+import { useQueryProductsOfCart } from "@/features/products/hooks/use-products";
 import { ItemRequested } from "./item-requested";
 
 interface Settings {

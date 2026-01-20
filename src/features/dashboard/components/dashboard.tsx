@@ -28,7 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/page-header";
-import { useQueryDashboard } from "@/fealtures/dashboard/hooks/use-dashboard";
+import { useQueryDashboard } from "@/features/dashboard/hooks/use-dashboard";
 import {
   currencyFormatter,
   formatCurrencyInput,

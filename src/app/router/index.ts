@@ -6,6 +6,7 @@ import { stockRoutes } from "./stock";
 import { checkoutRouter } from "./checkout";
 import { dashboardRoutes } from "./dashboard";
 import { customerRoutes } from "./customer";
+import { SalesRoutes } from "./sales";
 
 export const router = {
   products: productsRoutes,
@@ -16,4 +17,5 @@ export const router = {
   checkout: checkoutRouter,
   dashboard: dashboardRoutes,
   customer: customerRoutes,
+  sales: SalesRoutes,
 };

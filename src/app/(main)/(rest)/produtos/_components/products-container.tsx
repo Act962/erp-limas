@@ -9,7 +9,7 @@ import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
-import { useProducts } from "@/fealtures/products/hooks/use-products";
+import { useProducts } from "@/features/products/hooks/use-products";
 
 export function ProductsContainer() {
   const [category] = useQueryState("category");

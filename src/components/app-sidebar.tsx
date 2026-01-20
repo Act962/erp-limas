@@ -25,6 +25,7 @@ import {
   LayoutDashboard,
   LogOut,
   Package,
+  ShoppingCart,
   Store,
   Tag,
   TrendingUp,
@@ -71,11 +72,11 @@ const navigation = [
       { name: "Categorias", href: "/produtos/categorias", icon: Tag },
     ],
   },
-  // {
-  //   name: "Vendas",
-  //   href: "/vendas",
-  //   icon: ShoppingCart,
-  // },
+  {
+    name: "Frente de caixa",
+    href: "/vendas",
+    icon: ShoppingCart,
+  },
   {
     name: "Estoque",
     href: "/estoque",

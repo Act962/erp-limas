@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { currencyFormatter } from "@/utils/currency-formatter";
-import { useCheckoutStates } from "@/fealtures/checkout/hooks/use-checkout-states";
+import { useCheckoutStates } from "@/features/checkout/hooks/use-checkout-states";
 import { FieldError } from "@/components/ui/field";
 import { CircleXIcon } from "lucide-react";
 

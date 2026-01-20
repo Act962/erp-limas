@@ -8,7 +8,7 @@ import { ObservationsCard } from "./observations-card";
 import { OrderSummaryCard } from "./order-summary-card";
 import { useCheckoutLogic } from "./use-checkout-logic";
 import { redirect } from "next/navigation";
-import { useCheckoutStates } from "@/fealtures/checkout/hooks/use-checkout-states";
+import { useCheckoutStates } from "@/features/checkout/hooks/use-checkout-states";
 import { useEffect } from "react";
 import { useCart } from "@/hooks/use-cart";
 import { toast } from "sonner";
