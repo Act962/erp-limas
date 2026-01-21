@@ -9,16 +9,10 @@ import { currencyFormatter } from "@/utils/currency-formatter";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useQueryState } from "nuqs";
-import { useProducts } from "@/features/products/hooks/use-products";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export type ViewMode = "grid" | "list";
