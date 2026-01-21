@@ -21,8 +21,8 @@ import { AddCustomerModal } from "@/features/custom/components/add-customer";
 interface SelectCustomerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedCustomer: CustomerSales | null;
-  onSelect: (customer: CustomerSales | null) => void;
+  selectedCustomer?: CustomerSales;
+  onSelect: (customer: CustomerSales) => void;
 }
 
 export function SelectCustomerDialog({
@@ -35,9 +35,8 @@ export function SelectCustomerDialog({
 
   const { customers, isLoading } = useCustomer({});
   const filteredCustomers = customers?.filter(
-    (c) =>
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (c) => c.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    // ||      c.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSelect = (customer: CustomerSales) => {
@@ -46,7 +45,7 @@ export function SelectCustomerDialog({
   };
 
   const handleRemove = () => {
-    onSelect(null);
+    onSelect({} as CustomerSales);
     onOpenChange(false);
   };
 

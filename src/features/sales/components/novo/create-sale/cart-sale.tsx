@@ -17,6 +17,9 @@ import { currencyFormatter } from "@/utils/currency-formatter";
 import { Label } from "@/components/ui/label";
 import { CartItem, CustomerSales } from ".";
 import { useState } from "react";
+import { FieldError } from "@/components/ui/field";
+import { FieldErrors } from "react-hook-form";
+import { SaleFormData } from "./schema";
 
 interface CartSaleProps {
   cartItems: CartItem[];
@@ -24,13 +27,16 @@ interface CartSaleProps {
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   setItemQuantity: (id: string, quantity: number) => void;
-  customer: CustomerSales | null;
+  customer?: CustomerSales | null;
   setCustomerDialogOpen: (open: boolean) => void;
   discount: number;
   setDiscount: (discount: number) => void;
   subtotal: number;
   total: number;
   setPaymentDialogOpen: (open: boolean) => void;
+  discountType: "percent" | "value";
+  setDiscountType: (discountType: "percent" | "value") => void;
+  error?: FieldErrors<SaleFormData>;
 }
 
 export function CartSale({
@@ -46,11 +52,10 @@ export function CartSale({
   subtotal,
   total,
   setPaymentDialogOpen,
+  discountType,
+  setDiscountType,
+  error,
 }: CartSaleProps) {
-  const [discountType, setDiscountType] = useState<"percent" | "value">(
-    "percent",
-  );
-
   const discountAmount =
     discountType === "percent" ? (subtotal * discount) / 100 : discount;
 
@@ -225,6 +230,10 @@ export function CartSale({
                     <span>- {currencyFormatter(discountAmount)}</span>
                   </div>
                 )}
+                {error?.discount && (
+                  <FieldError>{error.discount.message}</FieldError>
+                )}
+
                 <Separator />
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
@@ -233,7 +242,6 @@ export function CartSale({
                   </span>
                 </div>
               </div>
-
               <Button
                 size="lg"
                 className="w-full"

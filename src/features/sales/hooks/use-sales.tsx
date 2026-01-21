@@ -1,5 +1,6 @@
 import { orpc } from "@/lib/orpc";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface useQuerySalesProps {
   dateInit?: Date;
@@ -28,7 +29,7 @@ export function useQuerySales({
         minValue,
         maxValue,
       },
-    })
+    }),
   );
 
   return {
@@ -36,3 +37,16 @@ export function useQuerySales({
     isLoadingSales: isLoading,
   };
 }
+
+export const useMutationCreateSale = () => {
+  return useMutation(
+    orpc.sales.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("Venda criada com sucesso!");
+      },
+      onError: () => {
+        toast.error("Erro ao criar venda!");
+      },
+    }),
+  );
+};
