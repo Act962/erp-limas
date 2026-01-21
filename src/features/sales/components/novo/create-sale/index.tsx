@@ -71,9 +71,9 @@ export default function CreateSalePage() {
   // Dialogs
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
-  const [completedDialogOpen, setCompletedDialogOpen] = useState(false);
+  const [completedDialogOpen, setCompletedDialogOpen] = useState(true);
   const [completedSale, setCompletedSale] = useState<{
-    saleNumber: string;
+    saleNumber: number;
     total: number;
     paymentMethod: string;
     change: number;
@@ -220,23 +220,9 @@ export default function CreateSalePage() {
     printReceipt: boolean;
   }) => {
     // Generate sale number
-    const saleNumber = `VND-${String(Date.now()).slice(-6)}`;
 
-    setCompletedSale({
-      saleNumber,
-      total,
-      paymentMethod: data.paymentMethod,
-      change: data.change,
-      customerName: customer?.name || null,
-      invoiceGenerated: data.generateInvoice,
-    });
-    handleNewSale();
-    setPaymentDialogOpen(false);
-    setCompletedDialogOpen(true);
-  };
-
-  const handleNewSale = () => {
     const { cartItems, customer, discount, paymentMethod } = form.getValues();
+
     const items = cartItems.map((item) => ({
       productId: item.id,
       productName: item.name,
@@ -254,15 +240,24 @@ export default function CreateSalePage() {
         paymentMethod: paymentMethod,
       },
       {
-        onSuccess: () => {
+        onSuccess: (sale) => {
+          setCompletedSale({
+            saleNumber: sale.saleNumber,
+            total,
+            paymentMethod: data.paymentMethod,
+            change: data.change,
+            customerName: customer?.name || null,
+            invoiceGenerated: data.generateInvoice,
+          });
           clearCart();
+          setPaymentDialogOpen(false);
+          setCompletedDialogOpen(true);
         },
         onError: (error) => {
           console.error(error);
         },
       },
     );
-    setCompletedSale(null);
   };
 
   return (
@@ -322,7 +317,7 @@ export default function CreateSalePage() {
         open={completedDialogOpen}
         onOpenChange={setCompletedDialogOpen}
         sale={completedSale}
-        onNewSale={handleNewSale}
+        onNewSale={() => {}}
         onPrintReceipt={() => {}}
         onPrintInvoice={() => {}}
       />

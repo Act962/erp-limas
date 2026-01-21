@@ -16,7 +16,7 @@ interface SaleCompletedDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   sale: {
-    saleNumber: string;
+    saleNumber: number;
     total: number;
     paymentMethod: string;
     change: number;

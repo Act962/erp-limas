@@ -33,7 +33,7 @@ export const createSale = base
   )
   .output(
     z.object({
-      id: z.string(),
+      saleNumber: z.number(),
     }),
   )
   .handler(async ({ context, input }) => {
@@ -67,7 +67,7 @@ export const createSale = base
           },
         },
       });
-      return { id: sale.id };
+      return { saleNumber: sale.saleNumber };
     } catch (error) {
       console.error(error);
       throw error;
