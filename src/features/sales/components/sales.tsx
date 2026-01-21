@@ -41,6 +41,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuerySales } from "../hooks/use-sales";
 import { PageHeader } from "@/components/page-header";
 import { statusConfig } from "@/utils/status-config";
+import { currencyFormatter } from "@/utils/currency-formatter";
 
 const paymentMethodLabels: Record<string, string> = {
   PIX: "PIX",
@@ -183,7 +184,7 @@ export function SalesPage() {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right font-semibold">
-                            R$ {sale.total.toFixed(2).replace(".", ",")}
+                            {currencyFormatter(sale.total)}
                           </TableCell>
                           <TableCell>
                             <DropdownMenu>

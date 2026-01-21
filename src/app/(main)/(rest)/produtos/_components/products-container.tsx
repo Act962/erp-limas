@@ -26,6 +26,8 @@ export function ProductsContainer() {
     maxValue: maxValue ?? undefined,
     dateInit: dateInit ? dayjs(dateInit).startOf("day").toDate() : undefined,
     dateEnd: dateEnd ? dayjs(dateEnd).endOf("day").toDate() : undefined,
+    page: 1,
+    pageSize: 10,
   });
 
   const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());

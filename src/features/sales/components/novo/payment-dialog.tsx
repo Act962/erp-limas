@@ -29,22 +29,16 @@ import {
   Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useSuspenseCatalogSettings } from "@/features/storefront/hooks/use-catalog-settings";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-type PaymentMethod =
-  | "DINHEIRO"
-  | "CREDITO"
-  | "DEBITO"
-  | "PIX"
-  | "BOLETO"
-  | "TRANSFERENCIA";
+import { PaymentMethod } from "@/generated/prisma/enums";
 
 interface PaymentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   total: number;
   customerName: string | null;
+  paymentMethod: PaymentMethod;
+  setPaymentMethod: (paymentMethod: PaymentMethod) => void;
   onConfirm: (data: {
     paymentMethod: PaymentMethod;
     amountPaid: number;
@@ -60,9 +54,10 @@ export function PaymentDialog({
   total,
   customerName,
   onConfirm,
+  paymentMethod,
+  setPaymentMethod,
 }: PaymentDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("DINHEIRO");
   const [amountPaid, setAmountPaid] = useState("");
   const [generateInvoice, setGenerateInvoice] = useState(false);
   const [printReceipt, setPrintReceipt] = useState(true);
@@ -84,7 +79,6 @@ export function PaymentDialog({
     });
 
     setIsLoading(false);
-    setPaymentMethod("DINHEIRO");
     setAmountPaid("");
     setGenerateInvoice(false);
     setPrintReceipt(true);
@@ -109,6 +103,11 @@ export function PaymentDialog({
     {
       id: "TRANSFERENCIA" as const,
       label: "Transferência Bancária",
+      icon: ArrowLeftRight,
+    },
+    {
+      id: "OUTROS" as const,
+      label: "Outros",
       icon: ArrowLeftRight,
     },
   ];
@@ -140,9 +139,9 @@ export function PaymentDialog({
                 <Label>Forma de Pagamento</Label>
                 <RadioGroup
                   value={paymentMethod}
-                  onValueChange={(value) =>
-                    setPaymentMethod(value as PaymentMethod)
-                  }
+                  onValueChange={(value) => {
+                    setPaymentMethod(value as PaymentMethod);
+                  }}
                   className="grid grid-cols-2 gap-2"
                 >
                   {paymentMethods.map((method) => (
@@ -157,13 +156,13 @@ export function PaymentDialog({
                         className={cn(
                           "flex items-center justify-center gap-2 rounded-lg border-2 border-muted bg-popover p-3 cursor-pointer transition-all hover:bg-accent",
                           paymentMethod === method.id &&
-                            "border-primary bg-primary/5"
+                            "border-primary bg-primary/5",
                         )}
                       >
                         <method.icon
                           className={cn(
                             "h-4 w-4",
-                            paymentMethod === method.id && "text-primary"
+                            paymentMethod === method.id && "text-primary",
                           )}
                         />
                         <span className="text-sm font-medium">

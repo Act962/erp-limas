@@ -1,17 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { LockIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useRef, useState } from "react";
 import { SelectCustomerDialog } from "../select-customer-dialog";
 import { PaymentDialog } from "../payment-dialog";
 import { SaleCompletedDialog } from "../sale-completed-dialog";
-import Link from "next/link";
 import { useProducts } from "@/features/products/hooks/use-products";
 import { PersonType } from "@/schemas/customer";
 import { ProductSection } from "./product-section";
 import { CartSale } from "./cart-sale";
 import { useQueryState } from "nuqs";
+import { SaleFormData, saleSchema } from "./schema";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutationCreateSale } from "@/features/sales/hooks/use-sales";
+import { PaymentMethod, SaleStatus } from "@/generated/prisma/enums";
+import { useBarcodeScan } from "@/hooks/use-barcode-scan";
 
 export interface CustomerSales {
   id: string;
@@ -48,15 +51,22 @@ export interface ProductSale {
 type ViewMode = "grid" | "list";
 
 export default function CreateSalePage() {
+  const form = useForm<SaleFormData>({
+    resolver: zodResolver(saleSchema),
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    defaultValues: {
+      cartItems: [],
+      customer: undefined,
+      discount: 0,
+      discountType: "percent",
+      paymentMethod: PaymentMethod.DINHEIRO,
+    },
+  });
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [discount, setDiscount] = useState(0);
-  const [discountType, setDiscountType] = useState<"percent" | "value">(
-    "percent",
-  );
-  const [customer, setCustomer] = useState<CustomerSales | null>(null);
+
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [isCashRegisterOpen, setIsCashRegisterOpen] = useState(true);
 
   // Dialogs
   const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
@@ -71,11 +81,14 @@ export default function CreateSalePage() {
     invoiceGenerated: boolean;
   } | null>(null);
 
+  const cartItems = form.watch("cartItems");
+  const discount = form.watch("discount");
+  const discountType = form.watch("discountType");
+  const customer = form.watch("customer");
+
   // Barcode scanner
-  const [barcodeBuffer, setBarcodeBuffer] = useState("");
-  const barcodeTimeout = useRef<NodeJS.Timeout | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [page, setPage] = useQueryState("page");
+  const [page] = useQueryState("page");
 
   const {
     hasNextPage,
@@ -87,64 +100,11 @@ export default function CreateSalePage() {
     pageSize: 12,
   });
 
-  // Barcode scanner listener
-  const handleBarcodeInput = useCallback(
-    (e: KeyboardEvent) => {
-      // Ignore if focus is on search input (manual typing)
-      if (document.activeElement === searchInputRef.current) return;
+  const mutation = useMutationCreateSale();
 
-      // Only process alphanumeric characters
-      if (e.key.length === 1 && /[a-zA-Z0-9]/.test(e.key)) {
-        setBarcodeBuffer((prev) => prev + e.key);
-
-        // Clear previous timeout
-        if (barcodeTimeout.current) {
-          clearTimeout(barcodeTimeout.current);
-        }
-
-        // Set new timeout - barcode scanners typically send characters very fast
-        barcodeTimeout.current = setTimeout(() => {
-          // Process barcode if we have enough characters
-          if (barcodeBuffer.length >= 8) {
-            const product = products?.find(
-              (p) => p.barcode === barcodeBuffer || p.sku === barcodeBuffer,
-            );
-            if (product && product.currentStock > 0) {
-              addToCart(product);
-            }
-          }
-          setBarcodeBuffer("");
-        }, 100);
-      }
-
-      // Enter key finalizes barcode input
-      if (e.key === "Enter" && barcodeBuffer) {
-        if (barcodeTimeout.current) {
-          clearTimeout(barcodeTimeout.current);
-        }
-        const product = products?.find(
-          (p) => p.barcode === barcodeBuffer || p.sku === barcodeBuffer,
-        );
-        if (product && product.currentStock > 0) {
-          addToCart(product);
-        }
-        setBarcodeBuffer("");
-      }
-    },
-    [barcodeBuffer],
-  );
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleBarcodeInput);
-    return () => {
-      window.removeEventListener("keydown", handleBarcodeInput);
-      if (barcodeTimeout.current) {
-        clearTimeout(barcodeTimeout.current);
-      }
-    };
-  }, [handleBarcodeInput]);
-
-  //filtros para adicionar no back futuramente
+  useBarcodeScan(true, (barcode) => {
+    setSearchTerm(barcode);
+  });
 
   const filteredProducts = products?.filter(
     (p) =>
@@ -154,11 +114,14 @@ export default function CreateSalePage() {
   );
 
   const addToCart = (product: ProductSale) => {
-    const cartItem = cartItems.find((item) => item.id === product.id);
-    if (cartItem) {
-      if (cartItem.quantity < Number(product.currentStock)) {
-        setCartItems(
-          cartItems.map((item) =>
+    const currentCart = form.getValues("cartItems");
+    const existingItem = currentCart.find((item) => item.id === product.id);
+
+    if (existingItem) {
+      if (existingItem.quantity < product.currentStock) {
+        form.setValue(
+          "cartItems",
+          currentCart.map((item) =>
             item.id === product.id
               ? { ...item, quantity: item.quantity + 1 }
               : item,
@@ -166,8 +129,8 @@ export default function CreateSalePage() {
         );
       }
     } else {
-      setCartItems([
-        ...cartItems,
+      form.setValue("cartItems", [
+        ...currentCart,
         {
           id: product.id,
           name: product.name,
@@ -179,55 +142,74 @@ export default function CreateSalePage() {
       ]);
     }
   };
-
   const updateQuantity = (id: string, delta: number) => {
-    setCartItems(
-      cartItems
-        .map((item) => {
-          if (item.id === id) {
-            const cartItem = cartItems.find((item) => item.id === id);
-            if (cartItem) {
-              return { ...item, quantity: item.quantity + delta };
-            }
+    const currentCart = form.getValues("cartItems");
+    const updatedCart = currentCart
+      .map((item) => {
+        if (item.id === id) {
+          const cartItem = cartItems.find((item) => item.id === id);
+          if (cartItem) {
+            return { ...item, quantity: item.quantity + delta };
           }
-          return item;
-        })
-        .filter((item) => item.quantity > 0),
-    );
+        }
+        return item;
+      })
+      .filter((item) => item.quantity > 0);
+    form.setValue("cartItems", updatedCart);
   };
 
   const setItemQuantity = (id: string, quantity: number) => {
-    setCartItems(
-      cartItems
-        .map((item) => {
-          if (item.id === id) {
-            if (quantity > item.currentStock) {
-              return { ...item, quantity: item.currentStock };
-            }
+    const currentCart = form.getValues("cartItems");
+    const updatedCart = currentCart
+      .map((item) => {
+        if (item.id === id) {
+          const cartItem = cartItems.find((item) => item.id === id);
+          if (cartItem) {
             return { ...item, quantity: quantity };
           }
-          return item;
-        })
-        .filter((item) => item.quantity > 0),
-    );
+        }
+        return item;
+      })
+      .filter((item) => item.quantity > 0);
+    form.setValue("cartItems", updatedCart);
   };
 
   const removeItem = (id: string) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    const currentCart = form.getValues("cartItems");
+    form.setValue(
+      "cartItems",
+      currentCart.filter((item) => item.id !== id),
+    );
   };
 
   const clearCart = () => {
-    setCartItems([]);
-    setDiscount(0);
-    setCustomer(null);
+    form.reset();
   };
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
+  const handleOpenPayment = async () => {
+    const allFields = [
+      "cartItems",
+      "customer",
+      "discount",
+      "discountType",
+    ] as const;
+    const isValid = await form.trigger(allFields);
+
+    if (isValid) {
+      setPaymentDialogOpen(true);
+    } else {
+      console.log(form.formState.errors);
+    }
+  };
+
+  const subtotal = form
+    .getValues("cartItems")
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   const discountAmount =
-    discountType === "percent" ? (subtotal * discount) / 100 : discount;
+    form.getValues("discountType") === "percent"
+      ? (subtotal * form.getValues("discount")) / 100
+      : form.getValues("discount");
   const total = Math.max(0, subtotal - discountAmount);
 
   const handlePaymentConfirm = (data: {
@@ -248,44 +230,43 @@ export default function CreateSalePage() {
       customerName: customer?.name || null,
       invoiceGenerated: data.generateInvoice,
     });
+    handleNewSale();
     setPaymentDialogOpen(false);
     setCompletedDialogOpen(true);
   };
 
   const handleNewSale = () => {
-    clearCart();
+    const { cartItems, customer, discount, paymentMethod } = form.getValues();
+    const items = cartItems.map((item) => ({
+      productId: item.id,
+      productName: item.name,
+      unitPrice: item.price,
+      quantity: item.quantity,
+    }));
+    mutation.mutate(
+      {
+        items,
+        customerId: customer?.id,
+        discount,
+        subtotal,
+        total,
+        status: SaleStatus.COMPLETED,
+        paymentMethod: paymentMethod,
+      },
+      {
+        onSuccess: () => {
+          clearCart();
+        },
+        onError: (error) => {
+          console.error(error);
+        },
+      },
+    );
     setCompletedSale(null);
   };
 
-  if (!isCashRegisterOpen) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted mb-6">
-          <LockIcon className="h-10 w-10 text-muted-foreground" />
-        </div>
-        <h2 className="text-2xl font-semibold mb-2">Caixa Fechado</h2>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          Para realizar vendas, é necessário abrir o caixa primeiro.
-        </p>
-        <Link href="/vendas/caixa">
-          <Button size="lg">Ir para Controle de Caixa</Button>
-        </Link>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      {/* Barcode indicator */}
-      {/* {barcodeBuffer && (
-        <Alert>
-          <Barcode className="h-4 w-4" />
-          <AlertDescription>
-            Lendo código de barras: <span className="font-mono font-semibold">{barcodeBuffer}</span>
-          </AlertDescription>
-        </Alert>
-      )} */}
-
       <div className="grid gap-4 lg:grid-cols-[1fr_420px]">
         {/* Left Side - Product Selection */}
         <ProductSection
@@ -308,13 +289,16 @@ export default function CreateSalePage() {
           removeItem={removeItem}
           clearCart={clearCart}
           discount={discount}
-          setDiscount={setDiscount}
-          customer={customer}
+          setDiscount={(value) => form.setValue("discount", value, {})}
+          customer={form.getValues("customer")}
           total={total}
           setCustomerDialogOpen={setCustomerDialogOpen}
-          setPaymentDialogOpen={setPaymentDialogOpen}
+          setPaymentDialogOpen={handleOpenPayment}
           setItemQuantity={setItemQuantity}
           subtotal={subtotal}
+          discountType={discountType}
+          setDiscountType={(value) => form.setValue("discountType", value, {})}
+          error={form.formState.errors}
         />
       </div>
 
@@ -322,8 +306,8 @@ export default function CreateSalePage() {
       <SelectCustomerDialog
         open={customerDialogOpen}
         onOpenChange={setCustomerDialogOpen}
-        selectedCustomer={customer}
-        onSelect={setCustomer}
+        selectedCustomer={form.getValues("customer")}
+        onSelect={(value) => form.setValue("customer", value, {})}
       />
       <PaymentDialog
         open={paymentDialogOpen}
@@ -331,6 +315,8 @@ export default function CreateSalePage() {
         total={total}
         customerName={customer?.name || null}
         onConfirm={handlePaymentConfirm}
+        paymentMethod={form.watch("paymentMethod")}
+        setPaymentMethod={(value) => form.setValue("paymentMethod", value, {})}
       />
       <SaleCompletedDialog
         open={completedDialogOpen}
