@@ -40,8 +40,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuerySales } from "../hooks/use-sales";
 import { PageHeader } from "@/components/page-header";
-import { statusConfig } from "@/utils/status-config";
+import { statusConfig } from "@/utils/status-sales-config";
 import { currencyFormatter } from "@/utils/currency-formatter";
+import { SaleDetailsDialog } from "./sale-details";
 
 const paymentMethodLabels: Record<string, string> = {
   PIX: "PIX",
@@ -54,6 +55,8 @@ const paymentMethodLabels: Record<string, string> = {
 export function SalesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [open, setOpen] = useState(false);
+  const [saleId, setSaleId] = useState<string | null>(null);
 
   const { data, isLoadingSales } = useQuerySales({
     status: undefined,
@@ -84,6 +87,11 @@ export function SalesPage() {
       hour: "2-digit",
       minute: "2-digit",
     }).format(date);
+  };
+
+  const handleOpenChange = (open: boolean, id: string) => {
+    setOpen(open);
+    setSaleId(id);
   };
 
   return (
@@ -194,7 +202,11 @@ export function SalesPage() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleOpenChange(true, sale.id)
+                                  }
+                                >
                                   <Eye className="h-4 w-4 mr-2" />
                                   Ver detalhes
                                 </DropdownMenuItem>
@@ -237,6 +249,9 @@ export function SalesPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      {saleId && (
+        <SaleDetailsDialog open={open} onOpenChange={setOpen} saleId={saleId} />
+      )}
     </div>
   );
 }
