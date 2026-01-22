@@ -1,5 +1,5 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { Catalog } from "../_components/catalog";
+import { Catalog } from "../../../features/storefront/components/catalog";
 
 interface StoreFrontLayoutProps {
   params: Promise<{ subdomain: string }>;

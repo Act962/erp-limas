@@ -1,4 +1,4 @@
-import { RegisterFormCatalog } from "../../_components/register-form";
+import { RegisterFormCatalog } from "../../../../features/storefront/components/register-form";
 
 interface RegisterParams {
   params?: Promise<{ subdomain: string }>;

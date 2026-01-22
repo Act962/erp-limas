@@ -1,7 +1,7 @@
 import prisma from "@/lib/db";
-import { Header } from "../_components/header";
+import { Header } from "../../../features/storefront/components/header";
 import { notFound } from "next/navigation";
-import { Footer } from "../_components/footer";
+import { Footer } from "../../../features/storefront/components/footer";
 import type { Metadata } from "next";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 

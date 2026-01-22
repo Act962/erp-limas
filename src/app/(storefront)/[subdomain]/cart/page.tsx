@@ -1,4 +1,4 @@
-import { Cart } from "../../_components/cart";
+import { Cart } from "../../../../features/storefront/components/cart";
 
 interface CardProps {
   params: Promise<{ subdomain: string }>;

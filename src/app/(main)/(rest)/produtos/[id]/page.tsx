@@ -1,6 +1,6 @@
 import { orpc } from "@/lib/orpc";
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { ProductView } from "../_components/product-view";
+import { ProductView } from "@/features/products/components/product-view";
 
 const stockHistory = [
   {
@@ -59,7 +59,7 @@ export default async function Page({ params }: ProductPageProps) {
       input: {
         id: productId,
       },
-    })
+    }),
   );
 
   return (

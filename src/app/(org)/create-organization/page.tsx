@@ -1,6 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import Link from "next/link";
-import { CreateFormOrg } from "../_components/create-form-org";
+import { CreateFormOrg } from "@/features/organization/components/create-form-org";
 import { requireAuth } from "@/lib/auth-utils";
 
 export default async function Page() {

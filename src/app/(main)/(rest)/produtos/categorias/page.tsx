@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/page-header";
-import { ListCategories } from "../_components/list-categories";
+import { ListCategories } from "@/features/products/components/list-categories";
 import { CreateCategoryButton } from "./create-category-button";
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
 import { orpc } from "@/lib/orpc";

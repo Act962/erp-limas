@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/page-header";
-import { ListMovements } from "./_components/list-movements";
+import { ListMovements } from "../../../../../features/stock/movimentscoes/list-movements";
 import { CreateStockMovimentModal } from "@/components/modals/stock/create-stock-moviment-modal";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";

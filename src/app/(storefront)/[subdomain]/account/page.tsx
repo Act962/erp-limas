@@ -1,4 +1,4 @@
-import { AccountPage } from "../../_components/acconut";
+import { AccountPage } from "@/features/storefront/components/acconut";
 
 interface AccountPageProps {
   params: Promise<{ subdomain: string }>;

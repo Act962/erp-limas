@@ -1,4 +1,4 @@
-import { LoginFormCatalog } from "../../_components/login-form";
+import { LoginFormCatalog } from "../../../../features/storefront/components/login-form";
 
 interface LoginParams {
   params?: Promise<{ subdomain: string }>;

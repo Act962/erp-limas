@@ -38,7 +38,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
         subdomain: subdomain,
         productSlug: slug,
       },
-    })
+    }),
   );
 
   const { data: catalogSettings, isLoading: isCatalogSettingsLoading } =
@@ -52,12 +52,12 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
   const { product, productsWithThisCategory } = data;
 
   const currentProductInCart = products.find(
-    (thisProduct) => thisProduct.productId === product.id
+    (thisProduct) => thisProduct.productId === product.id,
   );
 
   const [imageSelected, setImageSelected] = useState(product.thumbnail);
   const [quantity, setQuantity] = useState<number>(
-    Number(currentProductInCart?.quantity) || 1
+    Number(currentProductInCart?.quantity) || 1,
   );
 
   const [isMounted, setIsMounted] = useState(false);
@@ -86,7 +86,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
   function openWhatsapp() {
     window.open(
       `https://wa.me/${catalogSettings?.whatsappNumber}?text=Olá, gostaria de comprar o produto ${product.name}`,
-      "_blank"
+      "_blank",
     );
   }
 
@@ -173,7 +173,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                     updateQuantity(
                       product.id,
                       subdomain,
-                      (quantity - 1).toString()
+                      (quantity - 1).toString(),
                     );
                     setQuantity(quantity - 1);
                   }}
@@ -191,7 +191,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                     updateQuantity(
                       product.id,
                       subdomain,
-                      (quantity + 1).toString()
+                      (quantity + 1).toString(),
                     );
                     setQuantity(quantity + 1);
                   }}

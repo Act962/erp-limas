@@ -21,7 +21,7 @@ export function TabCustomization({
   setSettings,
 }: CustomizationTabProps) {
   const [imageSelected, setImageSelected] = useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   const onChangeImage = (imageNow: string) => {
@@ -81,7 +81,7 @@ export function TabCustomization({
                           setSettings({
                             ...settings,
                             bannerImages: settings.bannerImages.filter(
-                              (img) => img !== image
+                              (img) => img !== image,
                             ),
                           });
                         }}

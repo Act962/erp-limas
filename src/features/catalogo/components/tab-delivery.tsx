@@ -51,7 +51,7 @@ export function TabDelivery({ settings, setSettings }: TabDeliveryProps) {
                 <Checkbox
                   id={deliveryMethod.id}
                   checked={settings.deliveryMethods.includes(
-                    deliveryMethod.method as DeliveryMethod
+                    deliveryMethod.method as DeliveryMethod,
                   )}
                   onCheckedChange={(value) =>
                     setSettings({
@@ -63,7 +63,7 @@ export function TabDelivery({ settings, setSettings }: TabDeliveryProps) {
                           ]
                         : settings.deliveryMethods.filter(
                             (deliveryMethod) =>
-                              deliveryMethod !== deliveryMethod
+                              deliveryMethod !== deliveryMethod,
                           ),
                     })
                   }
@@ -212,7 +212,7 @@ export function TabDelivery({ settings, setSettings }: TabDeliveryProps) {
                     className="w-40"
                     inputMode="numeric"
                     value={formatCurrencyInput(
-                      String(settings.freeShippingMinValue * 100)
+                      String(settings.freeShippingMinValue * 100),
                     )}
                     onChange={(e) => {
                       const numericValue = parseCurrencyInput(e.target.value);

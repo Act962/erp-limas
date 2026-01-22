@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { phoneMask, normalizePhone } from "@/utils/format-phone";
 
-import { tabs } from "./mock/catalog-moc";
+import { tabs } from "@/features/catalogo/components/mock/catalog-moc";
 
 import { GeneralTab } from "./tab-general";
 import { VisibilityTab } from "./tab-visibility";

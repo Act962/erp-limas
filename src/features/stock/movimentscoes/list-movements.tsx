@@ -23,7 +23,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
-import { CalendarFilter } from "../../../produtos/_components/filter-calendar";
+import { CalendarFilter } from "@/features/products/components/filter-calendar";
 import { FilterMoviments } from "./filters";
 import { useQueryState } from "nuqs";
 import { useStock } from "@/features/stock/hooks/use-stock";
