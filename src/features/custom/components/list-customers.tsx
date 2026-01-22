@@ -33,7 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CalendarFilter } from "@/app/(main)/(rest)/produtos/_components/filter-calendar";
+import { CalendarFilter } from "@/features/products/components/filter-calendar";
 import { FilterClients } from "./filter";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
@@ -120,11 +120,11 @@ export function ListCustomers() {
                     const totalPurchases = customer.sales?.length || 0;
                     const totalSpent = customer.sales?.reduce(
                       (acc, sale) => acc + (Number(sale.total) || 0),
-                      0
+                      0,
                     );
                     const lastPurchase = customer.sales?.[0]?.createdAt
                       ? new Date(
-                          customer.sales?.[0]?.createdAt
+                          customer.sales?.[0]?.createdAt,
                         ).toLocaleDateString()
                       : "N/A";
 

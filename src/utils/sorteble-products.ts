@@ -1,4 +1,4 @@
-import { ProductCatalog } from "@/app/(storefront)/types/product";
+import { ProductCatalog } from "@/features/storefront/types/product";
 
 export function sortProducts(products: any, method: string) {
   const sorted = [...products];

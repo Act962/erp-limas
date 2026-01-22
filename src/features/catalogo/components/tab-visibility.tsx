@@ -129,7 +129,7 @@ export function VisibilityTab({ settings, setSettings }: VisibilityTabProps) {
                   <Button variant="outline">
                     {
                       SORT_ORDER.find(
-                        (order) => order.method === settings.sortOrder
+                        (order) => order.method === settings.sortOrder,
                       )?.label
                     }
                   </Button>

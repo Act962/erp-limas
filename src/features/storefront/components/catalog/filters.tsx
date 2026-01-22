@@ -79,11 +79,11 @@ export function FiltersCatalog({
   useEffect(() => {
     form.setValue(
       "minValue",
-      minValue ? formatCurrencyInput(minValue.toString()) : undefined
+      minValue ? formatCurrencyInput(minValue.toString()) : undefined,
     );
     form.setValue(
       "maxValue",
-      maxValue ? formatCurrencyInput(maxValue.toString()) : undefined
+      maxValue ? formatCurrencyInput(maxValue.toString()) : undefined,
     );
     form.setValue("categoryIds", selectedIds);
   }, [minValue, maxValue, selectedIds, form]);
@@ -115,7 +115,7 @@ export function FiltersCatalog({
       setCategorySlugs(
         getSelectedCategories()
           .map((cat) => cat.slug.toLowerCase())
-          .join(",")
+          .join(","),
       );
     } else {
       setCategorySlugs(null);

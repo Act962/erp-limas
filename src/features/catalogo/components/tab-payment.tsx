@@ -32,7 +32,7 @@ export function TabPayment({ settings, setSettings }: TabPaymentProps) {
                 <Checkbox
                   id={payment.method}
                   checked={settings.paymentMethodSettings.includes(
-                    payment.method
+                    payment.method,
                   )}
                   onCheckedChange={(value) =>
                     setSettings({
@@ -40,7 +40,7 @@ export function TabPayment({ settings, setSettings }: TabPaymentProps) {
                       paymentMethodSettings: value
                         ? [...settings.paymentMethodSettings, payment.method]
                         : settings.paymentMethodSettings.filter(
-                            (payment) => payment !== payment
+                            (payment) => payment !== payment,
                           ),
                     })
                   }

@@ -53,18 +53,18 @@ export function useCheckoutLogic(subdomain: string) {
       onError: (error) => {
         toast.error(error.message);
       },
-    })
+    }),
   );
 
   const availablePaymentMethods = useMemo(() => {
     return catalogSettings?.paymentMethodSettings.filter(
-      (method) => method in paymentMethodsConfig
+      (method) => method in paymentMethodsConfig,
     );
   }, [catalogSettings?.paymentMethodSettings]);
 
   const availableDeliveryMethods = useMemo(() => {
     return catalogSettings?.deliveryMethods.filter(
-      (method) => method in deliveryMethodsConfig
+      (method) => method in deliveryMethodsConfig,
     );
   }, [catalogSettings?.deliveryMethods]);
 
@@ -73,14 +73,14 @@ export function useCheckoutLogic(subdomain: string) {
       sum +
       item.salePrice *
         Number(
-          products.find((product) => product.productId === item.id)?.quantity
+          products.find((product) => product.productId === item.id)?.quantity,
         ),
-    0
+    0,
   );
 
   const totalWeight = products.reduce(
     (sum: number, item) => sum + 2 * Number(item.quantity),
-    0
+    0,
   );
 
   const calculateFreight = () => {
@@ -178,10 +178,10 @@ export function useCheckoutLogic(subdomain: string) {
     let message = "Olá! Gostaria de fazer um pedido:\n\n";
 
     message += `*Forma de pagamento:* ${getPaymentMethodLabel(
-      paymentMethod
+      paymentMethod,
     )}\n`;
     message += `*Método de entrega:* ${getDeliveryMethodLabel(
-      deliveryMethod
+      deliveryMethod,
     )}\n`;
 
     if (deliveryMethod === "DELIVERY_HOME" && address.trim()) {
@@ -209,11 +209,11 @@ export function useCheckoutLogic(subdomain: string) {
       const itemTotal = (
         item.salePrice *
         Number(
-          products.find((product) => product.productId === item.id)?.quantity
+          products.find((product) => product.productId === item.id)?.quantity,
         )
       ).toFixed(2);
       message += `${index + 1}. ${item.name} ${findAndConvertQuantity(
-        item.id
+        item.id,
       )}x - R$ ${itemTotal}\n`;
     });
 

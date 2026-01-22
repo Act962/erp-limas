@@ -1,5 +1,5 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { CatalogSettings } from "./_components/catalog";
+import { CatalogSettings } from "@/features/catalogo/components/catalog";
 import { orpc } from "@/lib/orpc";
 export default async function Page() {
   const queryClient = getQueryClient();

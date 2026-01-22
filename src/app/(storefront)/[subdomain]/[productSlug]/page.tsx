@@ -1,5 +1,5 @@
 import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { DetailsPoduct } from "../../_components/details-product";
+import { DetailsPoduct } from "../../../../features/storefront/components/details-product";
 import { orpc } from "@/lib/orpc";
 
 interface ProductProps {
@@ -20,7 +20,7 @@ export default async function Page({ params }: ProductProps) {
         subdomain: subdomain,
         productSlug: productSlug,
       },
-    })
+    }),
   );
 
   return (

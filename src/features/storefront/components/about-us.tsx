@@ -27,7 +27,7 @@ export function AboutUs({ subdomain }: AboutUsProps) {
       input: {
         subdomain: subdomain,
       },
-    })
+    }),
   );
 
   const { catalogSettings } = data;
@@ -101,7 +101,7 @@ export function AboutUs({ subdomain }: AboutUsProps) {
                   >
                     <Icon size={22} />
                   </Link>
-                )
+                ),
             )}
           </div>
         </div>
