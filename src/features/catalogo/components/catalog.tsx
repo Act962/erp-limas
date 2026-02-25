@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDebouncedValue } from "@/utils/use-debouced";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ export type { CatalogSettingsProps };
 export function CatalogSettings() {
   const { data, isLoading } = useCatalogSettingsPrivate();
   const useUpdateFieldsCatalogSettings = updateFieldCatalog();
+  const [settings, setSettings] = useState<CatalogSettingsProps>();
 
   if (isLoading) {
     return (
@@ -30,55 +31,59 @@ export function CatalogSettings() {
       </div>
     );
   }
-  if (!data) return <EmptyCatalog />;
+  if (!settings || !data) return <EmptyCatalog />;
 
-  const [settings, setSettings] = useState<CatalogSettingsProps>({
-    id: data.id,
-    organizationId: data.organizationId,
-    isActive: data.isActive,
-    showPrices: data.showPrices,
-    showStock: data.showStock,
-    allowOrders: data.allowOrders,
-    showProductWithoutStock: data.showProductWithoutStock,
-    sortOrder: data.sortOrder,
-    whatsappNumber: phoneMask(String(data.whatsappNumber ?? "")) ?? "",
-    showWhatsapp: data.showWhatsapp,
-    contactEmail: data.contactEmail ?? "",
-    metaTitle: data.metaTitle ?? "",
-    metaDescription: data.metaDescription ?? "",
-    logo: data.logo ?? "",
-    bannerImages: data.bannerImages ?? [],
-    aboutText: data.aboutText ?? "",
-    theme: data.theme ?? "",
-    instagram: data.instagram ?? "",
-    facebook: data.facebook ?? "",
-    twitter: data.twitter ?? "",
-    tiktok: data.tiktok ?? "",
-    kwai: data.kwai ?? "",
-    youtube: data.youtube ?? "",
-    cep: data.cep ?? "",
-    address: data.address ?? "",
-    district: data.district ?? "",
-    number: data.number ?? "",
-    id_meta: data.id_meta ?? "",
-    pixel_meta: data.pixel_meta ?? "",
-    paymentMethodSettings: data.paymentMethodSettings,
-    freightOptions: data.freightOptions,
-    freightChargeType: data.freightChargeType,
-    freightFixedValue: data.freightFixedValue,
-    freightValuePerKg: data.freightValuePerKg,
-    freeShippingMinValue: data.freeShippingMinValue ?? 0,
-    freeShippingEnabled: data.freeShippingEnabled,
-    deliveryMethods: data.deliveryMethods,
-    deliverySpecialInfo: data.deliverySpecialInfo ?? "",
-    cnpj: data.cnpj ?? "",
-    walletId: data.walletId ?? "",
-  });
+  useEffect(() => {
+    if (!data) return;
+
+    setSettings({
+      id: data.id,
+      organizationId: data.organizationId,
+      isActive: data.isActive,
+      showPrices: data.showPrices,
+      showStock: data.showStock,
+      allowOrders: data.allowOrders,
+      showProductWithoutStock: data.showProductWithoutStock,
+      sortOrder: data.sortOrder,
+      whatsappNumber: phoneMask(String(data.whatsappNumber ?? "")) ?? "",
+      showWhatsapp: data.showWhatsapp,
+      contactEmail: data.contactEmail ?? "",
+      metaTitle: data.metaTitle ?? "",
+      metaDescription: data.metaDescription ?? "",
+      logo: data.logo ?? "",
+      bannerImages: data.bannerImages ?? [],
+      aboutText: data.aboutText ?? "",
+      theme: data.theme ?? "",
+      instagram: data.instagram ?? "",
+      facebook: data.facebook ?? "",
+      twitter: data.twitter ?? "",
+      tiktok: data.tiktok ?? "",
+      kwai: data.kwai ?? "",
+      youtube: data.youtube ?? "",
+      cep: data.cep ?? "",
+      address: data.address ?? "",
+      district: data.district ?? "",
+      number: data.number ?? "",
+      id_meta: data.id_meta ?? "",
+      pixel_meta: data.pixel_meta ?? "",
+      paymentMethodSettings: data.paymentMethodSettings,
+      freightOptions: data.freightOptions,
+      freightChargeType: data.freightChargeType,
+      freightFixedValue: data.freightFixedValue,
+      freightValuePerKg: data.freightValuePerKg,
+      freeShippingMinValue: data.freeShippingMinValue ?? 0,
+      freeShippingEnabled: data.freeShippingEnabled,
+      deliveryMethods: data.deliveryMethods,
+      deliverySpecialInfo: data.deliverySpecialInfo ?? "",
+      cnpj: data.cnpj ?? "",
+      walletId: data.walletId ?? "",
+    });
+  }, [data]);
 
   const debounceUpdate = useDebouncedValue(settings, 500);
 
   function onSubmit() {
-    console.log(debounceUpdate.walletId);
+    if (!settings || !debounceUpdate) return;
     useUpdateFieldsCatalogSettings.mutate({
       id: settings.id,
       isActive: debounceUpdate.isActive,

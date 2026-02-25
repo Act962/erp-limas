@@ -14,7 +14,7 @@ import { TabIntegration } from "@/features/catalogo/components/tab-integration";
 
 export type TabProps = {
   settings: CatalogSettingsProps;
-  setSettings: Dispatch<SetStateAction<CatalogSettingsProps>>;
+  setSettings: Dispatch<SetStateAction<CatalogSettingsProps | undefined>>;
 };
 
 export type TabEntry = {
