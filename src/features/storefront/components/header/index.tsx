@@ -33,7 +33,7 @@ interface HeaderProps {
 export function Header({ settings }: HeaderProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const { products, updateQuantity, toggleProduct } = useCart(
-    settings.subdomain
+    settings.subdomain,
   );
 
   const { data: productsOfCart } = useQueryProductsOfCart({

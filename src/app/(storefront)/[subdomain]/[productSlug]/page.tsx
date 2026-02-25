@@ -1,6 +1,4 @@
-import { getQueryClient, HydrateClient } from "@/lib/query/hydration";
-import { DetailsPoduct } from "../../../../features/storefront/components/details-product";
-import { orpc } from "@/lib/orpc";
+import { DetailsPoduct } from "@/features/storefront/components/details-product";
 
 interface ProductProps {
   params: Promise<{
@@ -12,20 +10,5 @@ interface ProductProps {
 export default async function Page({ params }: ProductProps) {
   const { subdomain, productSlug } = await params;
 
-  const queryClient = getQueryClient();
-
-  await queryClient.prefetchQuery(
-    orpc.catalogSettings.relatedProducts.queryOptions({
-      input: {
-        subdomain: subdomain,
-        productSlug: productSlug,
-      },
-    }),
-  );
-
-  return (
-    <HydrateClient client={queryClient}>
-      <DetailsPoduct subdomain={subdomain} slug={productSlug} />
-    </HydrateClient>
-  );
+  return <DetailsPoduct subdomain={subdomain} slug={productSlug} />;
 }

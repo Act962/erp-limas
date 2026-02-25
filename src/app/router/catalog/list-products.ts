@@ -15,7 +15,7 @@ export const listProducts = base
       categorySlugs: z.array(z.string()).optional(),
       maxValue: z.number().optional(),
       minValue: z.number().optional(),
-    })
+    }),
   )
   .output(
     z.object({
@@ -28,7 +28,7 @@ export const listProducts = base
           slug: z.string(),
           image: z.string().nullable(),
           order: z.number(),
-        })
+        }),
       ),
       products: z.array(
         z.object({
@@ -47,9 +47,9 @@ export const listProducts = base
           promotionalPrice: z.number().nullable(),
           images: z.array(string()).nullable(),
           productIsDisponile: z.boolean(),
-        })
+        }),
       ),
-    })
+    }),
   )
   .handler(async ({ input, errors }) => {
     try {
@@ -76,14 +76,23 @@ export const listProducts = base
         where: {
           organizationId: organization.id,
           category: {
-            slug: {
-              in: input.categorySlugs,
+            ...(input.categorySlugs &&
+              input.categorySlugs.length > 0 && {
+                slug: {
+                  in: input.categorySlugs,
+                },
+              }),
+          },
+          ...(input.minValue && {
+            salePrice: {
+              gte: input.minValue,
             },
-          },
-          salePrice: {
-            gte: input.minValue,
-            lte: input.maxValue,
-          },
+          }),
+          ...(input.maxValue && {
+            salePrice: {
+              lte: input.maxValue,
+            },
+          }),
           ...(catalogSettings?.showProductWithoutStock
             ? {}
             : { currentStock: { gte: 1 } }),
