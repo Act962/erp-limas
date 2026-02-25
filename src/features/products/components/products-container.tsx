@@ -4,12 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { ProductsTable } from "./products-table";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { orpc } from "@/lib/orpc";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import { useQueryState } from "nuqs";
 import dayjs from "dayjs";
 import { useProducts } from "@/features/products/hooks/use-products";
+import { useCategory } from "@/context/category/hooks/use-categories";
 
 export function ProductsContainer() {
   const [category] = useQueryState("category");
@@ -30,8 +29,7 @@ export function ProductsContainer() {
     pageSize: 10,
   });
 
-  const { data } = useSuspenseQuery(orpc.categories.listAll.queryOptions());
-  const { categories } = data;
+  const { categories } = useCategory();
 
   return (
     <div className="px-4 mt-8 space-y-4">

@@ -18,7 +18,7 @@ export const publicSettingsCatalog = base
   .input(
     z.object({
       subdomain: z.string(),
-    })
+    }),
   )
   .output(
     z.object({
@@ -62,7 +62,7 @@ export const publicSettingsCatalog = base
         deliverySpecialInfo: z.string().nullable(),
         cnpj: z.string().nullable(),
       }),
-    })
+    }),
   )
   .handler(async ({ input, errors }) => {
     const { subdomain } = input;
