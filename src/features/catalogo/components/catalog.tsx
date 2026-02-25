@@ -14,6 +14,7 @@ import {
 } from "@/features/storefront/hooks/use-catalog-settings";
 
 import type { CatalogSettingsProps } from "@/features/catalogo/types/catalog-settings.types";
+import { EmptyCatalog } from "./empty-catalog";
 
 // Re-exporta para uso nos componentes filhos (tab-*)
 export type { CatalogSettingsProps };
@@ -22,8 +23,14 @@ export function CatalogSettings() {
   const { data, isLoading } = useCatalogSettingsPrivate();
   const useUpdateFieldsCatalogSettings = updateFieldCatalog();
 
-  if (isLoading) return <Spinner />;
-  if (!data) return null;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+  if (!data) return <EmptyCatalog />;
 
   const [settings, setSettings] = useState<CatalogSettingsProps>({
     id: data.id,
