@@ -10,7 +10,6 @@ interface TabPaymentProps {
 }
 
 export function TabPayment({ settings, setSettings }: TabPaymentProps) {
-  console.log(settings.paymentMethodSettings);
   return (
     <div className="space-y-6 mt-4">
       <div>

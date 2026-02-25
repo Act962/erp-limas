@@ -26,11 +26,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCategoryModal } from "@/hooks/modals/use-category-modal";
 import { orpc } from "@/lib/orpc";
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronRight,
   Copy,
@@ -55,7 +51,7 @@ export function ListCategories() {
       onSuccess: () => {
         queryClient.invalidateQueries(orpc.categories.list.queryOptions());
         queryClient.invalidateQueries(
-          orpc.categories.listWithoutSubcategory.queryOptions()
+          orpc.categories.listWithoutSubcategory.queryOptions(),
         );
 
         toast.success("Categoria duplicada com sucesso!");
@@ -63,7 +59,7 @@ export function ListCategories() {
       onError: (error) => {
         toast.error(error.message);
       },
-    })
+    }),
   );
 
   const handleDuplicate = (categoryId: string) => {
@@ -72,14 +68,13 @@ export function ListCategories() {
     });
   };
 
-  const {
-    data: { categories },
-    isPending,
-  } = useSuspenseQuery(orpc.categories.list.queryOptions());
+  const { data, isPending } = useQuery(orpc.categories.list.queryOptions());
+
+  const categories = data?.categories;
 
   const toggleExpand = (id: string) => {
     setExpandedCategories((prev) =>
-      prev.includes(id) ? prev.filter((catId) => catId !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((catId) => catId !== id) : [...prev, id],
     );
   };
   return (
@@ -106,7 +101,7 @@ export function ListCategories() {
               />
             ))}
 
-          {!isPending && categories.length === 0 && (
+          {!isPending && categories?.length === 0 && (
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
@@ -125,6 +120,7 @@ export function ListCategories() {
           )}
 
           {!isPending &&
+            categories &&
             categories.length > 0 &&
             categories.map((category) => (
               <div key={category.id}>

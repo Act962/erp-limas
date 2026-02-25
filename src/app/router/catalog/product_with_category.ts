@@ -12,44 +12,7 @@ export const getProductAndProductsByCategory = base
     z.object({
       subdomain: z.string(),
       productSlug: z.string(),
-    })
-  )
-  .output(
-    z.object({
-      product: z.object({
-        id: z.string(),
-        organizationId: z.string(),
-        isActive: z.boolean(),
-        name: z.string(),
-        description: z.string().nullable(),
-        slug: z.string(),
-        sku: z.string().nullable(),
-        minStock: z.number(),
-        categoryId: z.string().nullable(),
-        weight: z.number().nullable(),
-        thumbnail: z.string(),
-        currentStock: z.number(),
-        salePrice: z.number(),
-        promotionalPrice: z.number().nullable(),
-        images: z.array(string()).nullable(),
-        category: z.object({
-          name: z.string(),
-          slug: z.string(),
-        }),
-      }),
-      productIsDisponile: z.boolean(),
-      productsWithThisCategory: z.array(
-        z.object({
-          id: z.string(),
-          isActive: z.boolean(),
-          description: z.string().nullable(),
-          name: z.string(),
-          slug: z.string(),
-          thumbnail: z.string(),
-          salePrice: z.number(),
-        })
-      ),
-    })
+    }),
   )
   .handler(async ({ input, errors }) => {
     try {
@@ -80,11 +43,9 @@ export const getProductAndProductsByCategory = base
       });
 
       if (!product) {
-        throw errors.NOT_FOUND();
-      }
-
-      if (!product.categoryId) {
-        throw errors.NOT_FOUND();
+        throw errors.NOT_FOUND({
+          message: "Produto não encontrado",
+        });
       }
 
       const productsWithCategory = await prisma.product.findMany({
@@ -92,6 +53,7 @@ export const getProductAndProductsByCategory = base
           slug: {
             not: input.productSlug,
           },
+          organizationId: organization.id,
           categoryId: product.categoryId,
           isActive: true,
         },
@@ -116,7 +78,6 @@ export const getProductAndProductsByCategory = base
       }));
 
       const productIsDisponile = Number(product.currentStock) > 0;
-
       return {
         product: {
           ...product,
@@ -127,7 +88,7 @@ export const getProductAndProductsByCategory = base
           category: product.category as { name: string; slug: string },
           promotionalPrice: Number(product.promotionalPrice),
         },
-        productsWithThisCategory: productsList,
+        productsWithThisCategory: productsList || [],
         productIsDisponile,
       };
     } catch (error) {

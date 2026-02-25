@@ -11,9 +11,8 @@ import {
   Plus,
   PlusCircle,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { orpc } from "@/lib/orpc";
+import { notFound, useRouter } from "next/navigation";
+import { useProductDetails } from "@/features/storefront/hooks/use-product-details";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 import Image from "next/image";
 import placeholder from "@/assets/background-default-image.svg";
@@ -32,14 +31,10 @@ interface DetailsPoductProps {
 }
 
 export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
-  const { data } = useSuspenseQuery(
-    orpc.catalogSettings.relatedProducts.queryOptions({
-      input: {
-        subdomain: subdomain,
-        productSlug: slug,
-      },
-    }),
-  );
+  const { data, isLoading, error } = useProductDetails({
+    subdomain,
+    slug,
+  });
 
   const { data: catalogSettings, isLoading: isCatalogSettingsLoading } =
     useCatalogSettings({
@@ -49,43 +44,85 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
   const { products, updateQuantity, isProductInCart, toggleProduct } =
     useCart(subdomain);
 
-  const { product, productsWithThisCategory } = data;
-
-  const currentProductInCart = products.find(
-    (thisProduct) => thisProduct.productId === product.id,
-  );
-
-  const [imageSelected, setImageSelected] = useState(product.thumbnail);
-  const [quantity, setQuantity] = useState<number>(
-    Number(currentProductInCart?.quantity) || 1,
-  );
-
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
-  const showAsInCart = isProductInCart(product.id) && isMounted;
+  const [quantity, setQuantity] = useState<number>(1);
+  const [isMounted, setIsMounted] = useState(false);
+  const [imageSelected, setImageSelected] = useState<string | null>(null);
+
+  const product = data?.product;
+  const productsWithThisCategory = data?.productsWithThisCategory;
+
+  const currentProductInCart = product
+    ? products.find(
+        (thisProduct: { productId: string; quantity: string }) =>
+          thisProduct.productId === product.id,
+      )
+    : null;
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (product) {
+      setImageSelected(product.thumbnail);
+      setQuantity(Number(currentProductInCart?.quantity) || 1);
+    }
+  }, [product?.id, currentProductInCart?.quantity]);
+
+  if (isLoading || isCatalogSettingsLoading) {
+    return (
+      <div className="mx-auto w-full max-w-6xl py-8 space-y-8">
+        <div className="bg-accent-foreground/10 rounded-sm py-5 px-4 sm:px-10 flex flex-col gap-10">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-20" />
+            <ChevronRight className="size-3" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <div className="grid sm:grid-cols-2 grid-cols-1 w-full gap-10">
+            <Skeleton className="w-full aspect-square rounded-xl" />
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-3/4" />
+              <Skeleton className="h-6 w-1/2" />
+              <Skeleton className="h-20 w-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-14 w-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product || !productsWithThisCategory) {
+    notFound();
+  }
+
+  const showAsInCart = product && isProductInCart(product.id) && isMounted;
+
+  const constructImageUrl = (key: string) =>
+    `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.t3.storage.dev/${key}`;
+
   const imageSrc =
-    product.thumbnail && product.thumbnail.trim() !== ""
-      ? useConstructUrl(product.thumbnail)
+    imageSelected && imageSelected.trim() !== ""
+      ? constructImageUrl(imageSelected)
       : placeholder;
 
   function descriptionParse() {
-    if (!product.description) return null;
+    if (!product!.description) return null;
     try {
-      return JSON.parse(product.description);
+      return JSON.parse(product!.description);
     } catch (error) {
-      return product.description;
+      return product!.description;
     }
   }
 
   function openWhatsapp() {
     window.open(
-      `https://wa.me/${catalogSettings?.whatsappNumber}?text=Olá, gostaria de comprar o produto ${product.name}`,
+      `https://wa.me/${catalogSettings?.whatsappNumber}?text=Olá, gostaria de comprar o produto ${product!.name}`,
       "_blank",
     );
   }
@@ -97,10 +134,14 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
           sm:px-10 flex flex-col justify-center"
       >
         <div className="flex items-center text-sm font-semibold mb-3 gap-2 ">
-          <span className="hover:underline cursor-pointer">
-            {product.category.name}
-          </span>
-          <ChevronRight className="size-3" />
+          {product.category && (
+            <>
+              <span className="hover:underline cursor-pointer">
+                {product.category.name}
+              </span>
+              <ChevronRight className="size-3" />
+            </>
+          )}
           <span>{product.name}</span>
         </div>
         <div className="grid sm:grid-cols-2 grid-cols-1 w-full gap-10 items-center">
@@ -124,7 +165,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                   >
                     <Image
                       data-selected={imageSelected === image}
-                      src={useConstructUrl(image)}
+                      src={constructImageUrl(image)}
                       alt={product.name}
                       fill
                       className="size-full rounded-sm cursor-pointer
@@ -140,7 +181,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
             <div className="flex items-center gap-2">
               <span className="text-md font-medium">Categoria:</span>
               <span className="text-md font-medium text-muted-foreground">
-                {product.category.name}
+                {product.category && product.category.name}
               </span>
             </div>
             <span className="text-sm font-medium text-muted-foreground mb-4">
@@ -213,7 +254,7 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
                       <ButtonSale
                         className="w-full h-14 text-lg"
                         data={{
-                          productIsDisponile: data.productIsDisponile,
+                          productIsDisponile: data?.productIsDisponile,
                           showAsInCart: showAsInCart,
                         }}
                         onClick={() =>
@@ -257,27 +298,31 @@ export function DetailsPoduct({ subdomain, slug }: DetailsPoductProps) {
         <h2 className="text-2xl font-bold">Outros produtos desta categoria</h2>
         <div className="flex items-center justify-center md:justify-between gap-x-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 items-center">
-            {productsWithThisCategory.map((product) => (
+            {productsWithThisCategory.map((relatedProduct) => (
               <div
-                onClick={() => router.push(`/${product.slug}`)}
-                key={product.id}
+                onClick={() => router.push(`/${relatedProduct.slug}`)}
+                key={relatedProduct.id}
                 className="flex flex-col items-center gap-5 bg-foreground/5 rounded-2xl pb-5 shadow-md cursor-pointer 
                 hover:shadow-lg"
               >
                 <div className="w-full h-35 rounded-t-2xl overflow-hidden items-center relative">
                   <Image
-                    src={imageSrc}
-                    alt={product.name}
+                    src={
+                      relatedProduct.thumbnail
+                        ? constructImageUrl(relatedProduct.thumbnail)
+                        : placeholder
+                    }
+                    alt={relatedProduct.name}
                     fill
                     className="object-cover"
                   />
                 </div>
                 <div className="flex flex-col px-5 ">
                   <h3 className="font-medium line-clamp-2 min-h-[50px]">
-                    {product.name}
+                    {relatedProduct.name}
                   </h3>
                   <span className="text-xl font-semibold ">
-                    R${currencyFormatter(product.salePrice)}
+                    R${currencyFormatter(relatedProduct.salePrice)}
                   </span>
                 </div>
               </div>
