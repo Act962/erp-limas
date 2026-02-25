@@ -58,63 +58,35 @@ export const updateSettingsCatalog = base
       freeShippingMinValue: z.number().optional(),
       cnpj: z.string().optional(),
       deliverySpecialInfo: z.string().optional(),
-    })
+      walletId: z.string().optional(),
+    }),
   )
   .handler(async ({ input, errors }) => {
-    const catalogSettings = await prisma.catalogSettings.findUnique({
-      where: {
-        id: input.id,
-      },
-    });
-
-    if (!catalogSettings) {
-      throw errors.NOT_FOUND({
-        message: "Configuração do catálogo não encontrada.",
+    try {
+      const catalogSettings = await prisma.catalogSettings.findUnique({
+        where: {
+          id: input.id,
+        },
       });
-    }
 
-    await prisma.catalogSettings.update({
-      where: {
-        id: input.id,
-      },
-      data: {
-        isActive: input.isActive,
-        showPrices: input.showPrices,
-        showStock: input.showStock,
-        sortOrder: input.sortOrder,
-        allowOrders: input.allowOrders,
-        whatsappNumber: input.whatsappNumber,
-        showWhatsapp: input.showWhatsapp,
-        contactEmail: input.contactEmail,
-        metaTitle: input.metaTitle,
-        metaDescription: input.metaDescription,
-        logo: input.logo,
-        bannerImages: input.bannerImages,
-        aboutText: input.aboutText,
-        theme: input.theme,
-        instagram: input.instagram,
-        facebook: input.facebook,
-        twitter: input.twitter,
-        tiktok: input.tiktok,
-        youtube: input.youtube,
-        kwai: input.kwai,
-        cep: input.cep,
-        address: input.address,
-        district: input.district,
-        number: input.number,
-        id_meta: input.id_meta,
-        pixel_meta: input.pixel_meta,
-        showProductWithoutStock: input.showProductWithoutStock,
-        paymentMethodSettings: input.paymentMethodSettings,
-        freightOptions: input.freightOptions,
-        freightChargeType: input.freightChargeType,
-        freightFixedValue: input.freightFixedValue,
-        freightValuePerKg: input.freightValuePerKg,
-        freeShippingEnabled: input.freeShippingEnabled,
-        freeShippingMinValue: input.freeShippingMinValue,
-        deliveryMethods: input.deliveryMethods,
-        deliverySpecialInfo: input.deliverySpecialInfo,
-        cnpj: input.cnpj,
-      },
-    });
+      if (!catalogSettings) {
+        throw errors.NOT_FOUND({
+          message: "Configuração do catálogo não encontrada.",
+        });
+      }
+
+      const { id, ...rest } = input;
+
+      await prisma.catalogSettings.update({
+        where: {
+          id,
+        },
+        data: {
+          ...rest,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw errors.INTERNAL_SERVER_ERROR({});
+    }
   });

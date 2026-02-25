@@ -1,41 +1,73 @@
+import type { ComponentType, Dispatch, SetStateAction } from "react";
 import { FreightChargeType, PaymentMethod } from "@/generated/prisma/enums";
+import type { CatalogSettingsProps } from "@/features/catalogo/types/catalog-settings.types";
 
-export const tabs = [
+import { GeneralTab } from "@/features/catalogo/components/tab-general";
+import { VisibilityTab } from "@/features/catalogo/components/tab-visibility";
+import { TabContact } from "@/features/catalogo/components/tab-contact";
+import { TabCustomization } from "@/features/catalogo/components/tab-customization";
+import { TabDomain } from "@/features/catalogo/components/tab-domain";
+import { TabPayment } from "@/features/catalogo/components/tab-payment";
+import { TabDelivery } from "@/features/catalogo/components/tab-delivery";
+import { TabSocial } from "@/features/catalogo/components/tab-social";
+import { TabIntegration } from "@/features/catalogo/components/tab-integration";
+
+export type TabProps = {
+  settings: CatalogSettingsProps;
+  setSettings: Dispatch<SetStateAction<CatalogSettingsProps>>;
+};
+
+export type TabEntry = {
+  id: string;
+  label: string;
+  component: ComponentType<TabProps>;
+};
+
+export const tabs: TabEntry[] = [
   {
-    id: "geral" as const,
+    id: "geral",
     label: "Geral",
+    component: GeneralTab,
   },
   {
-    id: "visibility" as const,
+    id: "visibility",
     label: "Visibilidade",
+    component: VisibilityTab,
   },
   {
-    id: "contact" as const,
+    id: "contact",
     label: "Contato",
+    component: TabContact,
   },
   {
-    id: "customization" as const,
+    id: "customization",
     label: "Personalização",
+    component: TabCustomization,
   },
   {
-    id: "domain" as const,
+    id: "domain",
     label: "Site",
+    component: TabDomain,
   },
   {
-    id: "payment" as const,
+    id: "payment",
     label: "Pagamento",
+    component: TabPayment,
   },
   {
-    id: "delivery" as const,
+    id: "delivery",
     label: "Entrega",
+    component: TabDelivery,
   },
   {
-    id: "social" as const,
+    id: "social",
     label: "Redes Sociais",
+    component: TabSocial,
   },
   {
-    id: "integrations" as const,
+    id: "integrations",
     label: "Integrações",
+    component: TabIntegration,
   },
 ];
 

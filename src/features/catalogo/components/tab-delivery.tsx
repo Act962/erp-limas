@@ -19,8 +19,6 @@ import {
   FreightOption,
 } from "@/generated/prisma/enums";
 import {
-  currencyFormatter,
-  currencyUnformatter,
   formatCurrencyInput,
   parseCurrencyInput,
 } from "@/utils/currency-formatter";

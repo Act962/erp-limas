@@ -55,11 +55,11 @@ const subdomainSchema = z.object({
     .max(63, "O subdomínio deve ter no máximo 63 caracteres")
     .regex(
       /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/,
-      "Use apenas letras minúsculas, números e hífens (não pode começar ou terminar com hífen)"
+      "Use apenas letras minúsculas, números e hífens (não pode começar ou terminar com hífen)",
     )
     .refine(
       (value) => !RESERVED_SUBDOMAINS.includes(value),
-      "Este subdomínio está reservado"
+      "Este subdomínio está reservado",
     )
     .transform((value) => value.toLowerCase()),
 });
@@ -84,7 +84,7 @@ export function SubdomainDialog() {
   const subdomainValue = form.watch("subdomain");
 
   const CUSTOM_DOMAIN = `${url.protocol}//${
-    data?.organization.subdomain || "subdomain"
+    data?.organization.subdomain
   }.${url.host}`;
 
   const EDIT_DOMAIN = `${url.protocol}//${subdomainValue || "subdomain"}.${
@@ -99,7 +99,7 @@ export function SubdomainDialog() {
           console.log("Available: ", response.available);
           setIsAvailable(true);
           toast.success(
-            "Subdomínio disponível! Clique em Salvar para confirmar."
+            "Subdomínio disponível! Clique em Salvar para confirmar.",
           );
         } else {
           setIsAvailable(false);
@@ -113,7 +113,7 @@ export function SubdomainDialog() {
         setIsAvailable(false);
         toast.error(error.message || "Erro ao verificar subdomínio");
       },
-    })
+    }),
   );
 
   // Mutation para salvar o subdomínio
@@ -130,7 +130,7 @@ export function SubdomainDialog() {
       onError: (error: any) => {
         toast.error(error.message || "Erro ao atualizar subdomínio");
       },
-    })
+    }),
   );
   const handleCancel = () => {
     if (data?.organization.subdomain) {
@@ -191,7 +191,10 @@ export function SubdomainDialog() {
           {isPending ? (
             <Skeleton className="h-10 w-77.5" />
           ) : (
-            <Button variant="secondary">
+            <Button
+              variant="secondary"
+              disabled={!data?.organization.subdomain}
+            >
               {CUSTOM_DOMAIN} <Edit2 className="size-4" />
             </Button>
           )}
@@ -221,7 +224,7 @@ export function SubdomainDialog() {
                   buttonVariants({
                     variant: "secondary",
                   }),
-                  "mx-auto pointer-events-none"
+                  "mx-auto pointer-events-none",
                 )}
               >
                 <span className="text-sm font-semibold text-foreground">
@@ -257,7 +260,7 @@ export function SubdomainDialog() {
                       }}
                       className={cn(
                         fieldState.error &&
-                          "border-destructive focus-visible:ring-destructive"
+                          "border-destructive focus-visible:ring-destructive",
                       )}
                     />
                     {isAvailable && hasChanges && (

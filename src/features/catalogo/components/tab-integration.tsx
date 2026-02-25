@@ -62,6 +62,22 @@ export function TabIntegration({ settings, setSettings }: TabIntegrationProps) {
               relatórios avançados sobre tráfego, campanhas e conversões.
             </p>
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="assas-token">O token do seu Assas</Label>
+            <InputGroup>
+              <InputGroupInput
+                id="assas-token"
+                value={settings.walletId}
+                onChange={(e) =>
+                  setSettings({ ...settings, walletId: e.target.value })
+                }
+              />
+            </InputGroup>
+            <p className="text-sm text-muted-foreground">
+              Integre seu catálogo ao seu Assas e faça suas vendas diretamente
+              pelo catálogo.
+            </p>
+          </div>
         </div>
       </Card>
     </div>

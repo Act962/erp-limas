@@ -18,7 +18,17 @@ export function useCatalogSettings({ subdomain }: UseCatalogSettingsProps) {
         subdomain,
       },
       enabled: !!subdomain,
-    })
+    }),
+  );
+
+  return {
+    data: data?.catalogSettings,
+    isLoading,
+  };
+}
+export function useCatalogSettingsPrivate() {
+  const { data, isLoading } = useQuery(
+    orpc.catalogSettings.list.queryOptions(),
   );
 
   return {
@@ -36,7 +46,7 @@ export const updateFieldCatalog = () => {
       onError: () => {
         toast("Erro ao atualizar catálogo!");
       },
-    })
+    }),
   );
 };
 

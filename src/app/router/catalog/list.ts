@@ -1,15 +1,7 @@
 import { requireAuthMiddleware } from "@/app/middlewares/auth";
 import { base } from "@/app/middlewares/base";
 import { requireOrgMiddleware } from "@/app/middlewares/org";
-import {
-  CatalogSortOrder,
-  DeliveryMethod,
-  FreightChargeType,
-  FreightOption,
-  PaymentMethod,
-} from "@/generated/prisma/enums";
 import prisma from "@/lib/db";
-import z from "zod";
 
 export const listSettingsCatalog = base
   .use(requireAuthMiddleware)
@@ -19,51 +11,7 @@ export const listSettingsCatalog = base
     summary: "Listar configurações de catálogo",
     tags: ["settings-catalog"],
   })
-  .output(
-    z.object({
-      catalogSettings: z.object({
-        id: z.string(),
-        organizationId: z.string(),
-        isActive: z.boolean(),
-        showPrices: z.boolean(),
-        showStock: z.boolean(),
-        sortOrder: z.enum(CatalogSortOrder),
-        allowOrders: z.boolean(),
-        whatsappNumber: z.string().nullable(),
-        showWhatsapp: z.boolean(),
-        contactEmail: z.string().nullable(),
-        metaTitle: z.string().nullable(),
-        metaDescription: z.string().nullable(),
-        logo: z.string().nullable(),
-        bannerImages: z.array(z.string()).nullable(),
-        aboutText: z.string().nullable(),
-        theme: z.string().nullable(),
-        instagram: z.string().nullable(),
-        facebook: z.string().nullable(),
-        twitter: z.string().nullable(),
-        tiktok: z.string().nullable(),
-        youtube: z.string().nullable(),
-        kwai: z.string().nullable(),
-        cep: z.string().nullable(),
-        address: z.string().nullable(),
-        district: z.string().nullable(),
-        number: z.string().nullable(),
-        id_meta: z.string().nullable(),
-        pixel_meta: z.string().nullable(),
-        showProductWithoutStock: z.boolean(),
-        paymentMethodSettings: z.enum(PaymentMethod).array(),
-        deliveryMethods: z.enum(DeliveryMethod).array(),
-        freightOptions: z.enum(FreightOption),
-        freightChargeType: z.enum(FreightChargeType),
-        freightFixedValue: z.number(),
-        freightValuePerKg: z.number(),
-        freeShippingMinValue: z.number(),
-        freeShippingEnabled: z.boolean(),
-        deliverySpecialInfo: z.string().nullable(),
-        cnpj: z.string().nullable(),
-      }),
-    })
-  )
+
   .handler(async ({ context }) => {
     const catalogSettings = await prisma.catalogSettings.upsert({
       where: {
@@ -72,14 +20,13 @@ export const listSettingsCatalog = base
       create: {
         organizationId: context.org.id,
       },
-      update: {
-        organizationId: context.org.id,
-      },
+      update: {},
     });
 
     return {
       catalogSettings: {
         ...catalogSettings,
+
         freightFixedValue: Number(catalogSettings.freightFixedValue),
         freightValuePerKg: Number(catalogSettings.freightValuePerKg),
         freeShippingMinValue: Number(catalogSettings.freeShippingMinValue),
