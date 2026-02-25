@@ -63,7 +63,7 @@ export function TabIntegration({ settings, setSettings }: TabIntegrationProps) {
             </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="assas-token">O token do seu Assas</Label>
+            <Label htmlFor="assas-token">O id da sua carteira no Asaas</Label>
             <InputGroup>
               <InputGroupInput
                 id="assas-token"
@@ -74,7 +74,7 @@ export function TabIntegration({ settings, setSettings }: TabIntegrationProps) {
               />
             </InputGroup>
             <p className="text-sm text-muted-foreground">
-              Integre seu catálogo ao seu Assas e faça suas vendas diretamente
+              Integre seu catálogo ao seu Asaas e faça suas vendas diretamente
               pelo catálogo.
             </p>
           </div>
