@@ -24,15 +24,6 @@ export function CatalogSettings() {
   const useUpdateFieldsCatalogSettings = updateFieldCatalog();
   const [settings, setSettings] = useState<CatalogSettingsProps>();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
-  if (!settings || !data) return <EmptyCatalog />;
-
   useEffect(() => {
     if (!data) return;
 
@@ -79,8 +70,16 @@ export function CatalogSettings() {
       walletId: data.walletId ?? "",
     });
   }, [data]);
-
   const debounceUpdate = useDebouncedValue(settings, 500);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+  if (!settings || !data) return <EmptyCatalog />;
 
   function onSubmit() {
     if (!settings || !debounceUpdate) return;
