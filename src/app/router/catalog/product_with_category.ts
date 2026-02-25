@@ -53,6 +53,7 @@ export const getProductAndProductsByCategory = base
           slug: {
             not: input.productSlug,
           },
+          organizationId: organization.id,
           categoryId: product.categoryId,
           isActive: true,
         },
