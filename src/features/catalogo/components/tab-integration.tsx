@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import { CatalogSettingsProps } from "./catalog";
+import { Button } from "@/components/ui/button";
 
 interface TabIntegrationProps {
   settings: CatalogSettingsProps;
@@ -60,6 +61,16 @@ export function TabIntegration({ settings, setSettings }: TabIntegrationProps) {
             <p className="text-sm text-muted-foreground">
               Integre seu catálogo ao seu Meta Pixel (Facebook) e tenha
               relatórios avançados sobre tráfego, campanhas e conversões.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="metaPixel">
+              Integre seu catálogo com Mercado Livre (Facebook)
+            </Label>
+            <Button>Conectar</Button>
+            <p className="text-sm text-muted-foreground">
+              Integre seu catálogo ao seu Mercado Livre e facilite a comunicação
+              entre o seu catálogo e o Mercado Livre.
             </p>
           </div>
         </div>
